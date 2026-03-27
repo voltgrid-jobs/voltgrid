@@ -3,6 +3,8 @@ import { CATEGORY_LABELS, JOB_TYPE_LABELS } from '@/types'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
+import { SaveJobButton } from '@/components/jobs/SaveJobButton'
+import { AlertSignupWidget } from '@/components/jobs/AlertSignupWidget'
 
 export async function generateMetadata({
   params,
@@ -37,8 +39,15 @@ export default async function JobDetailPage({
   const { id } = await params
   const supabase = await createClient()
   const { data: job } = await supabase.from('jobs').select('*').eq('id', id).eq('is_active', true).single()
-
   if (!job) notFound()
+
+  const { data: { user } } = await supabase.auth.getUser()
+  let isSaved = false
+  if (user) {
+    const { data: saved } = await supabase
+      .from('saved_jobs').select('id').eq('user_id', user.id).eq('job_id', id).single()
+    isSaved = !!saved
+  }
 
   const salary = formatSalary(job.salary_min, job.salary_max, job.salary_currency)
   const applyUrl = job.apply_url || (job.apply_email ? `mailto:${job.apply_email}` : null)
@@ -111,18 +120,19 @@ export default async function JobDetailPage({
               {salary && <p className="text-green-400 font-semibold mt-2">{salary}</p>}
             </div>
 
-            {applyUrl && (
-              <div className="sm:flex-shrink-0">
+            <div className="sm:flex-shrink-0 flex flex-col gap-2">
+              {applyUrl && (
                 <a
                   href={applyUrl}
                   target={job.apply_url ? '_blank' : undefined}
                   rel="noopener noreferrer"
-                  className="inline-block bg-yellow-400 text-gray-950 px-8 py-3 rounded-xl font-semibold hover:bg-yellow-300 transition-colors text-center w-full sm:w-auto"
+                  className="inline-block bg-yellow-400 text-gray-950 px-8 py-3 rounded-xl font-semibold hover:bg-yellow-300 transition-colors text-center"
                 >
                   Apply Now →
                 </a>
-              </div>
-            )}
+              )}
+              <SaveJobButton jobId={job.id} initialSaved={isSaved} />
+            </div>
           </div>
         </div>
 
@@ -145,6 +155,10 @@ export default async function JobDetailPage({
               </a>
             </div>
           )}
+        </div>
+
+        <div className="mt-6">
+          <AlertSignupWidget keywords={job.title} category={job.category} />
         </div>
       </div>
     </>
