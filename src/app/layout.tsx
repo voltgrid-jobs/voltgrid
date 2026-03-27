@@ -7,17 +7,37 @@ import { Footer } from '@/components/layout/Footer'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'VoltGrid Jobs — Data Center & AI Infrastructure Trades',
+  metadataBase: new URL('https://voltgridjobs.com'),
+  title: {
+    default: 'VoltGrid Jobs — Data Center & AI Infrastructure Trades',
+    template: '%s — VoltGrid Jobs',
+  },
   description:
     'Find electrician, HVAC, low voltage, and construction jobs at data centers and AI infrastructure projects. The job board built for trades workers powering the AI boom.',
   keywords:
-    'data center jobs, electrician jobs, HVAC jobs, low voltage technician, construction trades, AI infrastructure, hyperscale',
+    'data center jobs, electrician jobs, HVAC jobs, low voltage technician, construction trades, AI infrastructure, hyperscale, data center electrician, HVAC technician hiring',
+  authors: [{ name: 'VoltGrid Jobs', url: 'https://voltgridjobs.com' }],
   openGraph: {
-    title: 'VoltGrid Jobs',
-    description: 'Trades jobs powering the AI infrastructure boom.',
+    title: 'VoltGrid Jobs — Data Center & AI Infrastructure Trades',
+    description: 'Electrician, HVAC, and low voltage jobs at data centers and AI infrastructure sites. Find high-paying trades roles powering the AI boom.',
     url: 'https://voltgridjobs.com',
     siteName: 'VoltGrid Jobs',
     type: 'website',
+    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'VoltGrid Jobs',
+    description: 'Trades jobs powering the AI infrastructure boom.',
+    site: '@voltgridjobs',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, 'max-video-preview': -1, 'max-image-preview': 'large', 'max-snippet': -1 },
+  },
+  verification: {
+    google: '', // Fill in once Google Search Console is configured
   },
 }
 
