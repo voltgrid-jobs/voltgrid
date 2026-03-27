@@ -74,7 +74,14 @@ create table if not exists public.jobs (
   is_active boolean default true,
   expires_at timestamptz default (now() + interval '30 days'),
   created_at timestamptz default now(),
-  updated_at timestamptz default now()
+  updated_at timestamptz default now(),
+  -- Trades-specific fields (added 2026-03-27)
+  per_diem boolean default false,
+  per_diem_rate integer,
+  travel_required text check (travel_required in ('none', 'local', 'regional', 'national')),
+  shift_type text check (shift_type in ('day', 'night', 'rotating', '4x10', '5x8', 'other')),
+  contract_length text,
+  is_union boolean default false
 );
 
 create index if not exists jobs_category_idx on public.jobs(category);

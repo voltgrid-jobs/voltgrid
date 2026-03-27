@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { CATEGORY_LABELS, JOB_TYPE_LABELS } from '@/types'
+import { CATEGORY_LABELS, JOB_TYPE_LABELS, TRAVEL_LABELS, SHIFT_LABELS } from '@/types'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
@@ -127,6 +127,11 @@ export default async function JobDetailPage({
                     Remote OK
                   </span>
                 )}
+                {job.is_union && (
+                  <span className="bg-blue-900/40 text-blue-300 text-xs px-2 py-0.5 rounded font-medium">
+                    🔵 Union
+                  </span>
+                )}
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">{job.title}</h1>
               <p className="text-gray-400 text-lg">{job.company_name}</p>
@@ -149,6 +154,47 @@ export default async function JobDetailPage({
             </div>
           </div>
         </div>
+
+        {/* Trades-specific job details */}
+        {(job.per_diem || job.travel_required || job.shift_type || job.contract_length || job.is_union) && (
+          <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 sm:p-8 mb-6">
+            <h2 className="text-lg font-bold text-white mb-4">Job Details</h2>
+            <dl className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {job.per_diem && (
+                <div>
+                  <dt className="text-gray-500 text-xs uppercase tracking-wide mb-1">Per Diem</dt>
+                  <dd className="text-emerald-400 font-semibold">
+                    {job.per_diem_rate ? `$${job.per_diem_rate}/day` : 'Included'}
+                  </dd>
+                </div>
+              )}
+              {job.travel_required && job.travel_required !== 'none' && (
+                <div>
+                  <dt className="text-gray-500 text-xs uppercase tracking-wide mb-1">Travel</dt>
+                  <dd className="text-sky-400 font-medium">{TRAVEL_LABELS[job.travel_required]}</dd>
+                </div>
+              )}
+              {job.shift_type && (
+                <div>
+                  <dt className="text-gray-500 text-xs uppercase tracking-wide mb-1">Shift</dt>
+                  <dd className="text-gray-200 font-medium">{SHIFT_LABELS[job.shift_type]}</dd>
+                </div>
+              )}
+              {job.contract_length && (
+                <div>
+                  <dt className="text-gray-500 text-xs uppercase tracking-wide mb-1">Duration</dt>
+                  <dd className="text-gray-200 font-medium">{job.contract_length}</dd>
+                </div>
+              )}
+              {job.is_union && (
+                <div>
+                  <dt className="text-gray-500 text-xs uppercase tracking-wide mb-1">Union</dt>
+                  <dd className="text-blue-400 font-medium">🔵 CBA / Signatory</dd>
+                </div>
+              )}
+            </dl>
+          </div>
+        )}
 
         <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 sm:p-8">
           <h2 className="text-xl font-bold text-white mb-4">Job Description</h2>

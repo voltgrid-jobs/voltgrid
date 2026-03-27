@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { CATEGORY_LABELS, JOB_TYPE_LABELS } from '@/types'
+import { CATEGORY_LABELS, JOB_TYPE_LABELS, TRAVEL_LABELS, SHIFT_LABELS } from '@/types'
 
 const PLANS = [
   { id: 'single_post', name: 'Single Post', price: '$149', description: '1 listing · 30 days' },
@@ -12,6 +12,7 @@ export function PostJobForm() {
   const [plan, setPlan] = useState('single_post')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showPerDiemRate, setShowPerDiemRate] = useState(false)
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -32,6 +33,12 @@ export function PostJobForm() {
       salary_max: (form.elements.namedItem('salary_max') as HTMLInputElement).value,
       description: (form.elements.namedItem('description') as HTMLTextAreaElement).value,
       apply_url: (form.elements.namedItem('apply_url') as HTMLInputElement).value,
+      per_diem: (form.elements.namedItem('per_diem') as HTMLInputElement).checked,
+      per_diem_rate: (form.elements.namedItem('per_diem_rate') as HTMLInputElement).value || undefined,
+      travel_required: (form.elements.namedItem('travel_required') as HTMLSelectElement).value || undefined,
+      shift_type: (form.elements.namedItem('shift_type') as HTMLSelectElement).value || undefined,
+      contract_length: (form.elements.namedItem('contract_length') as HTMLInputElement).value || undefined,
+      is_union: (form.elements.namedItem('is_union') as HTMLInputElement).checked,
     }
 
     try {
@@ -209,6 +216,85 @@ export function PostJobForm() {
           className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 text-sm"
         />
         <p className="text-gray-600 text-xs mt-1">Job seekers will be sent here to apply.</p>
+      </div>
+
+      {/* Trades-specific fields */}
+      <div className="border-t border-gray-800 pt-6">
+        <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wide">Trades Details</h3>
+
+        {/* Per Diem */}
+        <div className="mb-4">
+          <label className="flex items-center gap-3 cursor-pointer mb-2">
+            <input
+              name="per_diem"
+              type="checkbox"
+              className="w-4 h-4 rounded border-gray-600 bg-gray-900 text-yellow-400 focus:ring-yellow-400"
+              onChange={(e) => setShowPerDiemRate(e.target.checked)}
+            />
+            <span className="text-sm text-gray-300">Per diem / daily allowance included</span>
+          </label>
+          {showPerDiemRate && (
+            <input
+              name="per_diem_rate"
+              type="number"
+              placeholder="Daily rate (e.g. 150)"
+              className="w-full sm:w-48 bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 text-sm"
+            />
+          )}
+        </div>
+
+        {/* Travel + Shift */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Travel Required</label>
+            <select
+              name="travel_required"
+              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-yellow-400 text-sm"
+            >
+              <option value="">Not specified</option>
+              {Object.entries(TRAVEL_LABELS).map(([key, label]) => (
+                <option key={key} value={key}>{label}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Shift Type</label>
+            <select
+              name="shift_type"
+              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-yellow-400 text-sm"
+            >
+              <option value="">Not specified</option>
+              {Object.entries(SHIFT_LABELS).map(([key, label]) => (
+                <option key={key} value={key}>{label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Contract Length */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-300 mb-1">Contract / Assignment Length</label>
+          <input
+            name="contract_length"
+            type="text"
+            placeholder="e.g. 6-month contract, 18-month project, contract to hire"
+            className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 text-sm"
+          />
+        </div>
+
+        {/* Union */}
+        <div>
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              name="is_union"
+              type="checkbox"
+              className="w-4 h-4 rounded border-gray-600 bg-gray-900 text-blue-400 focus:ring-blue-400"
+            />
+            <span className="text-sm text-gray-300">
+              This position is covered by a collective bargaining agreement (IBEW, UA, or other union)
+            </span>
+          </label>
+        </div>
       </div>
 
       {error && (

@@ -41,6 +41,13 @@ export interface Job {
   expires_at: string
   created_at: string
   updated_at: string
+  // Trades-specific fields
+  per_diem?: boolean
+  per_diem_rate?: number
+  travel_required?: 'none' | 'local' | 'regional' | 'national'
+  shift_type?: 'day' | 'night' | 'rotating' | '4x10' | '5x8' | 'other'
+  contract_length?: string
+  is_union?: boolean
 }
 
 export interface Employer {
@@ -71,4 +78,20 @@ export const JOB_TYPE_LABELS: Record<JobType, string> = {
   part_time: 'Part-Time',
   contract: 'Contract',
   apprenticeship: 'Apprenticeship',
+}
+
+export const TRAVEL_LABELS: Record<string, string> = {
+  none: 'No Travel',
+  local: 'Local Travel',
+  regional: 'Regional Travel',
+  national: 'National Travel',
+}
+
+export const SHIFT_LABELS: Record<string, string> = {
+  day: 'Day Shift',
+  night: 'Night Shift',
+  rotating: 'Rotating',
+  '4x10': '4×10',
+  '5x8': '5×8',
+  other: 'Other',
 }

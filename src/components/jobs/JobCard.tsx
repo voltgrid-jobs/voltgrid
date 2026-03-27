@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { type Job, CATEGORY_LABELS, JOB_TYPE_LABELS } from '@/types'
+import { type Job, CATEGORY_LABELS, JOB_TYPE_LABELS, TRAVEL_LABELS, SHIFT_LABELS } from '@/types'
 
 function formatSalary(min?: number, max?: number, currency = 'USD') {
   if (!min && !max) return null
@@ -29,6 +29,19 @@ function timeAgo(dateStr: string) {
 export function JobCard({ job, featured = false }: { job: Job; featured?: boolean }) {
   const salary = formatSalary(job.salary_min, job.salary_max, job.salary_currency)
 
+  const perDiemLabel = job.per_diem
+    ? job.per_diem_rate
+      ? `Per Diem $${job.per_diem_rate}/day`
+      : 'Per Diem'
+    : null
+
+  const travelLabel =
+    job.travel_required && job.travel_required !== 'none'
+      ? TRAVEL_LABELS[job.travel_required]
+      : null
+
+  const shiftLabel = job.shift_type ? SHIFT_LABELS[job.shift_type] : null
+
   return (
     <Link
       href={`/jobs/${job.id}`}
@@ -53,6 +66,31 @@ export function JobCard({ job, featured = false }: { job: Job; featured?: boolea
             {job.remote && (
               <span className="bg-green-900/40 text-green-400 text-xs px-2 py-0.5 rounded">
                 Remote OK
+              </span>
+            )}
+            {job.is_union && (
+              <span className="bg-blue-900/40 text-blue-300 text-xs px-2 py-0.5 rounded font-medium">
+                Union
+              </span>
+            )}
+            {perDiemLabel && (
+              <span className="bg-emerald-900/40 text-emerald-400 text-xs px-2 py-0.5 rounded font-medium">
+                {perDiemLabel}
+              </span>
+            )}
+            {travelLabel && (
+              <span className="bg-sky-900/40 text-sky-400 text-xs px-2 py-0.5 rounded">
+                {travelLabel}
+              </span>
+            )}
+            {shiftLabel && (
+              <span className="bg-gray-800 text-gray-300 text-xs px-2 py-0.5 rounded">
+                {shiftLabel}
+              </span>
+            )}
+            {job.contract_length && (
+              <span className="bg-gray-800 text-gray-300 text-xs px-2 py-0.5 rounded">
+                {job.contract_length}
               </span>
             )}
           </div>

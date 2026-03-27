@@ -18,6 +18,12 @@ interface RawJob {
   category?: JobCategory
   job_type?: JobType
   remote?: boolean
+  // Trades fields (parsed from description)
+  per_diem?: boolean
+  per_diem_rate?: number
+  travel_required?: string
+  shift_type?: string
+  contract_length?: string
 }
 
 function classifyCategory(title: string, description: string): JobCategory {
@@ -29,6 +35,64 @@ function classifyCategory(title: string, description: string): JobCategory {
   if (/\b(project manager|pm|superintendent|program manager|scheduler)\b/.test(text)) return 'project_management'
   if (/\b(operations|facilities|data center technician|dct|infrastructure tech)\b/.test(text)) return 'operations'
   return 'other'
+}
+
+/**
+ * Parse trades-specific fields from job description text using regex heuristics.
+ */
+function parseTradesFields(description: string): Partial<RawJob> {
+  const text = description.toLowerCase()
+  const result: Partial<RawJob> = {}
+
+  // Per diem detection
+  if (/per\s+diem|daily\s+allowance|\$\d+\/day|\$\d+\s*per\s*day/.test(text)) {
+    result.per_diem = true
+    // Try to extract rate
+    const rateMatch = text.match(/\$(\d+)\s*(?:\/day|per\s*day|daily)/)
+    if (rateMatch) {
+      result.per_diem_rate = parseInt(rateMatch[1], 10)
+    }
+  }
+
+  // Travel requirement detection
+  if (/must\s+relocate|relocation\s+required/.test(text)) {
+    result.travel_required = 'national'
+  } else if (/travel\s+up\s+to\s+(?:7[5-9]|[89]\d|100)\s*%|extensive\s+travel|national\s+travel/.test(text)) {
+    result.travel_required = 'national'
+  } else if (/travel\s+up\s+to\s+(?:[3-6]\d)\s*%|regional\s+travel|multi.?state/.test(text)) {
+    result.travel_required = 'regional'
+  } else if (/local\s+travel|within\s+(?:the\s+)?(?:metro|city|area)|travel\s+required/.test(text)) {
+    result.travel_required = 'local'
+  }
+
+  // Shift type detection
+  if (/4\s*[x×]\s*10|4-10\s+schedule|four\s+ten|10.hour\s+shift/.test(text)) {
+    result.shift_type = '4x10'
+  } else if (/5\s*[x×]\s*8|five\s+eight|8.hour\s+shift/.test(text)) {
+    result.shift_type = '5x8'
+  } else if (/night\s+shift|overnight|graveyard\s+shift|third\s+shift/.test(text)) {
+    result.shift_type = 'night'
+  } else if (/rotating\s+shift|swing\s+shift|alternating\s+shift|rotation/.test(text)) {
+    result.shift_type = 'rotating'
+  } else if (/day\s+shift|first\s+shift|daytime/.test(text)) {
+    result.shift_type = 'day'
+  }
+
+  // Contract length detection
+  const contractMatch = text.match(
+    /(\d+)[- ]?(month|week|year)[- ]?(?:contract|assignment|project|position)|contract\s+to\s+hire|contract-to-hire/
+  )
+  if (contractMatch) {
+    if (contractMatch[0].includes('contract to hire') || contractMatch[0].includes('contract-to-hire')) {
+      result.contract_length = 'Contract to Hire'
+    } else {
+      const num = contractMatch[1]
+      const unit = contractMatch[2]
+      result.contract_length = `${num}-${unit} contract`
+    }
+  }
+
+  return result
 }
 
 async function fetchAdzunaJobs(): Promise<RawJob[]> {
@@ -62,16 +126,18 @@ async function fetchAdzunaJobs(): Promise<RawJob[]> {
       const data = await res.json()
 
       for (const job of (data.results || [])) {
+        const description = job.description || ''
         jobs.push({
           source: 'adzuna',
           source_id: job.id,
           title: job.title,
           company_name: job.company?.display_name || 'Unknown',
           location: job.location?.display_name || 'USA',
-          description: job.description || '',
+          description,
           apply_url: job.redirect_url,
           salary_min: job.salary_min ? Math.round(job.salary_min) : undefined,
           salary_max: job.salary_max ? Math.round(job.salary_max) : undefined,
+          ...parseTradesFields(description),
         })
       }
     } catch (e) {
@@ -100,13 +166,14 @@ async function fetchUSAJobs(): Promise<RawJob[]> {
 
       for (const item of (data.SearchResult?.SearchResultItems || [])) {
         const pos = item.MatchedObjectDescriptor
+        const description = pos.QualificationSummary || pos.UserArea?.Details?.JobSummary || ''
         jobs.push({
           source: 'usajobs',
           source_id: pos.PositionID,
           title: pos.PositionTitle,
           company_name: pos.OrganizationName,
           location: pos.PositionLocation?.[0]?.LocationName || 'USA',
-          description: pos.QualificationSummary || pos.UserArea?.Details?.JobSummary || '',
+          description,
           apply_url: pos.ApplyURI?.[0],
           salary_min: pos.PositionRemuneration?.[0]?.MinimumRange
             ? Math.round(parseFloat(pos.PositionRemuneration[0].MinimumRange))
@@ -114,6 +181,7 @@ async function fetchUSAJobs(): Promise<RawJob[]> {
           salary_max: pos.PositionRemuneration?.[0]?.MaximumRange
             ? Math.round(parseFloat(pos.PositionRemuneration[0].MaximumRange))
             : undefined,
+          ...parseTradesFields(description),
         })
       }
     } catch (e) {
@@ -124,13 +192,16 @@ async function fetchUSAJobs(): Promise<RawJob[]> {
 }
 
 async function fetchGreenhouseJobs(): Promise<RawJob[]> {
-  // Verified active Greenhouse boards with data center / trades roles (2026-03-27)
-  // Note: Iron Mountain, Digital Realty, Equinix, Mortenson, Turner, AECOM, Bechtel
-  // do NOT use Greenhouse — replaced with confirmed active boards.
+  // Verified active Greenhouse boards for data center / trades roles
   const companies = [
+    // Core data center operators
     'coreweave',    // 263 jobs — Data Center Technicians, Apprentice Program, Facilities Managers
     'edgeconnex',   // ~50 jobs — Critical Systems/MEP Engineers, Electrical/Mechanical Operations
     'aligned',      // ~4 jobs — Data Center ops roles
+    // NECA member electrical contractors (verified 2026-03-27)
+    // Note: All slugs below returned 404 and are excluded:
+    // rosendin, acco, myi, bergelectric, harrisonconstruction, criticalprojectsllc,
+    // faith-technologies, myriad-supply, amelco, westphal
   ]
   const jobs: RawJob[] = []
 
@@ -146,16 +217,18 @@ async function fetchGreenhouseJobs(): Promise<RawJob[]> {
         // Filter for trades-relevant roles
         if (!/(electrician|hvac|low.?voltage|mechanical|facilities|construction|trades|technician|data center|critical systems|mep|power engineer|apprentice|operations engineer)/.test(title)) continue
 
+        const description = job.content
+          ? job.content.replace(/<[^>]+>/g, ' ').substring(0, 2000)
+          : ''
         jobs.push({
           source: 'greenhouse',
           source_id: String(job.id),
           title: job.title,
           company_name: company.charAt(0).toUpperCase() + company.slice(1),
           location: job.location?.name || 'USA',
-          description: job.content
-            ? job.content.replace(/<[^>]+>/g, ' ').substring(0, 2000)
-            : '',
+          description,
           apply_url: job.absolute_url,
+          ...parseTradesFields(description),
         })
       }
     } catch {
@@ -163,6 +236,29 @@ async function fetchGreenhouseJobs(): Promise<RawJob[]> {
     }
   }
   return jobs
+}
+
+/**
+ * DOL Apprenticeship API integration.
+ * 
+ * Investigation results (2026-03-27):
+ * - https://www.apprenticeship.gov/api/jobs returns 404 (no public REST API)
+ * - The site uses Drupal 10 and a USA.gov search
+ * - No documented public JSON API for job listings
+ * - The apprenticeship finder uses form-based search, not a REST API
+ * - Returning stub implementation that gracefully fails
+ */
+async function fetchDOLApprenticeshipJobs(): Promise<RawJob[]> {
+  // DOL apprenticeship.gov does not have a public REST API for job listings.
+  // The site is a Drupal 10 application with USA.gov site search integration.
+  // 
+  // Alternative: Use the DOL's O*NET API or RAPIDS system (requires registration).
+  // For now, this returns empty and logs appropriately.
+  //
+  // Future: Register for RAPIDS API at https://entbpmp.dol.gov and implement
+  // properly authenticated job listing retrieval.
+  console.log('DOL Apprenticeship: No public API available — skipping')
+  return []
 }
 
 export async function POST(req: NextRequest) {
@@ -175,13 +271,14 @@ export async function POST(req: NextRequest) {
   const allJobs: RawJob[] = []
 
   // Fetch from all sources concurrently
-  const [adzunaJobs, usaJobs, greenhouseJobs] = await Promise.all([
+  const [adzunaJobs, usaJobs, greenhouseJobs, dolJobs] = await Promise.all([
     fetchAdzunaJobs(),
     fetchUSAJobs(),
     fetchGreenhouseJobs(),
+    fetchDOLApprenticeshipJobs(),
   ])
 
-  allJobs.push(...adzunaJobs, ...usaJobs, ...greenhouseJobs)
+  allJobs.push(...adzunaJobs, ...usaJobs, ...greenhouseJobs, ...dolJobs)
 
   let inserted = 0
   let skipped = 0
@@ -224,6 +321,12 @@ export async function POST(req: NextRequest) {
       is_featured: false,
       is_active: true,
       expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      // Trades fields (will be ignored if columns don't exist yet — handled gracefully)
+      ...(job.per_diem !== undefined && { per_diem: job.per_diem }),
+      ...(job.per_diem_rate !== undefined && { per_diem_rate: job.per_diem_rate }),
+      ...(job.travel_required && { travel_required: job.travel_required }),
+      ...(job.shift_type && { shift_type: job.shift_type }),
+      ...(job.contract_length && { contract_length: job.contract_length }),
     })
 
     if (!error) inserted++
@@ -239,6 +342,7 @@ export async function POST(req: NextRequest) {
       adzuna: adzunaJobs.length,
       usajobs: usaJobs.length,
       greenhouse: greenhouseJobs.length,
+      dol_apprenticeship: dolJobs.length,
     },
   })
 }
