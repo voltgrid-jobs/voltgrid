@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 export function Footer() {
   return (
@@ -6,9 +7,15 @@ export function Footer() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8">
           <div>
-            <div className="flex items-center gap-2 font-bold text-lg mb-3">
-              <span className="text-yellow-400">⚡</span>
-              <span className="text-white">VoltGrid Jobs</span>
+            <div className="mb-3">
+              <Image
+                src="/logo-wordmark-transparent.png"
+                alt="VoltGrid Jobs"
+                width={233}
+                height={36}
+                className="h-8 w-auto"
+                unoptimized
+              />
             </div>
             <p className="text-gray-500 text-sm">
               The job board for trades workers powering the AI infrastructure boom.
