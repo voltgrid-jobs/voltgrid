@@ -52,28 +52,42 @@ export default async function JobDetailPage({
   const salary = formatSalary(job.salary_min, job.salary_max, job.salary_currency)
   const applyUrl = job.apply_url || (job.apply_email ? `mailto:${job.apply_email}` : null)
 
+  // Map internal job_type values to schema.org employmentType
+  const employmentTypeMap: Record<string, string> = {
+    full_time: 'FULL_TIME',
+    part_time: 'PART_TIME',
+    contract: 'CONTRACTOR',
+    apprenticeship: 'OTHER',
+  }
+
   // JSON-LD structured data for Google Jobs
-  const jsonLd = {
+  const jsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org/',
     '@type': 'JobPosting',
     title: job.title,
     description: job.description,
-    hiringOrganization: { '@type': 'Organization', name: job.company_name },
+    hiringOrganization: {
+      '@type': 'Organization',
+      name: job.company_name,
+      ...(job.company_logo_url && { logo: job.company_logo_url }),
+    },
     jobLocation: {
       '@type': 'Place',
       address: { '@type': 'PostalAddress', addressLocality: job.location },
     },
-    employmentType: job.job_type.toUpperCase().replace('_', '_'),
+    ...(job.remote && { jobLocationType: 'TELECOMMUTE' }),
+    employmentType: employmentTypeMap[job.job_type] ?? 'OTHER',
     datePosted: job.created_at,
-    validThrough: job.expires_at,
+    ...(job.expires_at && { validThrough: job.expires_at }),
+    ...(applyUrl && { url: applyUrl }),
     ...(job.salary_min && {
       baseSalary: {
         '@type': 'MonetaryAmount',
-        currency: job.salary_currency,
+        currency: job.salary_currency ?? 'USD',
         value: {
           '@type': 'QuantitativeValue',
-          minValue: job.salary_min,
-          maxValue: job.salary_max,
+          ...(job.salary_min && { minValue: job.salary_min }),
+          ...(job.salary_max && { maxValue: job.salary_max }),
           unitText: 'YEAR',
         },
       },
