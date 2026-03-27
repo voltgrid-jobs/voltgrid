@@ -32,17 +32,33 @@ function classifyCategory(title: string, description: string): JobCategory {
 }
 
 async function fetchAdzunaJobs(): Promise<RawJob[]> {
-  const keywords = ['data center electrician', 'data center HVAC', 'data center construction', 'hyperscale electrician', 'low voltage data center']
+  if (!process.env.ADZUNA_APP_ID || !process.env.ADZUNA_API_KEY) return []
+
+  const keywords = [
+    'data center electrician',
+    'data center HVAC technician',
+    'low voltage data center',
+    'hyperscale electrician',
+    'critical facilities technician',
+    'data center construction',
+  ]
   const jobs: RawJob[] = []
 
-  // Adzuna public search (no API key needed for basic search via their JSON endpoint)
-  for (const kw of keywords.slice(0, 2)) { // Limit to avoid rate limits
+  for (const kw of keywords.slice(0, 3)) { // 3 keywords, 20 results each = up to 60
     try {
-      const url = `https://api.adzuna.com/v1/api/jobs/us/search/1?app_id=${process.env.ADZUNA_APP_ID}&app_key=${process.env.ADZUNA_API_KEY}&results_per_page=20&what=${encodeURIComponent(kw)}&content-type=application/json`
-      if (!process.env.ADZUNA_APP_ID) continue // Skip if no key configured
+      const url = `https://api.adzuna.com/v1/api/jobs/us/search/1` +
+        `?app_id=${process.env.ADZUNA_APP_ID}` +
+        `&app_key=${process.env.ADZUNA_API_KEY}` +
+        `&results_per_page=20` +
+        `&what=${encodeURIComponent(kw)}`
 
-      const res = await fetch(url)
-      if (!res.ok) continue
+      const res = await fetch(url, {
+        headers: { 'Content-Type': 'application/json' },
+      })
+      if (!res.ok) {
+        console.error('Adzuna error:', res.status, await res.text().catch(() => ''))
+        continue
+      }
       const data = await res.json()
 
       for (const job of (data.results || [])) {
@@ -108,9 +124,13 @@ async function fetchUSAJobs(): Promise<RawJob[]> {
 }
 
 async function fetchGreenhouseJobs(): Promise<RawJob[]> {
+  // Verified active Greenhouse boards with data center / trades roles (2026-03-27)
+  // Note: Iron Mountain, Digital Realty, Equinix, Mortenson, Turner, AECOM, Bechtel
+  // do NOT use Greenhouse — replaced with confirmed active boards.
   const companies = [
-    'ironmountain', 'digitalrealty', 'equinix', 'mortenson',
-    'turnerconstruction', 'aecom', 'bechtel'
+    'coreweave',    // 263 jobs — Data Center Technicians, Apprentice Program, Facilities Managers
+    'edgeconnex',   // ~50 jobs — Critical Systems/MEP Engineers, Electrical/Mechanical Operations
+    'aligned',      // ~4 jobs — Data Center ops roles
   ]
   const jobs: RawJob[] = []
 
@@ -124,7 +144,7 @@ async function fetchGreenhouseJobs(): Promise<RawJob[]> {
       for (const job of (data.jobs || []).slice(0, 10)) {
         const title = job.title?.toLowerCase() || ''
         // Filter for trades-relevant roles
-        if (!/(electrician|hvac|low.?voltage|mechanical|facilities|construction|trades|technician|data center)/.test(title)) continue
+        if (!/(electrician|hvac|low.?voltage|mechanical|facilities|construction|trades|technician|data center|critical systems|mep|power engineer|apprentice|operations engineer)/.test(title)) continue
 
         jobs.push({
           source: 'greenhouse',
