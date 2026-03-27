@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
@@ -20,10 +21,15 @@ export function Header() {
   return (
     <header className="border-b border-gray-800 bg-gray-950/90 backdrop-blur-sm sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 font-bold text-xl">
-          <span className="text-yellow-400">⚡</span>
-          <span className="text-white">VoltGrid</span>
-          <span className="text-gray-500 font-normal text-sm hidden sm:inline">Jobs</span>
+        <Link href="/" className="flex items-center">
+          <Image
+            src="/logo-wordmark-transparent.png"
+            alt="VoltGrid Jobs"
+            width={160}
+            height={40}
+            className="h-9 w-auto"
+            priority
+          />
         </Link>
 
         <nav className="hidden md:flex items-center gap-5 text-sm text-gray-400">
