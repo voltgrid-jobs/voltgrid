@@ -15,6 +15,10 @@ interface SearchParams {
   q?: string
   type?: string
   featured?: string
+  per_diem?: string
+  travel?: string
+  shift?: string
+  union?: string
 }
 
 export default async function JobsPage({
@@ -51,6 +55,22 @@ export default async function JobsPage({
 
   if (params.featured === 'true') {
     query = query.eq('is_featured', true)
+  }
+
+  if (params.per_diem === 'true') {
+    query = query.eq('per_diem', true)
+  }
+
+  if (params.travel) {
+    query = query.eq('travel_required', params.travel)
+  }
+
+  if (params.shift) {
+    query = query.eq('shift_type', params.shift)
+  }
+
+  if (params.union === 'true') {
+    query = query.eq('is_union', true)
   }
 
   const { data: jobs, error } = await query

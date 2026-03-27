@@ -1,6 +1,6 @@
 'use client'
 import { useRouter } from 'next/navigation'
-import { CATEGORY_LABELS, JOB_TYPE_LABELS } from '@/types'
+import { CATEGORY_LABELS, JOB_TYPE_LABELS, TRAVEL_LABELS, SHIFT_LABELS } from '@/types'
 
 interface Props {
   currentParams: {
@@ -8,6 +8,10 @@ interface Props {
     location?: string
     q?: string
     type?: string
+    per_diem?: string
+    travel?: string
+    shift?: string
+    union?: string
   }
 }
 
@@ -20,7 +24,7 @@ export function JobFilters({ currentParams }: Props) {
     Object.entries(merged).forEach(([k, v]) => {
       if (v) params.set(k, v)
     })
-    if (key === value || !value) params.delete(key)
+    if (!value) params.delete(key)
     router.push(`/jobs?${params.toString()}`)
   }
 
@@ -122,6 +126,88 @@ export function JobFilters({ currentParams }: Props) {
             }
           }}
         />
+      </div>
+
+      {/* Shift Type */}
+      <div>
+        <label className="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wider">
+          Shift Type
+        </label>
+        <div className="space-y-1">
+          {Object.entries(SHIFT_LABELS).map(([key, label]) => (
+            <button
+              key={key}
+              onClick={() => updateFilter('shift', currentParams.shift === key ? '' : key)}
+              className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                currentParams.shift === key
+                  ? 'bg-yellow-400/20 text-yellow-400 font-medium'
+                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Travel Required */}
+      <div>
+        <label className="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wider">
+          Travel Required
+        </label>
+        <div className="space-y-1">
+          {Object.entries(TRAVEL_LABELS).map(([key, label]) => (
+            <button
+              key={key}
+              onClick={() => updateFilter('travel', currentParams.travel === key ? '' : key)}
+              className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                currentParams.travel === key
+                  ? 'bg-yellow-400/20 text-yellow-400 font-medium'
+                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Per Diem */}
+      <div>
+        <label className="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wider">
+          Per Diem
+        </label>
+        <div className="space-y-1">
+          <button
+            onClick={() => updateFilter('per_diem', currentParams.per_diem === 'true' ? '' : 'true')}
+            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+              currentParams.per_diem === 'true'
+                ? 'bg-green-400/20 text-green-400 font-medium'
+                : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+            }`}
+          >
+            Per Diem Included
+          </button>
+        </div>
+      </div>
+
+      {/* Union */}
+      <div>
+        <label className="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wider">
+          Union
+        </label>
+        <div className="space-y-1">
+          <button
+            onClick={() => updateFilter('union', currentParams.union === 'true' ? '' : 'true')}
+            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+              currentParams.union === 'true'
+                ? 'bg-blue-400/20 text-blue-400 font-medium'
+                : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+            }`}
+          >
+            Union / CBA
+          </button>
+        </div>
       </div>
     </div>
   )
