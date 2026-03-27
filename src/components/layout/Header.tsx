@@ -1,0 +1,50 @@
+'use client'
+import Link from 'next/link'
+import { useState } from 'react'
+
+export function Header() {
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  return (
+    <header className="border-b border-gray-800 bg-gray-950/90 backdrop-blur-sm sticky top-0 z-50">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2 font-bold text-xl">
+          <span className="text-yellow-400">⚡</span>
+          <span className="text-white">VoltGrid</span>
+          <span className="text-gray-500 font-normal text-sm hidden sm:inline">Jobs</span>
+        </Link>
+
+        <nav className="hidden md:flex items-center gap-6 text-sm text-gray-400">
+          <Link href="/jobs" className="hover:text-white transition-colors">Browse Jobs</Link>
+          <Link href="/employers" className="hover:text-white transition-colors">For Employers</Link>
+          <Link href="/post-job" className="bg-yellow-400 text-gray-950 px-4 py-2 rounded-lg font-semibold hover:bg-yellow-300 transition-colors">
+            Post a Job
+          </Link>
+        </nav>
+
+        <button
+          className="md:hidden text-gray-400 hover:text-white"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {menuOpen
+              ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            }
+          </svg>
+        </button>
+      </div>
+
+      {menuOpen && (
+        <div className="md:hidden border-t border-gray-800 bg-gray-950 px-4 py-4 flex flex-col gap-4 text-sm">
+          <Link href="/jobs" className="text-gray-400 hover:text-white" onClick={() => setMenuOpen(false)}>Browse Jobs</Link>
+          <Link href="/employers" className="text-gray-400 hover:text-white" onClick={() => setMenuOpen(false)}>For Employers</Link>
+          <Link href="/post-job" className="bg-yellow-400 text-gray-950 px-4 py-2 rounded-lg font-semibold text-center hover:bg-yellow-300" onClick={() => setMenuOpen(false)}>
+            Post a Job
+          </Link>
+        </div>
+      )}
+    </header>
+  )
+}
