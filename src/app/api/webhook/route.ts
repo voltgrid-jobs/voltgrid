@@ -110,6 +110,36 @@ export async function POST(req: NextRequest) {
 
       if (jobError) throw jobError
 
+      // Determine credits to add
+      const creditsMap: Record<string, number> = {
+        single_post: 0, // already used for this job
+        five_pack: 4,   // 1 used now, 4 remaining
+        pro_monthly: 999,
+        featured_addon: 0,
+      }
+      const creditsToAdd = creditsMap[meta.plan] ?? 0
+      const isPro = meta.plan === 'pro_monthly'
+
+      // Upsert employer credits
+      if (employerId) {
+        const { data: existing } = await supabase
+          .from('employer_credits').select('id, post_credits').eq('employer_id', employerId).single()
+        if (existing) {
+          await supabase.from('employer_credits').update({
+            post_credits: (existing as { post_credits: number }).post_credits + creditsToAdd,
+            is_pro: isPro || undefined,
+            pro_renews_at: isPro ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() : undefined,
+          }).eq('employer_id', employerId)
+        } else {
+          await supabase.from('employer_credits').insert({
+            employer_id: employerId,
+            post_credits: creditsToAdd,
+            is_pro: isPro,
+            pro_renews_at: isPro ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() : null,
+          })
+        }
+      }
+
       // Record payment
       await supabase.from('payments').insert({
         employer_id: employerId,
@@ -119,7 +149,7 @@ export async function POST(req: NextRequest) {
         amount_cents: session.amount_total,
         currency: session.currency,
         status: 'complete',
-        credits_added: 1,
+        credits_added: creditsToAdd + 1,
       })
 
       console.log('Job created:', (job as { id: string }).id)

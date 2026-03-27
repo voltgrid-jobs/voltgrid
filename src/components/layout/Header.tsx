@@ -30,12 +30,14 @@ export function Header() {
           <Link href="/jobs" className="hover:text-white transition-colors">Browse Jobs</Link>
           <Link href="/employers" className="hover:text-white transition-colors">For Employers</Link>
           {user ? (
-            <Link href="/account" className="hover:text-white transition-colors flex items-center gap-1">
-              <span className="w-7 h-7 rounded-full bg-yellow-400/20 text-yellow-400 flex items-center justify-center text-xs font-bold">
-                {user.email?.[0].toUpperCase()}
-              </span>
-              Account
-            </Link>
+            <>
+              <Link href="/dashboard" className="hover:text-white transition-colors">Dashboard</Link>
+              <Link href="/account" className="hover:text-white transition-colors flex items-center gap-1">
+                <span className="w-7 h-7 rounded-full bg-yellow-400/20 text-yellow-400 flex items-center justify-center text-xs font-bold">
+                  {user.email?.[0].toUpperCase()}
+                </span>
+              </Link>
+            </>
           ) : (
             <Link href="/auth/login" className="hover:text-white transition-colors">Sign In</Link>
           )}
@@ -63,7 +65,10 @@ export function Header() {
           <Link href="/jobs" className="text-gray-400 hover:text-white" onClick={() => setMenuOpen(false)}>Browse Jobs</Link>
           <Link href="/employers" className="text-gray-400 hover:text-white" onClick={() => setMenuOpen(false)}>For Employers</Link>
           {user ? (
-            <Link href="/account" className="text-gray-400 hover:text-white" onClick={() => setMenuOpen(false)}>My Account</Link>
+            <>
+              <Link href="/dashboard" className="text-gray-400 hover:text-white" onClick={() => setMenuOpen(false)}>Dashboard</Link>
+              <Link href="/account" className="text-gray-400 hover:text-white" onClick={() => setMenuOpen(false)}>My Account</Link>
+            </>
           ) : (
             <Link href="/auth/login" className="text-gray-400 hover:text-white" onClick={() => setMenuOpen(false)}>Sign In</Link>
           )}
