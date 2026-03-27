@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     googleBot: { index: true, follow: true, 'max-video-preview': -1, 'max-image-preview': 'large', 'max-snippet': -1 },
   },
   verification: {
-    google: '', // Fill in once Google Search Console is configured
+    google: 'kxEivUYz_8VjIEZuK3WDKxgEYrs6g9Le44fiWMyGoD0',
   },
 }
 
