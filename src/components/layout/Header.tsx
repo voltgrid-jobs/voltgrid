@@ -25,9 +25,9 @@ export function Header() {
           <Image
             src="/logo-wordmark-transparent.png"
             alt="VoltGrid Jobs"
-            width={248}
-            height={37}
-            className="h-10 w-auto"
+            width={233}
+            height={36}
+            className="h-9 w-auto"
             priority
           />
         </Link>
