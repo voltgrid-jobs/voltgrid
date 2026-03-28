@@ -21,9 +21,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const categories = ['electrical', 'hvac', 'low_voltage', 'construction', 'project_management', 'operations']
 
+  const locationSlugs = [
+    'northern-virginia',
+    'phoenix',
+    'dallas',
+    'chicago',
+    'portland',
+    'atlanta',
+  ]
+
+  const locationUrls: MetadataRoute.Sitemap = locationSlugs.map(slug => ({
+    url: `${baseUrl}/locations/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly',
+    priority: 0.7,
+  }))
+
   return [
     { url: baseUrl, lastModified: new Date(), changeFrequency: 'daily', priority: 1.0 },
     { url: `${baseUrl}/jobs`, lastModified: new Date(), changeFrequency: 'hourly', priority: 0.9 },
+    { url: `${baseUrl}/locations`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
     { url: `${baseUrl}/employers`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/post-job`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
     ...categories.map(cat => ({
@@ -32,6 +49,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily' as const,
       priority: 0.8,
     })),
+    ...locationUrls,
     ...jobUrls,
   ]
 }
