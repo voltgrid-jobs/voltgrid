@@ -32,7 +32,7 @@ function sanitizeJobDescription(html: string): string {
   clean = clean
     .replace(/<\/(p|div|li|h[1-6]|tr|blockquote|section|article)>/gi, '\n')
     .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<li[^>]*>/gi, '• ')
+    .replace(/<li[^>]*>/gi, '\n• ')
     .replace(/<h([1-6])[^>]*>/gi, '\n')
   // Strip all remaining tags
   clean = clean.replace(/<[^>]+>/g, '')
@@ -42,9 +42,10 @@ function sanitizeJobDescription(html: string): string {
     .replace(/&mdash;/g, '—')
     .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)))
     .replace(/&[a-z]+;/gi, ' ')
-  // Collapse excessive whitespace/newlines
+  // Collapse whitespace — keep bullet structure intact
   clean = clean
     .replace(/[ \t]{2,}/g, ' ')
+    .replace(/•[ \t]*\n[ \t]*/g, '• ')  // bullet + newline + space → inline
     .replace(/\n[ \t]+/g, '\n')
     .replace(/\n{3,}/g, '\n\n')
     .trim()
@@ -244,8 +245,28 @@ export default async function JobDetailPage({
 
         <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 sm:p-8">
           <h2 className="text-xl font-bold text-white mb-4">Job Description</h2>
-          <div className="text-gray-300 leading-relaxed whitespace-pre-wrap">
-            {sanitizeJobDescription(job.description)}
+          <div className="text-gray-300 leading-relaxed">
+            {sanitizeJobDescription(job.description)
+              .split('\n')
+              .map((line, i) => {
+                const trimmed = line.trim()
+                if (!trimmed) return <div key={i} className="h-3" />
+                if (trimmed.startsWith('• ')) {
+                  return (
+                    <div key={i} className="flex gap-2 my-1">
+                      <span className="text-yellow-400 flex-shrink-0 mt-0.5">•</span>
+                      <span>{trimmed.slice(2)}</span>
+                    </div>
+                  )
+                }
+                // Section headers: short lines in ALL CAPS or ending with no punctuation after a blank line
+                const isHeader = trimmed.length < 60 && trimmed === trimmed.toUpperCase() && trimmed.length > 3
+                if (isHeader) {
+                  return <h3 key={i} className="font-semibold text-white mt-5 mb-2 text-sm uppercase tracking-wide">{trimmed}</h3>
+                }
+                return <p key={i} className="my-1">{trimmed}</p>
+              })
+            }
           </div>
 
           {applyUrl && (
