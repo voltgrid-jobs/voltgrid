@@ -21,6 +21,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const categories = ['electrical', 'hvac', 'low_voltage', 'construction', 'project_management', 'operations']
 
+  const tradeSlugs = [
+    'electrician-jobs',
+    'hvac-jobs',
+    'low-voltage-jobs',
+    'construction-jobs',
+    'project-management-jobs',
+    'operations-jobs',
+  ]
+
   const locationSlugs = [
     'northern-virginia',
     'phoenix',
@@ -29,6 +38,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     'portland',
     'atlanta',
   ]
+
+  const tradeUrls: MetadataRoute.Sitemap = tradeSlugs.map(slug => ({
+    url: `${baseUrl}/trades/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'daily',
+    priority: 0.8,
+  }))
 
   const locationUrls: MetadataRoute.Sitemap = locationSlugs.map(slug => ({
     url: `${baseUrl}/locations/${slug}`,
@@ -40,6 +56,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     { url: baseUrl, lastModified: new Date(), changeFrequency: 'daily', priority: 1.0 },
     { url: `${baseUrl}/jobs`, lastModified: new Date(), changeFrequency: 'hourly', priority: 0.9 },
+    { url: `${baseUrl}/trades`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.8 },
     { url: `${baseUrl}/locations`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
     { url: `${baseUrl}/employers`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/post-job`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
@@ -49,6 +66,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily' as const,
       priority: 0.8,
     })),
+    ...tradeUrls,
     ...locationUrls,
     ...jobUrls,
   ]

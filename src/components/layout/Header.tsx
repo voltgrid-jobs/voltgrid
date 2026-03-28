@@ -35,6 +35,8 @@ export function Header() {
 
         <nav className="hidden md:flex items-center gap-5 text-sm text-gray-400">
           <Link href="/jobs" className="hover:text-white transition-colors">Browse Jobs</Link>
+          <Link href="/trades" className="hover:text-white transition-colors">Trades</Link>
+          <Link href="/locations" className="hover:text-white transition-colors">Locations</Link>
           <Link href="/employers" className="hover:text-white transition-colors">For Employers</Link>
           {user ? (
             <>
@@ -70,6 +72,8 @@ export function Header() {
       {menuOpen && (
         <div className="md:hidden border-t border-gray-800 bg-gray-950 px-4 py-4 flex flex-col gap-4 text-sm">
           <Link href="/jobs" className="text-gray-400 hover:text-white" onClick={() => setMenuOpen(false)}>Browse Jobs</Link>
+          <Link href="/trades" className="text-gray-400 hover:text-white" onClick={() => setMenuOpen(false)}>Trades</Link>
+          <Link href="/locations" className="text-gray-400 hover:text-white" onClick={() => setMenuOpen(false)}>Locations</Link>
           <Link href="/employers" className="text-gray-400 hover:text-white" onClick={() => setMenuOpen(false)}>For Employers</Link>
           {user ? (
             <>
