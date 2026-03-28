@@ -264,7 +264,7 @@ async function fetchGreenhouseJobs(): Promise<RawJob[]> {
         if (!/(electrician|hvac|low.?voltage|mechanical|facilities|construction|trades|technician|data center|critical systems|mep|power engineer|apprentice|operations engineer)/.test(title)) continue
 
         const description = job.content
-          ? stripHtml(job.content).substring(0, 3000)
+          ? stripHtml(job.content).substring(0, 10000)
           : ''
         jobs.push({
           source: 'greenhouse',
@@ -315,7 +315,7 @@ async function fetchLeverJobs(): Promise<RawJob[]> {
         // Filter for trades/data center roles
         if (!/(electrician|hvac|low.?voltage|mechanical|facilities|construction|trades|technician|data center|critical|mep|power|operations|apprentice)/.test(title)) continue
 
-        const description = stripHtml(posting.descriptionPlain || posting.description || '').substring(0, 3000)
+        const description = stripHtml(posting.descriptionPlain || posting.description || '').substring(0, 10000)
 
         jobs.push({
           source: 'greenhouse', // reuse existing enum value — no separate lever source needed
