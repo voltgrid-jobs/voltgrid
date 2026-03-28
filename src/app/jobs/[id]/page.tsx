@@ -51,6 +51,29 @@ function sanitizeJobDescription(html: string): string {
     .trim()
   return clean
 }
+// Canada and French detection (mirrors JobCard logic)
+const CANADA_KEYWORDS = [
+  'Quebec', 'Ontario', 'British Columbia', 'Alberta', 'Canada',
+  'Saskatchewan', 'Manitoba', 'Nova Scotia', 'New Brunswick',
+  'Newfoundland', 'Prince Edward Island', 'Yukon', 'Northwest Territories', 'Nunavut',
+  ' QC', ' BC', ' ON', ' AB', ' SK', ' MB', ' NS', ' NB', ', QC', ', BC', ', ON', ', AB',
+]
+function isCanadaJob(location: string): boolean {
+  return CANADA_KEYWORDS.some((kw) => location.includes(kw))
+}
+const FRENCH_WORDS = ['poste', 'emploi', 'vous', 'notre', 'nous', 'pour', 'avec', 'dans', 'une', 'des']
+function isFrenchDescription(description: string): boolean {
+  if (!description) return false
+  const lower = description.toLowerCase()
+  let count = 0
+  for (const word of FRENCH_WORDS) {
+    const regex = new RegExp(`\\b${word}\\b`, 'g')
+    const matches = lower.match(regex)
+    if (matches) count += matches.length
+  }
+  return count >= 3
+}
+
 import { SaveJobButton } from '@/components/jobs/SaveJobButton'
 import { AlertSignupWidget } from '@/components/jobs/AlertSignupWidget'
 import { ApplyButton } from '@/components/jobs/ApplyButton'
@@ -106,6 +129,8 @@ export default async function JobDetailPage({
 
   const salary = formatSalary(job.salary_min, job.salary_max, job.salary_currency, job.salary_period ?? 'year')
   const applyUrl = job.apply_url || (job.apply_email ? `mailto:${job.apply_email}` : null)
+  const isCanada = isCanadaJob(job.location ?? '')
+  const isFrench = isFrenchDescription(job.description ?? '')
 
   // Map internal job_type values to schema.org employmentType
   const employmentTypeMap: Record<string, string> = {
@@ -157,140 +182,176 @@ export default async function JobDetailPage({
       />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
         <div className="mb-6">
-          <Link href="/jobs" className="text-gray-500 hover:text-gray-300 text-sm transition-colors">
+          <Link href="/jobs" className="text-sm transition-colors" style={{ color: 'var(--fg-muted)' }}>
             ← Back to jobs
           </Link>
         </div>
 
-        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 sm:p-8 mb-6">
+        {/* Header card */}
+        <div className="rounded-2xl p-6 sm:p-8 mb-4" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6">
             <div className="flex-1">
-              <div className="flex flex-wrap gap-2 mb-3">
+              <div className="flex flex-wrap gap-1.5 mb-3">
                 {job.is_featured && (
-                  <span className="bg-yellow-400/20 text-yellow-400 text-xs font-medium px-2 py-0.5 rounded">
-                    Featured
-                  </span>
+                  <span className="text-xs font-medium px-2 py-0.5 rounded" style={{ background: 'var(--yellow-dim)', color: 'var(--yellow)' }}>Featured</span>
                 )}
-                <span className="bg-gray-800 text-gray-400 text-xs px-2 py-0.5 rounded">
+                <span className="text-xs px-2 py-0.5 rounded" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--fg-muted)' }}>
                   {CATEGORY_LABELS[job.category as keyof typeof CATEGORY_LABELS]}
                 </span>
-                <span className="bg-gray-800 text-gray-400 text-xs px-2 py-0.5 rounded">
+                <span className="text-xs px-2 py-0.5 rounded" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--fg-muted)' }}>
                   {JOB_TYPE_LABELS[job.job_type as keyof typeof JOB_TYPE_LABELS]}
                 </span>
                 {job.remote && (
-                  <span className="bg-green-900/40 text-green-400 text-xs px-2 py-0.5 rounded">
-                    Remote OK
-                  </span>
+                  <span className="text-xs px-2 py-0.5 rounded" style={{ background: 'var(--green-dim)', color: 'var(--green)' }}>Remote OK</span>
                 )}
                 {job.is_union && (
-                  <span className="bg-blue-900/40 text-blue-300 text-xs px-2 py-0.5 rounded font-medium">
-                    🔵 Union
-                  </span>
+                  <span className="text-xs font-medium px-2 py-0.5 rounded" style={{ background: 'var(--blue-dim)', color: 'var(--blue-fg)' }}>Union</span>
                 )}
               </div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">{job.title}</h1>
-              <p className="text-gray-400 text-lg">{job.company_name}</p>
-              <p className="text-gray-500 mt-1">📍 {job.location}</p>
-              {salary && <p className="text-green-400 font-semibold mt-2">{salary}</p>}
+              <h1 className="text-2xl sm:text-3xl font-semibold mb-2" style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif', letterSpacing: '-0.01em' }}>
+                {job.title}
+              </h1>
+              <p className="text-base" style={{ color: 'var(--fg-muted)' }}>{job.company_name}</p>
+              <p className="text-sm mt-1" style={{ color: 'var(--fg-faint)' }}>{job.location}</p>
+              {/* CHANGE 6: Blur salary for guests */}
+              {salary && (
+                user ? (
+                  <p className="font-semibold mt-2" style={{ color: 'var(--green)' }}>{salary}</p>
+                ) : (
+                  <div className="mt-2 flex items-center gap-2 flex-wrap">
+                    <span
+                      className="font-semibold select-none"
+                      style={{ color: 'var(--green)', filter: 'blur(5px)', userSelect: 'none', pointerEvents: 'none' }}
+                    >
+                      $●●,●●● – $●●●,●●● / year
+                    </span>
+                    <Link
+                      href={`/auth/login?next=/jobs/${job.id}`}
+                      className="text-xs px-2.5 py-1 rounded-full font-medium transition-opacity"
+                      style={{ background: 'var(--yellow-dim)', color: 'var(--yellow)', border: '1px solid var(--yellow-border)' }}
+                    >
+                      Sign in to see full salary — it&apos;s free
+                    </Link>
+                  </div>
+                )
+              )}
             </div>
 
             <div className="sm:flex-shrink-0 flex flex-col gap-2">
               {applyUrl && (
-                <ApplyButton
-                  jobId={job.id}
-                  applyUrl={applyUrl}
-                  isExternalUrl={!!job.apply_url}
-                  source="top_button"
-                />
+                <ApplyButton jobId={job.id} applyUrl={applyUrl} isExternalUrl={!!job.apply_url} source="top_button" />
               )}
               <SaveJobButton jobId={job.id} initialSaved={isSaved} />
             </div>
           </div>
         </div>
 
-        {/* Trades-specific job details */}
+        {/* Trades details */}
         {(job.per_diem || job.travel_required || job.shift_type || job.contract_length || job.is_union) && (
-          <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 sm:p-8 mb-6">
-            <h2 className="text-lg font-bold text-white mb-4">Job Details</h2>
+          <div className="rounded-2xl p-6 sm:p-8 mb-4" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
+            <p className="text-xs font-semibold tracking-widest uppercase mb-4" style={{ color: 'var(--fg-faint)' }}>Job Details</p>
             <dl className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {job.per_diem && (
                 <div>
-                  <dt className="text-gray-500 text-xs uppercase tracking-wide mb-1">Per Diem</dt>
-                  <dd className="text-emerald-400 font-semibold">
-                    {job.per_diem_rate ? `$${job.per_diem_rate}/day` : 'Included'}
-                  </dd>
+                  <dt className="text-xs uppercase tracking-wide mb-1" style={{ color: 'var(--fg-faint)' }}>Per Diem</dt>
+                  <dd className="font-semibold text-sm" style={{ color: 'var(--green)' }}>{job.per_diem_rate ? `$${job.per_diem_rate}/day` : 'Included'}</dd>
                 </div>
               )}
               {job.travel_required && job.travel_required !== 'none' && (
                 <div>
-                  <dt className="text-gray-500 text-xs uppercase tracking-wide mb-1">Travel</dt>
-                  <dd className="text-sky-400 font-medium">{TRAVEL_LABELS[job.travel_required]}</dd>
+                  <dt className="text-xs uppercase tracking-wide mb-1" style={{ color: 'var(--fg-faint)' }}>Travel</dt>
+                  <dd className="font-medium text-sm" style={{ color: 'var(--blue-fg)' }}>{TRAVEL_LABELS[job.travel_required]}</dd>
                 </div>
               )}
               {job.shift_type && (
                 <div>
-                  <dt className="text-gray-500 text-xs uppercase tracking-wide mb-1">Shift</dt>
-                  <dd className="text-gray-200 font-medium">{SHIFT_LABELS[job.shift_type]}</dd>
+                  <dt className="text-xs uppercase tracking-wide mb-1" style={{ color: 'var(--fg-faint)' }}>Shift</dt>
+                  <dd className="font-medium text-sm" style={{ color: 'var(--fg)' }}>{SHIFT_LABELS[job.shift_type]}</dd>
                 </div>
               )}
               {job.contract_length && (
                 <div>
-                  <dt className="text-gray-500 text-xs uppercase tracking-wide mb-1">Duration</dt>
-                  <dd className="text-gray-200 font-medium">{job.contract_length}</dd>
+                  <dt className="text-xs uppercase tracking-wide mb-1" style={{ color: 'var(--fg-faint)' }}>Duration</dt>
+                  <dd className="font-medium text-sm" style={{ color: 'var(--fg)' }}>{job.contract_length}</dd>
                 </div>
               )}
               {job.is_union && (
                 <div>
-                  <dt className="text-gray-500 text-xs uppercase tracking-wide mb-1">Union</dt>
-                  <dd className="text-blue-400 font-medium">🔵 CBA / Signatory</dd>
+                  <dt className="text-xs uppercase tracking-wide mb-1" style={{ color: 'var(--fg-faint)' }}>Union</dt>
+                  <dd className="font-medium text-sm" style={{ color: 'var(--blue-fg)' }}>CBA / Signatory</dd>
                 </div>
               )}
             </dl>
           </div>
         )}
 
-        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 sm:p-8">
-          <h2 className="text-xl font-bold text-white mb-4">Job Description</h2>
-          <div className="text-gray-300 leading-relaxed">
+        {/* CHANGE 3: Canada / French notice banners */}
+        {(isCanada || isFrench) && (
+          <div className="flex flex-col gap-2 mb-4">
+            {isCanada && (
+              <div
+                className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm"
+                style={{ background: 'rgba(220,38,38,0.08)', border: '1px solid rgba(220,38,38,0.2)', color: 'var(--fg-muted)' }}
+              >
+                <span>🇨🇦</span>
+                <span>This role is based in Canada</span>
+              </div>
+            )}
+            {isFrench && (
+              <div
+                className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm"
+                style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)', color: 'var(--fg-muted)' }}
+              >
+                <span>📋</span>
+                <span>This listing is posted in French</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Description */}
+        <div className="rounded-2xl p-6 sm:p-8" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
+          <p className="text-xs font-semibold tracking-widest uppercase mb-5" style={{ color: 'var(--fg-faint)' }}>Job Description</p>
+          <div className="job-description">
             {sanitizeJobDescription(job.description)
               .split('\n')
               .map((line, i) => {
                 const trimmed = line.trim()
-                if (!trimmed) return <div key={i} className="h-3" />
+                if (!trimmed) return <div key={i} className="h-4" />
                 if (trimmed.startsWith('• ')) {
                   return (
-                    <div key={i} className="flex gap-2 my-1">
-                      <span className="text-yellow-400 flex-shrink-0 mt-0.5">•</span>
+                    <div key={i} className="flex gap-3 my-2">
+                      <span style={{ color: 'var(--yellow)', flexShrink: 0, marginTop: '0.2rem', fontWeight: 700 }}>—</span>
                       <span>{trimmed.slice(2)}</span>
                     </div>
                   )
                 }
-                // Section headers: short lines in ALL CAPS or ending with no punctuation after a blank line
                 const isHeader = trimmed.length < 60 && trimmed === trimmed.toUpperCase() && trimmed.length > 3
                 if (isHeader) {
-                  return <h3 key={i} className="font-semibold text-white mt-5 mb-2 text-sm uppercase tracking-wide">{trimmed}</h3>
+                  return <h3 key={i}>{trimmed}</h3>
                 }
-                return <p key={i} className="my-1">{trimmed}</p>
+                return <p key={i} className="my-1.5">{trimmed}</p>
               })
             }
           </div>
 
           {applyUrl && (
-            <div className="mt-10 pt-8 border-t border-gray-800 text-center">
-              <p className="text-gray-400 mb-4">Ready to apply?</p>
+            <div className="mt-10 pt-8 text-center" style={{ borderTop: '1px solid var(--border)' }}>
+              <p className="text-sm mb-4" style={{ color: 'var(--fg-muted)' }}>Ready to apply?</p>
               <ApplyButton
                 jobId={job.id}
                 applyUrl={applyUrl}
                 isExternalUrl={!!job.apply_url}
                 label="Apply for this Job →"
                 source="bottom_button"
-                className="inline-block bg-yellow-400 text-gray-950 px-10 py-4 rounded-xl font-semibold text-lg hover:bg-yellow-300 transition-colors"
+                className="inline-block px-10 py-4 rounded-xl font-semibold text-lg transition-opacity"
+                style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
               />
             </div>
           )}
         </div>
 
-        <div className="mt-6">
+        <div className="mt-4">
           <AlertSignupWidget keywords={job.title} category={job.category} />
         </div>
       </div>

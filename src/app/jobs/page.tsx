@@ -89,10 +89,10 @@ export default async function JobsPage({
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">
+        <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif', letterSpacing: '-0.01em' }}>
           {activeCategory ? `${CATEGORY_LABELS[activeCategory]} Jobs` : 'All Jobs'}
         </h1>
-        <p className="text-gray-400">
+        <p style={{ color: 'var(--fg-muted)' }}>
           {hasFilters
             ? `${jobs?.length ?? 0} matching positions`
             : `${totalCount ?? 0} open positions`} at data centers and AI infrastructure projects
@@ -112,21 +112,18 @@ export default async function JobsPage({
               ))}
             </div>
           ) : (
-            <div className="bg-gray-900 border border-gray-800 rounded-xl p-12 text-center">
-              <div className="text-4xl mb-4">🔍</div>
-              <p className="text-gray-300 font-medium mb-2">No jobs found</p>
+            <div className="rounded-xl p-12 text-center" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
+              <p className="font-medium mb-2" style={{ color: 'var(--fg)' }}>No jobs found</p>
               {hasFilters ? (
                 <>
-                  <p className="text-gray-500 text-sm mb-4">Try adjusting your filters or search terms.</p>
-                  <a
-                    href="/jobs"
-                    className="inline-block text-yellow-400 text-sm hover:text-yellow-300 border border-yellow-400/30 px-4 py-2 rounded-lg hover:border-yellow-400/60 transition-colors"
-                  >
+                  <p className="text-sm mb-4" style={{ color: 'var(--fg-muted)' }}>Try adjusting your filters or search terms.</p>
+                  <a href="/jobs" className="inline-block text-sm px-4 py-2 rounded-lg transition-colors"
+                    style={{ color: 'var(--yellow)', border: '1px solid var(--yellow-border)' }}>
                     Clear all filters →
                   </a>
                 </>
               ) : (
-                <p className="text-gray-500 text-sm">New jobs are added daily. Check back shortly.</p>
+                <p className="text-sm" style={{ color: 'var(--fg-muted)' }}>New jobs are added daily. Check back shortly.</p>
               )}
             </div>
           )}

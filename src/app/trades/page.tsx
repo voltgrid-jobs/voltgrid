@@ -48,7 +48,7 @@ const CATEGORIES = [
 
 export default function TradesPage() {
   return (
-    <main className="min-h-screen bg-gray-950 text-white">
+    <main className="min-h-screen">
       {/* Hero */}
       <section className="border-b border-gray-800 py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">

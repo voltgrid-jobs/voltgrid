@@ -21,28 +21,27 @@ export function JobFilters({ currentParams }: Props) {
   function updateFilter(key: string, value: string) {
     const params = new URLSearchParams()
     const merged = { ...currentParams, [key]: value }
-    Object.entries(merged).forEach(([k, v]) => {
-      if (v) params.set(k, v)
-    })
+    Object.entries(merged).forEach(([k, v]) => { if (v) params.set(k, v) })
     if (!value) params.delete(key)
     router.push(`/jobs?${params.toString()}`)
   }
 
-  function clearFilters() {
-    router.push('/jobs')
-  }
+  function clearFilters() { router.push('/jobs') }
 
   const hasFilters = Object.values(currentParams).some(Boolean)
 
+  const filterBtn = (active: boolean, accent = 'yellow') => ({
+    style: active
+      ? { background: accent === 'green' ? 'var(--green-dim)' : accent === 'blue' ? 'var(--blue-dim)' : 'var(--yellow-dim)', color: accent === 'green' ? 'var(--green)' : accent === 'blue' ? 'var(--blue-fg)' : 'var(--yellow)' }
+      : { color: 'var(--fg-muted)' },
+  })
+
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-xl p-5 space-y-6">
+    <div className="rounded-xl p-5 space-y-6" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
       <div className="flex items-center justify-between">
-        <h2 className="font-semibold text-white">Filters</h2>
+        <h2 className="font-semibold text-sm" style={{ color: 'var(--fg)' }}>Filters</h2>
         {hasFilters && (
-          <button
-            onClick={clearFilters}
-            className="text-xs text-yellow-400 hover:text-yellow-300"
-          >
+          <button onClick={clearFilters} className="text-xs transition-colors" style={{ color: 'var(--yellow)' }}>
             Clear all
           </button>
         )}
@@ -50,164 +49,118 @@ export function JobFilters({ currentParams }: Props) {
 
       {/* Search */}
       <div>
-        <label className="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wider">
-          Search
-        </label>
+        <label className="block text-xs font-medium tracking-widest uppercase mb-2" style={{ color: 'var(--fg-faint)' }}>Search</label>
         <input
           type="text"
           defaultValue={currentParams.q}
           placeholder="Job title, company..."
-          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400"
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              updateFilter('q', (e.target as HTMLInputElement).value)
-            }
-          }}
+          className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none"
+          style={{ background: 'var(--bg)', border: '1px solid var(--border-strong)', color: 'var(--fg)', caretColor: 'var(--yellow)' }}
+          onKeyDown={(e) => { if (e.key === 'Enter') updateFilter('q', (e.target as HTMLInputElement).value) }}
         />
       </div>
 
       {/* Category */}
       <div>
-        <label className="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wider">
-          Trade
-        </label>
-        <div className="space-y-1">
-          {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
-            <button
-              key={key}
-              onClick={() => updateFilter('category', currentParams.category === key ? '' : key)}
-              className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                currentParams.category === key
-                  ? 'bg-yellow-400/20 text-yellow-400 font-medium'
-                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
+        <label className="block text-xs font-medium tracking-widest uppercase mb-2" style={{ color: 'var(--fg-faint)' }}>Trade</label>
+        <div className="space-y-0.5">
+          {Object.entries(CATEGORY_LABELS).map(([key, label]) => {
+            const active = currentParams.category === key
+            return (
+              <button key={key} onClick={() => updateFilter('category', active ? '' : key)}
+                className="w-full text-left px-3 py-2 rounded-lg text-sm transition-colors"
+                {...filterBtn(active)}>
+                {label}
+              </button>
+            )
+          })}
         </div>
       </div>
 
       {/* Job Type */}
       <div>
-        <label className="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wider">
-          Job Type
-        </label>
-        <div className="space-y-1">
-          {Object.entries(JOB_TYPE_LABELS).map(([key, label]) => (
-            <button
-              key={key}
-              onClick={() => updateFilter('type', currentParams.type === key ? '' : key)}
-              className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                currentParams.type === key
-                  ? 'bg-yellow-400/20 text-yellow-400 font-medium'
-                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
+        <label className="block text-xs font-medium tracking-widest uppercase mb-2" style={{ color: 'var(--fg-faint)' }}>Job Type</label>
+        <div className="space-y-0.5">
+          {Object.entries(JOB_TYPE_LABELS).map(([key, label]) => {
+            const active = currentParams.type === key
+            return (
+              <button key={key} onClick={() => updateFilter('type', active ? '' : key)}
+                className="w-full text-left px-3 py-2 rounded-lg text-sm transition-colors"
+                {...filterBtn(active)}>
+                {label}
+              </button>
+            )
+          })}
         </div>
       </div>
 
       {/* Location */}
       <div>
-        <label className="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wider">
-          Location
-        </label>
+        <label className="block text-xs font-medium tracking-widest uppercase mb-2" style={{ color: 'var(--fg-faint)' }}>Location</label>
         <input
           type="text"
           defaultValue={currentParams.location}
           placeholder="City, state..."
-          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400"
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              updateFilter('location', (e.target as HTMLInputElement).value)
-            }
-          }}
+          className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none"
+          style={{ background: 'var(--bg)', border: '1px solid var(--border-strong)', color: 'var(--fg)' }}
+          onKeyDown={(e) => { if (e.key === 'Enter') updateFilter('location', (e.target as HTMLInputElement).value) }}
         />
       </div>
 
       {/* Shift Type */}
       <div>
-        <label className="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wider">
-          Shift Type
-        </label>
-        <div className="space-y-1">
-          {Object.entries(SHIFT_LABELS).map(([key, label]) => (
-            <button
-              key={key}
-              onClick={() => updateFilter('shift', currentParams.shift === key ? '' : key)}
-              className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                currentParams.shift === key
-                  ? 'bg-yellow-400/20 text-yellow-400 font-medium'
-                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
+        <label className="block text-xs font-medium tracking-widest uppercase mb-2" style={{ color: 'var(--fg-faint)' }}>Shift</label>
+        <div className="space-y-0.5">
+          {Object.entries(SHIFT_LABELS).map(([key, label]) => {
+            const active = currentParams.shift === key
+            return (
+              <button key={key} onClick={() => updateFilter('shift', active ? '' : key)}
+                className="w-full text-left px-3 py-2 rounded-lg text-sm transition-colors"
+                {...filterBtn(active)}>
+                {label}
+              </button>
+            )
+          })}
         </div>
       </div>
 
-      {/* Travel Required */}
+      {/* Travel */}
       <div>
-        <label className="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wider">
-          Travel Required
-        </label>
-        <div className="space-y-1">
-          {Object.entries(TRAVEL_LABELS).map(([key, label]) => (
-            <button
-              key={key}
-              onClick={() => updateFilter('travel', currentParams.travel === key ? '' : key)}
-              className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                currentParams.travel === key
-                  ? 'bg-yellow-400/20 text-yellow-400 font-medium'
-                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
+        <label className="block text-xs font-medium tracking-widest uppercase mb-2" style={{ color: 'var(--fg-faint)' }}>Travel</label>
+        <div className="space-y-0.5">
+          {Object.entries(TRAVEL_LABELS).map(([key, label]) => {
+            const active = currentParams.travel === key
+            return (
+              <button key={key} onClick={() => updateFilter('travel', active ? '' : key)}
+                className="w-full text-left px-3 py-2 rounded-lg text-sm transition-colors"
+                {...filterBtn(active)}>
+                {label}
+              </button>
+            )
+          })}
         </div>
       </div>
 
       {/* Per Diem */}
       <div>
-        <label className="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wider">
-          Per Diem
-        </label>
-        <div className="space-y-1">
-          <button
-            onClick={() => updateFilter('per_diem', currentParams.per_diem === 'true' ? '' : 'true')}
-            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-              currentParams.per_diem === 'true'
-                ? 'bg-green-400/20 text-green-400 font-medium'
-                : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-            }`}
-          >
-            Per Diem Included
-          </button>
-        </div>
+        <label className="block text-xs font-medium tracking-widest uppercase mb-2" style={{ color: 'var(--fg-faint)' }}>Per Diem</label>
+        <button
+          onClick={() => updateFilter('per_diem', currentParams.per_diem === 'true' ? '' : 'true')}
+          className="w-full text-left px-3 py-2 rounded-lg text-sm transition-colors"
+          {...filterBtn(currentParams.per_diem === 'true', 'green')}>
+          Per Diem Included
+        </button>
       </div>
 
       {/* Union */}
       <div>
-        <label className="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wider">
-          Union
-        </label>
-        <div className="space-y-1">
-          <button
-            onClick={() => updateFilter('union', currentParams.union === 'true' ? '' : 'true')}
-            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-              currentParams.union === 'true'
-                ? 'bg-blue-400/20 text-blue-400 font-medium'
-                : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-            }`}
-          >
-            Union / CBA
-          </button>
-        </div>
+        <label className="block text-xs font-medium tracking-widest uppercase mb-2" style={{ color: 'var(--fg-faint)' }}>Union</label>
+        <button
+          onClick={() => updateFilter('union', currentParams.union === 'true' ? '' : 'true')}
+          className="w-full text-left px-3 py-2 rounded-lg text-sm transition-colors"
+          {...filterBtn(currentParams.union === 'true', 'blue')}>
+          Union / CBA
+        </button>
       </div>
     </div>
   )

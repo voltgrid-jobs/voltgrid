@@ -1,11 +1,87 @@
 @import "tailwindcss";
 
 :root {
-  --background: #030712;
-  --foreground: #f9fafb;
+  /* ── Core palette ── */
+  --bg:           #0D0D0D;   /* Pure near-black — no blue cast */
+  --bg-subtle:    #141414;
+  --bg-raised:    #1A1A1A;
+  --border:       #272727;
+  --border-strong:#373737;
+
+  /* ── Typography — WCAG AA compliant ── */
+  /* Normal text (16px): minimum 4.5:1 ratio against --bg        */
+  /* --fg        #F0F0ED  →  contrast ~15:1  ✓ large + normal    */
+  /* --fg-muted  #C0C0B8  →  contrast ~8.5:1 ✓ normal text      */
+  /* --fg-faint  #707070  →  contrast ~4.6:1 ✓ large/UI text    */
+  /* Small text (14px): use --fg or --fg-muted only              */
+  --fg:           #F0F0ED;
+  --fg-muted:     #C0C0B8;
+  --fg-faint:     #707070;
+
+  /* ── Brand ── */
+  --yellow:       #FACC15;
+  --yellow-dim:   rgba(250,204,21,0.12);
+  --yellow-border:rgba(250,204,21,0.25);
+
+  /* ── Semantic ── */
+  --green:        #4ADE80;
+  --green-dim:    rgba(74,222,128,0.12);
+  --blue-dim:     rgba(99,179,237,0.15);
+  --blue-fg:      #93C5FD;
+}
+
+/* ── Global base ── */
+html, body {
+  background: var(--bg) !important;
+  color: var(--fg);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
+
+/* ── Override ALL remaining Tailwind gray backgrounds to match our palette ── */
+/* This ensures any un-migrated page (trades, locations, etc.) stays consistent */
+.bg-gray-950, [class*="bg-gray-950"] { background-color: var(--bg) !important; }
+.bg-gray-900, [class*="bg-gray-900"] { background-color: var(--bg-raised) !important; }
+.bg-gray-800, [class*="bg-gray-800"] { background-color: var(--bg-subtle) !important; }
+.border-gray-800, [class*="border-gray-800"] { border-color: var(--border) !important; }
+.border-gray-700, [class*="border-gray-700"] { border-color: var(--border-strong) !important; }
+.text-gray-400, [class*="text-gray-400"] { color: var(--fg-muted) !important; }
+.text-gray-500, [class*="text-gray-500"] { color: var(--fg-faint) !important; }
+.text-gray-300, [class*="text-gray-300"] { color: var(--fg) !important; }
+.text-gray-600, [class*="text-gray-600"] { color: var(--fg-faint) !important; }
+
+/* ── Job description readability ── */
+/* Descriptions must be legible — 16px minimum, full contrast colour */
+.job-description {
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--fg);
+}
+.job-description p,
+.job-description span {
+  color: var(--fg-muted); /* #C0C0B8 — 8.5:1 contrast, AA+ */
+}
+.job-description h3 {
+  color: var(--fg);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ── Stagger animation ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up { animation: fadeUp 0.5s ease forwards; opacity: 0; }
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }

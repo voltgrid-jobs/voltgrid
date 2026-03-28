@@ -137,40 +137,38 @@ export default function EmployersPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
 
-      <div className="bg-gray-950 text-white">
+      <div>
         {/* ── Hero ── */}
         <section className="max-w-5xl mx-auto px-4 sm:px-6 pt-20 pb-16 text-center">
-          <div className="inline-flex items-center gap-2 bg-yellow-400/10 border border-yellow-400/30 rounded-full px-4 py-1.5 text-yellow-400 text-sm font-medium mb-6">
+          <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest uppercase px-3 py-1.5 rounded-full mb-6"
+            style={{ background: 'var(--yellow-dim)', color: 'var(--yellow)', border: '1px solid var(--yellow-border)' }}>
             ⚡ The only job board built for data center trades
           </div>
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-5">
+          <h1 className="leading-tight mb-5"
+            style={{ fontFamily: 'var(--font-display), system-ui, sans-serif', fontSize: 'clamp(2.5rem, 6vw, 4rem)', fontWeight: 800, color: 'var(--fg)' }}>
             Stop filtering out nurses.<br />
-            <span className="text-yellow-400">Hire the people who build AI infrastructure.</span>
+            <span style={{ color: 'var(--yellow)' }}>Hire the people who build AI infrastructure.</span>
           </h1>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-8">
+          <p className="text-lg max-w-2xl mx-auto mb-8" style={{ color: 'var(--fg-muted)' }}>
             VoltGrid reaches electricians, HVAC techs, and low voltage specialists who already know
             what a data center is. Flat pricing. Live in 5 minutes. No account manager required.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              href="/post-job"
-              className="bg-yellow-400 text-gray-950 px-8 py-4 rounded-xl font-bold text-lg hover:bg-yellow-300 transition-colors"
-            >
+            <Link href="/post-job" className="px-8 py-4 rounded-xl font-bold text-lg transition-opacity"
+              style={{ background: 'var(--yellow)', color: '#0A0A0A' }}>
               Post a Job — $149
             </Link>
-            <a
-              href="#pricing"
-              className="border border-gray-700 text-gray-300 px-8 py-4 rounded-xl font-semibold text-lg hover:border-gray-500 transition-colors"
-            >
+            <a href="#pricing" className="px-8 py-4 rounded-xl font-semibold text-lg transition-colors"
+              style={{ border: '1px solid var(--border-strong)', color: 'var(--fg-muted)' }}>
               See all plans
             </a>
           </div>
         </section>
 
-        {/* ── Trust / Context Bar ── */}
-        <section className="border-y border-gray-800 bg-gray-900/50">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-            <p className="text-center text-gray-500 text-xs uppercase tracking-widest mb-6 font-medium">
+        {/* ── Trust Bar ── */}
+        <section style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', background: 'var(--bg-subtle)' }}>
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+            <p className="text-center text-xs uppercase tracking-widest mb-8 font-medium" style={{ color: 'var(--fg-faint)' }}>
               Why the urgency is real
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
@@ -180,35 +178,31 @@ export default function EmployersPage() {
                 { stat: '500,000+', label: 'additional trades workers needed to build and operate these facilities' },
               ].map(({ stat, label }) => (
                 <div key={stat}>
-                  <div className="text-3xl font-extrabold text-yellow-400 mb-1">{stat}</div>
-                  <div className="text-gray-400 text-sm">{label}</div>
+                  <div className="text-3xl font-extrabold mb-1" style={{ color: 'var(--yellow)', fontFamily: 'var(--font-display), system-ui, sans-serif' }}>{stat}</div>
+                  <div className="text-sm" style={{ color: 'var(--fg-muted)' }}>{label}</div>
                 </div>
               ))}
             </div>
-            <p className="text-center text-gray-600 text-xs mt-6">
-              The AI infrastructure buildout is the biggest construction wave in a generation. The workers are out there — but you need to be where they're looking.
-            </p>
           </div>
         </section>
 
-        {/* ── Pain Point Section ── */}
+        {/* ── Pain Points ── */}
         <section className="max-w-5xl mx-auto px-4 sm:px-6 py-20">
-          <h2 className="text-3xl font-bold text-white text-center mb-4">
+          <h2 className="text-3xl font-bold text-center mb-4" style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif' }}>
             Where everyone else falls short
           </h2>
-          <p className="text-gray-400 text-center mb-12 max-w-xl mx-auto">
+          <p className="text-center mb-12 max-w-xl mx-auto" style={{ color: 'var(--fg-muted)' }}>
             General job boards weren't built for niche hiring. Here's the problem — and how VoltGrid fixes it.
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             {PAIN_POINTS.map((item) => (
-              <div key={item.platform} className="bg-gray-900 border border-gray-800 rounded-2xl p-6 flex flex-col">
-                <div className="text-3xl mb-3">{item.icon}</div>
-                <div className="text-xs text-gray-500 uppercase tracking-widest font-medium mb-1">{item.platform}</div>
-                <h3 className="text-lg font-bold text-white mb-2">{item.problem}</h3>
-                <p className="text-gray-400 text-sm mb-4 flex-1">{item.detail}</p>
-                <div className="border-t border-gray-800 pt-4">
-                  <div className="flex items-start gap-2 text-sm text-green-400">
-                    <span className="mt-0.5 flex-shrink-0">✓</span>
+              <div key={item.platform} className="rounded-2xl p-6 flex flex-col" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
+                <div className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--fg-faint)' }}>{item.platform}</div>
+                <h3 className="text-base font-bold mb-2" style={{ color: 'var(--fg)' }}>{item.problem}</h3>
+                <p className="text-sm mb-4 flex-1" style={{ color: 'var(--fg-muted)' }}>{item.detail}</p>
+                <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
+                  <div className="flex items-start gap-2 text-sm" style={{ color: 'var(--green)' }}>
+                    <span className="flex-shrink-0 mt-0.5">✓</span>
                     <span>{item.solution}</span>
                   </div>
                 </div>
@@ -218,63 +212,48 @@ export default function EmployersPage() {
         </section>
 
         {/* ── How It Works ── */}
-        <section className="bg-gray-900/50 border-y border-gray-800">
+        <section style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', background: 'var(--bg-subtle)' }}>
           <div className="max-w-5xl mx-auto px-4 sm:px-6 py-20">
-            <h2 className="text-3xl font-bold text-white text-center mb-4">
-              Live in 5 minutes, no BS
+            <h2 className="text-3xl font-bold text-center mb-4" style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif' }}>
+              Live in 5 minutes
             </h2>
-            <p className="text-gray-400 text-center mb-14 max-w-lg mx-auto">
+            <p className="text-center mb-14 max-w-lg mx-auto" style={{ color: 'var(--fg-muted)' }}>
               No account manager. No approval queue. No bidding on keywords.
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
               {[
-                {
-                  step: '01',
-                  title: 'Write your listing',
-                  desc: 'Fill out the job form: role, location, pay range, requirements. Takes about 3 minutes.',
-                },
-                {
-                  step: '02',
-                  title: 'Pay flat fee',
-                  desc: 'Choose your plan. $149 for a single post, or grab the 5-Pack at $99 each. No subscriptions unless you want them.',
-                },
-                {
-                  step: '03',
-                  title: 'Trades workers apply directly',
-                  desc: 'Applications go straight to your email or ATS link. We stay out of the way.',
-                },
+                { step: '01', title: 'Write your listing', desc: 'Fill out the job form: role, location, pay range, requirements. Takes about 3 minutes.' },
+                { step: '02', title: 'Pay flat fee', desc: 'Choose your plan. $149 for a single post, or grab the 5-Pack at $99 each. No subscriptions unless you want them.' },
+                { step: '03', title: 'Trades workers apply directly', desc: 'Applications go straight to your email or ATS link. We stay out of the way.' },
               ].map(({ step, title, desc }) => (
-                <div key={step} className="flex flex-col items-center text-center sm:items-start sm:text-left">
-                  <div className="w-12 h-12 rounded-full bg-yellow-400/10 border border-yellow-400/30 flex items-center justify-center text-yellow-400 font-bold text-sm mb-4">
-                    {step}
-                  </div>
-                  <h3 className="text-lg font-bold text-white mb-2">{title}</h3>
-                  <p className="text-gray-400 text-sm">{desc}</p>
+                <div key={step}>
+                  <div className="text-5xl font-bold mb-4 leading-none" style={{ fontFamily: 'var(--font-display), system-ui, sans-serif', color: 'var(--yellow)' }}>{step}</div>
+                  <h3 className="font-bold text-base mb-2" style={{ color: 'var(--fg)' }}>{title}</h3>
+                  <p className="text-sm" style={{ color: 'var(--fg-muted)' }}>{desc}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ── Who Posts Here ── */}
+        {/* ── Who Posts ── */}
         <section className="max-w-5xl mx-auto px-4 sm:px-6 py-20">
-          <h2 className="text-3xl font-bold text-white text-center mb-4">
-            Who's hiring on VoltGrid
+          <h2 className="text-3xl font-bold text-center mb-4" style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif' }}>
+            Who&apos;s hiring on VoltGrid
           </h2>
-          <p className="text-gray-400 text-center mb-12 max-w-lg mx-auto">
+          <p className="text-center mb-12 max-w-lg mx-auto" style={{ color: 'var(--fg-muted)' }}>
             From hyperscale buildouts to ongoing O&amp;M — if you need licensed trades workers in data centers, this is your board.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {WHO_POSTS.map(({ title, desc }) => (
-              <div key={title} className="bg-gray-900 border border-gray-800 rounded-xl p-5">
-                <h3 className="font-semibold text-white mb-1.5">{title}</h3>
-                <p className="text-gray-400 text-sm">{desc}</p>
+              <div key={title} className="rounded-xl p-5" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
+                <h3 className="font-semibold mb-1.5" style={{ color: 'var(--fg)' }}>{title}</h3>
+                <p className="text-sm" style={{ color: 'var(--fg-muted)' }}>{desc}</p>
               </div>
             ))}
-            {/* CTA card */}
-            <div className="bg-yellow-400/5 border border-yellow-400/30 rounded-xl p-5 flex flex-col justify-center items-start">
-              <p className="text-yellow-400 font-semibold mb-2">Ready to post?</p>
-              <Link href="/post-job" className="text-sm text-gray-300 hover:text-white underline underline-offset-2">
+            <div className="rounded-xl p-5 flex flex-col justify-center" style={{ background: 'var(--yellow-dim)', border: '1px solid var(--yellow-border)' }}>
+              <p className="font-semibold mb-2" style={{ color: 'var(--yellow)' }}>Ready to post?</p>
+              <Link href="/post-job" className="text-sm underline underline-offset-2" style={{ color: 'var(--fg-muted)' }}>
                 Post a job in 5 minutes →
               </Link>
             </div>
@@ -282,99 +261,108 @@ export default function EmployersPage() {
         </section>
 
         {/* ── Pricing ── */}
-        <section id="pricing" className="bg-gray-900/50 border-y border-gray-800">
+        <section id="pricing" style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', background: 'var(--bg-subtle)' }}>
           <div className="max-w-5xl mx-auto px-4 sm:px-6 py-20">
-            <h2 className="text-3xl font-bold text-white text-center mb-3">
+            <h2 className="text-3xl font-bold text-center mb-3" style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif' }}>
               Simple, flat pricing
             </h2>
-            <p className="text-gray-400 text-center mb-12 max-w-lg mx-auto">
+            <p className="text-center mb-10 max-w-lg mx-auto" style={{ color: 'var(--fg-muted)' }}>
               No pay-per-click. No surprise invoices. Pick a plan, post your jobs, hire your crew.
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+
+            {/* CHANGE 4A: Price anchoring callout */}
+            <div
+              className="rounded-xl px-6 py-5 mb-10 max-w-2xl mx-auto"
+              style={{ background: 'rgba(234,179,8,0.1)', border: '1px solid var(--yellow-border)' }}
+            >
+              <p className="text-sm font-semibold mb-1" style={{ color: 'var(--yellow)' }}>
+                💡 Industry context
+              </p>
+              <p className="text-base font-medium leading-snug" style={{ color: 'var(--fg)' }}>
+                The average agency placement fee for a skilled trades hire is{' '}
+                <span style={{ color: 'var(--fg)' }}>$3,000–$8,000</span>.
+              </p>
+              <p className="text-base font-bold mt-1" style={{ color: 'var(--yellow)' }}>
+                VoltGrid: $149 flat. No bidding. No surprises.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
               {PLANS.map((plan) => (
-                <div
-                  key={plan.name}
-                  className={`rounded-2xl border p-7 flex flex-col relative ${
-                    plan.highlighted
-                      ? 'border-yellow-400 bg-yellow-400/5'
-                      : 'border-gray-800 bg-gray-900'
-                  }`}
-                >
+                <div key={plan.name} className="rounded-2xl p-7 flex flex-col relative"
+                  style={{ background: plan.highlighted ? 'var(--yellow-dim)' : 'var(--bg-raised)', border: plan.highlighted ? '1px solid var(--yellow-border)' : '1px solid var(--border)' }}>
                   {plan.badge && (
-                    <div
-                      className={`text-xs font-semibold uppercase tracking-wider mb-3 ${
-                        plan.highlighted ? 'text-yellow-400' : 'text-gray-500'
-                      }`}
-                    >
+                    <div className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: plan.highlighted ? 'var(--yellow)' : 'var(--fg-faint)' }}>
                       {plan.badge}
                     </div>
                   )}
-                  <h3 className="text-xl font-bold text-white mb-1">{plan.name}</h3>
+                  <h3 className="text-xl font-bold mb-1" style={{ color: 'var(--fg)' }}>{plan.name}</h3>
                   <div className="flex items-baseline gap-1 mb-1">
-                    <span className="text-4xl font-extrabold text-white">{plan.price}</span>
-                    <span className="text-gray-500 text-sm">{plan.period}</span>
+                    <span className="text-4xl font-extrabold" style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif' }}>{plan.price}</span>
+                    <span className="text-sm" style={{ color: 'var(--fg-faint)' }}>{plan.period}</span>
                   </div>
-                  <p className="text-gray-400 text-sm mb-6">{plan.description}</p>
+                  <p className="text-sm mb-6" style={{ color: 'var(--fg-muted)' }}>{plan.description}</p>
                   <ul className="space-y-2.5 mb-8 flex-1">
                     {plan.features.map((f) => (
-                      <li key={f} className="flex items-start gap-2.5 text-sm text-gray-300">
-                        <span className="text-green-400 mt-0.5 flex-shrink-0">✓</span>
+                      <li key={f} className="flex items-start gap-2.5 text-sm" style={{ color: 'var(--fg-muted)' }}>
+                        <span className="flex-shrink-0 mt-0.5" style={{ color: 'var(--green)' }}>✓</span>
                         {f}
                       </li>
                     ))}
                   </ul>
-                  <Link
-                    href={plan.href}
-                    className={`block text-center py-3.5 rounded-xl font-semibold transition-colors ${
-                      plan.highlighted
-                        ? 'bg-yellow-400 text-gray-950 hover:bg-yellow-300'
-                        : 'border border-gray-700 text-white hover:border-gray-500 hover:bg-gray-800'
-                    }`}
-                  >
+                  <Link href={plan.href} className="block text-center py-3.5 rounded-xl font-semibold transition-all"
+                    style={plan.highlighted
+                      ? { background: 'var(--yellow)', color: '#0A0A0A' }
+                      : { border: '1px solid var(--border-strong)', color: 'var(--fg-muted)' }}>
                     {plan.cta}
                   </Link>
                 </div>
               ))}
             </div>
-            <p className="text-center text-gray-500 text-sm">
-              Need a featured boost? Add +$99 to any listing to pin it to the top of its category for 30 days.
-              <br />
-              Questions?{' '}
-              <a href="mailto:hello@voltgridjobs.com" className="text-yellow-400 hover:text-yellow-300">
-                hello@voltgridjobs.com
-              </a>
+            {/* CHANGE 4B: Guarantee badge */}
+            <div className="flex justify-center mb-6">
+              <div
+                className="inline-flex items-center gap-2 text-sm px-4 py-2 rounded-full"
+                style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)', color: 'var(--fg-muted)' }}
+              >
+                <span style={{ color: 'var(--green)' }}>✓</span>
+                <span>14-day listing guarantee — if you have a technical issue, we&apos;ll make it right.</span>
+              </div>
+            </div>
+
+            <p className="text-center text-sm" style={{ color: 'var(--fg-faint)' }}>
+              Need a featured boost? Add +$99 to any listing to pin it to the top for 30 days.&nbsp;
+              <a href="mailto:hello@voltgridjobs.com" style={{ color: 'var(--yellow)' }}>hello@voltgridjobs.com</a>
             </p>
           </div>
         </section>
 
         {/* ── FAQ ── */}
         <section className="max-w-3xl mx-auto px-4 sm:px-6 py-20">
-          <h2 className="text-3xl font-bold text-white text-center mb-12">
+          <h2 className="text-3xl font-bold text-center mb-12" style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif' }}>
             Frequently asked questions
           </h2>
-          <div className="space-y-4">
+          <div className="space-y-0">
             {FAQS.map(({ q, a }) => (
-              <div key={q} className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-                <h3 className="font-semibold text-white mb-2">{q}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">{a}</p>
+              <div key={q} style={{ borderTop: '1px solid var(--border)', paddingTop: '1.5rem', paddingBottom: '1.5rem' }}>
+                <h3 className="font-semibold mb-2" style={{ color: 'var(--fg)' }}>{q}</h3>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--fg-muted)' }}>{a}</p>
               </div>
             ))}
           </div>
         </section>
 
-        {/* ── Bottom CTA Strip ── */}
-        <section className="bg-yellow-400">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-14 text-center">
-            <h2 className="text-3xl font-extrabold text-gray-950 mb-3">
+        {/* ── Bottom CTA ── */}
+        <section style={{ background: 'var(--yellow)' }}>
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 text-center">
+            <h2 className="text-3xl font-extrabold mb-3" style={{ color: '#0A0A0A', fontFamily: 'var(--font-display), system-ui, sans-serif' }}>
               Ready to find your next crew?
             </h2>
-            <p className="text-gray-800 mb-8 text-lg">
-              Post a job in 5 minutes. No account manager. No bidding. Just trades workers who know the work.
+            <p className="mb-8 text-lg" style={{ color: 'rgba(10,10,10,0.7)' }}>
+              Post a job in 5 minutes. No account manager. No bidding.
             </p>
-            <Link
-              href="/post-job"
-              className="inline-block bg-gray-950 text-yellow-400 px-10 py-4 rounded-xl font-bold text-lg hover:bg-gray-900 transition-colors"
-            >
+            <Link href="/post-job" className="inline-block px-10 py-4 rounded-xl font-bold text-lg transition-opacity"
+              style={{ background: '#0A0A0A', color: 'var(--yellow)' }}>
               Post a Job — $149
             </Link>
           </div>

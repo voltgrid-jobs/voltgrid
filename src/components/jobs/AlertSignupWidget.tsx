@@ -26,18 +26,18 @@ export function AlertSignupWidget({ keywords, category }: { keywords?: string; c
 
   if (done) {
     return (
-      <div className="bg-green-900/20 border border-green-800 rounded-xl p-5 text-center">
-        <p className="text-green-400 font-medium">✓ Alert set up!</p>
-        <p className="text-gray-500 text-sm mt-1">We&apos;ll email you daily when new matching jobs are posted.</p>
+      <div className="rounded-xl p-5 text-center" style={{ background: 'var(--green-dim)', border: '1px solid rgba(74,222,128,0.2)' }}>
+        <p className="font-semibold text-sm" style={{ color: 'var(--green)' }}>✓ Alert set up</p>
+        <p className="text-xs mt-1" style={{ color: 'var(--fg-muted)' }}>We&apos;ll email you daily when new matching jobs are posted.</p>
       </div>
     )
   }
 
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
-      <h3 className="font-semibold text-white mb-1">Get job alerts</h3>
-      <p className="text-gray-500 text-sm mb-4">
-        We&apos;ll email you when new {keywords || category || 'trades'} jobs are posted.
+    <div className="rounded-xl p-5" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
+      <h3 className="font-semibold text-sm mb-1" style={{ color: 'var(--fg)' }}>Get job alerts</h3>
+      <p className="text-xs mb-4" style={{ color: 'var(--fg-muted)' }}>
+        Daily email when new {keywords || category || 'trades'} jobs are posted.
       </p>
       <form onSubmit={handleSubmit} className="flex gap-2">
         <input
@@ -46,17 +46,19 @@ export function AlertSignupWidget({ keywords, category }: { keywords?: string; c
           onChange={e => setEmail(e.target.value)}
           required
           placeholder="your@email.com"
-          className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 text-sm"
+          className="flex-1 px-3 py-2 rounded-lg text-sm focus:outline-none"
+          style={{ background: 'var(--bg)', border: '1px solid var(--border-strong)', color: 'var(--fg)' }}
         />
         <button
           type="submit"
           disabled={loading}
-          className="bg-yellow-400 text-gray-950 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-yellow-300 transition-colors disabled:opacity-60 whitespace-nowrap"
+          className="px-4 py-2 rounded-lg font-semibold text-sm transition-opacity disabled:opacity-60 whitespace-nowrap"
+          style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
         >
           {loading ? '...' : 'Notify me'}
         </button>
       </form>
-      {error && <p className="text-red-400 text-xs mt-2">{error}</p>}
+      {error && <p className="text-xs mt-2" style={{ color: '#F87171' }}>{error}</p>}
     </div>
   )
 }

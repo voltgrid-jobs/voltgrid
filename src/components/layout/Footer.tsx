@@ -3,9 +3,9 @@ import Image from 'next/image'
 
 export function Footer() {
   return (
-    <footer className="border-t border-gray-800 bg-gray-950 py-10 mt-16">
+    <footer style={{ borderTop: '1px solid var(--border)', background: 'var(--bg)', marginTop: '4rem', paddingTop: '3rem', paddingBottom: '2.5rem' }}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 mb-10">
           <div>
             <div className="mb-3">
               <Image
@@ -17,33 +17,42 @@ export function Footer() {
                 unoptimized
               />
             </div>
-            <p className="text-gray-500 text-sm">
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--fg-muted)' }}>
               The job board for trades workers powering the AI infrastructure boom.
             </p>
           </div>
 
           <div>
-            <h3 className="font-semibold text-gray-300 mb-3 text-sm uppercase tracking-wider">Job Seekers</h3>
-            <ul className="space-y-2 text-sm text-gray-500">
-              <li><Link href="/jobs" className="hover:text-gray-300 transition-colors">Browse All Jobs</Link></li>
-              <li><Link href="/jobs?category=electrical" className="hover:text-gray-300 transition-colors">Electrical Jobs</Link></li>
-              <li><Link href="/jobs?category=hvac" className="hover:text-gray-300 transition-colors">HVAC Jobs</Link></li>
-              <li><Link href="/jobs?category=low_voltage" className="hover:text-gray-300 transition-colors">Low Voltage Jobs</Link></li>
+            <h3 className="font-semibold text-xs tracking-widest uppercase mb-4" style={{ color: 'var(--fg-faint)' }}>
+              Job Seekers
+            </h3>
+            <ul className="space-y-2.5 text-sm" style={{ color: 'var(--fg-muted)' }}>
+              <li><Link href="/jobs" className="hover:text-white transition-colors">Browse All Jobs</Link></li>
+              <li><Link href="/jobs?category=electrical" className="hover:text-white transition-colors">Electrical Jobs</Link></li>
+              <li><Link href="/jobs?category=hvac" className="hover:text-white transition-colors">HVAC Jobs</Link></li>
+              <li><Link href="/jobs?category=low_voltage" className="hover:text-white transition-colors">Low Voltage Jobs</Link></li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-semibold text-gray-300 mb-3 text-sm uppercase tracking-wider">Employers</h3>
-            <ul className="space-y-2 text-sm text-gray-500">
-              <li><Link href="/post-job" className="hover:text-gray-300 transition-colors">Post a Job</Link></li>
-              <li><Link href="/employers" className="hover:text-gray-300 transition-colors">Employer Info</Link></li>
-              <li><Link href="/pricing" className="hover:text-gray-300 transition-colors">Pricing</Link></li>
+            <h3 className="font-semibold text-xs tracking-widest uppercase mb-4" style={{ color: 'var(--fg-faint)' }}>
+              Employers
+            </h3>
+            <ul className="space-y-2.5 text-sm" style={{ color: 'var(--fg-muted)' }}>
+              <li><Link href="/post-job" className="hover:text-white transition-colors">Post a Job</Link></li>
+              <li><Link href="/employers" className="hover:text-white transition-colors">Why VoltGrid</Link></li>
+              <li><Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-gray-800 pt-6 text-center text-xs text-gray-600">
-          © {new Date().getFullYear()} VoltGrid Jobs. All rights reserved.
+        <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1.5rem' }} className="flex flex-col sm:flex-row items-center justify-between gap-2">
+          <span className="text-xs" style={{ color: 'var(--fg-faint)' }}>
+            © {new Date().getFullYear()} VoltGrid Jobs. All rights reserved.
+          </span>
+          <span className="text-xs" style={{ color: 'var(--fg-faint)' }}>
+            Built for the trades workers powering AI.
+          </span>
         </div>
       </div>
     </footer>

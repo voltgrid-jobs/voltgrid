@@ -105,7 +105,7 @@ export default async function CityPage({ params }: Props) {
   })
 
   return (
-    <main className="min-h-screen bg-gray-950 text-white">
+    <main className="min-h-screen">
       {/* Breadcrumb */}
       <nav className="max-w-5xl mx-auto px-4 pt-6 pb-2">
         <ol className="flex items-center gap-2 text-sm text-gray-500">

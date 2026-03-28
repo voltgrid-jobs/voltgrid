@@ -1,10 +1,22 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Barlow_Condensed, Barlow } from 'next/font/google'
 import './globals.css'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 
-const inter = Inter({ subsets: ['latin'] })
+const barlowCondensed = Barlow_Condensed({
+  subsets: ['latin'],
+  weight: ['600', '700', '800'],
+  variable: '--font-display',
+  display: 'swap',
+})
+
+const barlow = Barlow({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  variable: '--font-sans',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://voltgridjobs.com'),
@@ -24,14 +36,12 @@ export const metadata: Metadata = {
     siteName: 'VoltGrid Jobs',
     type: 'website',
     locale: 'en_US',
-    images: [
-      {
-        url: 'https://voltgridjobs.com/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'VoltGrid Jobs — Trades Jobs at Data Centers & AI Sites',
-      },
-    ],
+    images: [{
+      url: 'https://voltgridjobs.com/og-image.png',
+      width: 1200,
+      height: 630,
+      alt: 'VoltGrid Jobs — Trades Jobs at Data Centers & AI Sites',
+    }],
   },
   twitter: {
     card: 'summary_large_image',
@@ -45,29 +55,17 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true, 'max-video-preview': -1, 'max-image-preview': 'large', 'max-snippet': -1 },
   },
-  verification: {
-    google: 'kxEivUYz_8VjIEZuK3WDKxgEYrs6g9Le44fiWMyGoD0',
-  },
-  icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon.ico',
-    apple: '/favicon.png',
-  },
+  verification: { google: 'kxEivUYz_8VjIEZuK3WDKxgEYrs6g9Le44fiWMyGoD0' },
+  icons: { icon: '/favicon.ico', shortcut: '/favicon.ico', apple: '/favicon.png' },
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <div className="min-h-screen flex flex-col bg-gray-950 text-gray-100">
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </div>
+    <html lang="en" className={`${barlowCondensed.variable} ${barlow.variable}`}>
+      <body style={{ background: 'var(--bg)', color: 'var(--fg)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <Header />
+        <main style={{ flex: 1 }}>{children}</main>
+        <Footer />
       </body>
     </html>
   )

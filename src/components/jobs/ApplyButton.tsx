@@ -6,6 +6,7 @@ interface ApplyButtonProps {
   isExternalUrl: boolean
   label?: string
   className?: string
+  style?: React.CSSProperties
   source?: string
 }
 
@@ -15,10 +16,11 @@ export function ApplyButton({
   isExternalUrl,
   label = 'Apply Now →',
   className,
+  style,
   source = 'top_button',
 }: ApplyButtonProps) {
-  const defaultClass =
-    'inline-block bg-yellow-400 text-gray-950 px-8 py-3 rounded-xl font-semibold hover:bg-yellow-300 transition-colors text-center'
+  const defaultClass = 'inline-block px-8 py-3 rounded-xl font-semibold transition-opacity text-center'
+  const defaultStyle = { background: 'var(--yellow)', color: '#0A0A0A' }
 
   function handleClick() {
     // Fire-and-forget — do not block navigation
@@ -37,6 +39,7 @@ export function ApplyButton({
       target={isExternalUrl ? '_blank' : undefined}
       rel="noopener noreferrer"
       className={className ?? defaultClass}
+      style={style ?? defaultStyle}
       onClick={handleClick}
     >
       {label}
