@@ -3,7 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import type { JobCategory, JobType, JobSource } from '@/types'
 
 // Simple auth: require a secret header to prevent public triggering
-const INGEST_SECRET = process.env.INGEST_SECRET || 'voltgrid-ingest-dev'
+const INGEST_SECRET = process.env.INGEST_SECRET
 
 interface RawJob {
   source: JobSource
@@ -262,6 +262,10 @@ async function fetchDOLApprenticeshipJobs(): Promise<RawJob[]> {
 }
 
 export async function POST(req: NextRequest) {
+  if (!INGEST_SECRET) {
+    console.error('INGEST_SECRET is not configured')
+    return NextResponse.json({ error: 'Not configured' }, { status: 500 })
+  }
   const secret = req.headers.get('x-ingest-secret')
   if (secret !== INGEST_SECRET) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -349,6 +353,9 @@ export async function POST(req: NextRequest) {
 
 // Also allow GET for Vercel Cron
 export async function GET(req: NextRequest) {
+  if (!INGEST_SECRET) {
+    return NextResponse.json({ error: 'Not configured' }, { status: 500 })
+  }
   const authHeader = req.headers.get('authorization')
   if (authHeader !== `Bearer ${INGEST_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

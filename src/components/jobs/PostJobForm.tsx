@@ -4,7 +4,7 @@ import { CATEGORY_LABELS, JOB_TYPE_LABELS, TRAVEL_LABELS, SHIFT_LABELS } from '@
 
 const PLANS = [
   { id: 'single_post', name: 'Single Post', price: '$149', description: '1 listing · 30 days' },
-  { id: 'five_pack', name: '5-Pack', price: '$499', description: '5 listings · best value' },
+  { id: 'five_pack', name: '5-Pack', price: '$499', description: '5 listings · $99 each · best value' },
   { id: 'pro_monthly', name: 'Pro Monthly', price: '$799/mo', description: 'Unlimited listings' },
 ]
 

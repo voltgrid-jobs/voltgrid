@@ -3,8 +3,46 @@ import { CATEGORY_LABELS, JOB_TYPE_LABELS, TRAVEL_LABELS, SHIFT_LABELS } from '@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
+
+/**
+ * Server-side HTML sanitizer for job descriptions from external sources.
+ * Strips all tags except a safe whitelist, decodes HTML entities,
+ * and removes script/style/iframe content entirely.
+ */
+function sanitizeJobDescription(html: string): string {
+  if (!html) return ''
+  // Remove dangerous elements and their content entirely
+  let clean = html
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<iframe[\s\S]*?<\/iframe>/gi, '')
+    .replace(/<object[\s\S]*?<\/object>/gi, '')
+    .replace(/<embed[^>]*>/gi, '')
+  // Replace block-level tags with newlines for readable plain text
+  clean = clean
+    .replace(/<\/(p|div|li|h[1-6]|tr|br|blockquote)>/gi, '\n')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<li[^>]*>/gi, '• ')
+  // Strip all remaining tags
+  clean = clean.replace(/<[^>]+>/g, '')
+  // Decode common HTML entities
+  clean = clean
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&ndash;/g, '–')
+    .replace(/&mdash;/g, '—')
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)))
+  // Collapse excessive whitespace/newlines
+  clean = clean.replace(/\n{3,}/g, '\n\n').trim()
+  return clean
+}
 import { SaveJobButton } from '@/components/jobs/SaveJobButton'
 import { AlertSignupWidget } from '@/components/jobs/AlertSignupWidget'
+import { ApplyButton } from '@/components/jobs/ApplyButton'
 
 export async function generateMetadata({
   params,
@@ -141,14 +179,12 @@ export default async function JobDetailPage({
 
             <div className="sm:flex-shrink-0 flex flex-col gap-2">
               {applyUrl && (
-                <a
-                  href={applyUrl}
-                  target={job.apply_url ? '_blank' : undefined}
-                  rel="noopener noreferrer"
-                  className="inline-block bg-yellow-400 text-gray-950 px-8 py-3 rounded-xl font-semibold hover:bg-yellow-300 transition-colors text-center"
-                >
-                  Apply Now →
-                </a>
+                <ApplyButton
+                  jobId={job.id}
+                  applyUrl={applyUrl}
+                  isExternalUrl={!!job.apply_url}
+                  source="top_button"
+                />
               )}
               <SaveJobButton jobId={job.id} initialSaved={isSaved} />
             </div>
@@ -199,20 +235,20 @@ export default async function JobDetailPage({
         <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 sm:p-8">
           <h2 className="text-xl font-bold text-white mb-4">Job Description</h2>
           <div className="text-gray-300 leading-relaxed whitespace-pre-wrap">
-            {job.description}
+            {sanitizeJobDescription(job.description)}
           </div>
 
           {applyUrl && (
             <div className="mt-10 pt-8 border-t border-gray-800 text-center">
               <p className="text-gray-400 mb-4">Ready to apply?</p>
-              <a
-                href={applyUrl}
-                target={job.apply_url ? '_blank' : undefined}
-                rel="noopener noreferrer"
+              <ApplyButton
+                jobId={job.id}
+                applyUrl={applyUrl}
+                isExternalUrl={!!job.apply_url}
+                label="Apply for this Job →"
+                source="bottom_button"
                 className="inline-block bg-yellow-400 text-gray-950 px-10 py-4 rounded-xl font-semibold text-lg hover:bg-yellow-300 transition-colors"
-              >
-                Apply for this Job →
-              </a>
+              />
             </div>
           )}
         </div>

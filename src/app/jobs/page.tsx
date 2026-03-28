@@ -75,6 +75,15 @@ export default async function JobsPage({
 
   const { data: jobs, error } = await query
 
+  // Get the true total count (unflitered) for display — matches homepage count
+  const { count: totalCount } = await supabase
+    .from('jobs')
+    .select('*', { count: 'exact', head: true })
+    .eq('is_active', true)
+
+  const hasFilters = params.category || params.q || params.location || params.type ||
+    params.featured || params.per_diem || params.travel || params.shift || params.union
+
   const activeCategory = params.category as JobCategory | undefined
 
   return (
@@ -84,7 +93,9 @@ export default async function JobsPage({
           {activeCategory ? `${CATEGORY_LABELS[activeCategory]} Jobs` : 'All Jobs'}
         </h1>
         <p className="text-gray-400">
-          {jobs?.length ?? 0} open positions at data centers and AI infrastructure projects
+          {hasFilters
+            ? `${jobs?.length ?? 0} matching positions`
+            : `${totalCount ?? 0} open positions`} at data centers and AI infrastructure projects
         </p>
       </div>
 
@@ -104,11 +115,19 @@ export default async function JobsPage({
             <div className="bg-gray-900 border border-gray-800 rounded-xl p-12 text-center">
               <div className="text-4xl mb-4">🔍</div>
               <p className="text-gray-300 font-medium mb-2">No jobs found</p>
-              <p className="text-gray-500 text-sm">
-                {params.q || params.category || params.location
-                  ? 'Try adjusting your filters.'
-                  : 'Jobs are being loaded. Check back shortly.'}
-              </p>
+              {hasFilters ? (
+                <>
+                  <p className="text-gray-500 text-sm mb-4">Try adjusting your filters or search terms.</p>
+                  <a
+                    href="/jobs"
+                    className="inline-block text-yellow-400 text-sm hover:text-yellow-300 border border-yellow-400/30 px-4 py-2 rounded-lg hover:border-yellow-400/60 transition-colors"
+                  >
+                    Clear all filters →
+                  </a>
+                </>
+              ) : (
+                <p className="text-gray-500 text-sm">New jobs are added daily. Check back shortly.</p>
+              )}
             </div>
           )}
         </div>
