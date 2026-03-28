@@ -64,7 +64,9 @@
 >
 > If [COMPANY] has any open roles on current or upcoming data center projects, I'd love to get them in front of our audience. Single listing is $149, or a 5-pack at $99 each if you've got multiple roles.
 >
-> Happy to set up a call or just send you a link to get started — takes about 5 minutes to post.
+> One thing that's useful for contractors: every listing comes with a shareable link you can send directly to candidates in your own network. Anyone who applies through your link, you found them — we just host the posting. Saves you managing a separate email thread.
+>
+> Takes about 5 minutes to post. Happy to set up a call or just send you a link to get started.
 >
 > [YOUR NAME]  
 > VoltGrid Jobs · voltgridjobs.com  
@@ -81,7 +83,7 @@
 >
 > The difference from Indeed or LinkedIn: our audience is specifically trades professionals who understand data center environments — critical facilities techs, HVAC specialists, electricians with PDU/UPS/generator experience. They're not stumbling across your listing between restaurant and warehouse jobs.
 >
-> If you have open DCT, facilities tech, or MEP roles, it'd be worth a shot. $149 per listing, live in minutes, applications direct to your team.
+> If you have open DCT, facilities tech, or MEP roles, it'd be worth a shot. $149 per listing, live in minutes, applications direct to your team. Every listing comes with a shareable link — if you have previous applicants or referrals you want to route to it, you can send them straight there.
 >
 > Worth a quick chat?
 >
@@ -99,7 +101,9 @@
 >
 > We're a niche job board for electricians, HVAC techs, and low voltage specialists specifically seeking data center and AI infrastructure work. If you're filling roles for colocation operators, hyperscale GCs, or MEP subs, the candidates actively browsing VoltGrid are already pre-qualified by intent.
 >
-> A Pro plan ($799/mo) gives you unlimited postings — worth it if you're managing multiple open requisitions at once. Happy to walk through the options.
+> Each listing includes a shareable link — useful if you want to push a specific role to candidates already in your pipeline without routing them through a generic job search. A Pro plan ($799/mo) gives you unlimited postings if you're managing multiple open requisitions at once.
+>
+> Happy to walk through the options.
 >
 > [YOUR NAME]  
 > VoltGrid Jobs · voltgridjobs.com

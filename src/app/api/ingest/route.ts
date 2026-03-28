@@ -5,6 +5,52 @@ import type { JobCategory, JobType, JobSource } from '@/types'
 // Simple auth: require a secret header to prevent public triggering
 const INGEST_SECRET = process.env.INGEST_SECRET
 
+/**
+ * Strip HTML from job descriptions before storing in Supabase.
+ * Same logic as the render-time sanitizer on the detail page — applied at ingest
+ * so the DB holds clean plain text, not raw HTML from Greenhouse/Lever/etc.
+ */
+function stripHtml(html: string): string {
+  if (!html) return ''
+  let clean = html
+    // Remove dangerous/irrelevant blocks entirely
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<iframe[\s\S]*?<\/iframe>/gi, '')
+    .replace(/<object[\s\S]*?<\/object>/gi, '')
+    .replace(/<embed[^>]*>/gi, '')
+    // Soft hyphens (common in Greenhouse copy-paste artifacts)
+    .replace(/\u00ad/g, '')
+  // Block-level tags → newline
+  clean = clean
+    .replace(/<\/(p|div|li|h[1-6]|tr|blockquote|section|article)>/gi, '\n')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<li[^>]*>/gi, '• ')
+    .replace(/<h([1-6])[^>]*>/gi, '\n')
+  // Strip all remaining tags
+  clean = clean.replace(/<[^>]+>/g, '')
+  // Decode HTML entities
+  clean = clean
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&ndash;/g, '–')
+    .replace(/&mdash;/g, '—')
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)))
+    .replace(/&[a-z]+;/gi, ' ')
+  // Collapse excessive whitespace
+  clean = clean
+    .replace(/[ \t]{2,}/g, ' ')
+    .replace(/\n[ \t]+/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+  return clean
+}
+
 interface RawJob {
   source: JobSource
   source_id: string
@@ -126,7 +172,7 @@ async function fetchAdzunaJobs(): Promise<RawJob[]> {
       const data = await res.json()
 
       for (const job of (data.results || [])) {
-        const description = job.description || ''
+        const description = stripHtml(job.description || '')
         jobs.push({
           source: 'adzuna',
           source_id: job.id,
@@ -166,7 +212,7 @@ async function fetchUSAJobs(): Promise<RawJob[]> {
 
       for (const item of (data.SearchResult?.SearchResultItems || [])) {
         const pos = item.MatchedObjectDescriptor
-        const description = pos.QualificationSummary || pos.UserArea?.Details?.JobSummary || ''
+        const description = stripHtml(pos.QualificationSummary || pos.UserArea?.Details?.JobSummary || '')
         jobs.push({
           source: 'usajobs',
           source_id: pos.PositionID,
@@ -218,7 +264,7 @@ async function fetchGreenhouseJobs(): Promise<RawJob[]> {
         if (!/(electrician|hvac|low.?voltage|mechanical|facilities|construction|trades|technician|data center|critical systems|mep|power engineer|apprentice|operations engineer)/.test(title)) continue
 
         const description = job.content
-          ? job.content.replace(/<[^>]+>/g, ' ').substring(0, 2000)
+          ? stripHtml(job.content).substring(0, 3000)
           : ''
         jobs.push({
           source: 'greenhouse',
@@ -269,9 +315,7 @@ async function fetchLeverJobs(): Promise<RawJob[]> {
         // Filter for trades/data center roles
         if (!/(electrician|hvac|low.?voltage|mechanical|facilities|construction|trades|technician|data center|critical|mep|power|operations|apprentice)/.test(title)) continue
 
-        const description = (posting.descriptionPlain || posting.description || '')
-          .replace(/<[^>]+>/g, ' ')
-          .substring(0, 2000)
+        const description = stripHtml(posting.descriptionPlain || posting.description || '').substring(0, 3000)
 
         jobs.push({
           source: 'greenhouse', // reuse existing enum value — no separate lever source needed

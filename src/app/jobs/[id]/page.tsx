@@ -18,6 +18,7 @@ function sanitizeJobDescription(html: string): string {
     .replace(/<iframe[\s\S]*?<\/iframe>/gi, '')
     .replace(/<object[\s\S]*?<\/object>/gi, '')
     .replace(/<embed[^>]*>/gi, '')
+    .replace(/\u00ad/g, '') // soft hyphens from Greenhouse copy-paste
   // Replace block-level tags with newlines for readable plain text
   clean = clean
     .replace(/<\/(p|div|li|h[1-6]|tr|br|blockquote)>/gi, '\n')
