@@ -11,34 +11,43 @@ import type { Metadata } from 'next'
  */
 function sanitizeJobDescription(html: string): string {
   if (!html) return ''
-  // Remove dangerous elements and their content entirely
+  // First decode any entity-encoded HTML (e.g. &lt;div&gt; stored by some ATS sources)
   let clean = html
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&nbsp;/g, ' ')
+  // Remove dangerous elements and their content entirely
+  clean = clean
     .replace(/<script[\s\S]*?<\/script>/gi, '')
     .replace(/<style[\s\S]*?<\/style>/gi, '')
     .replace(/<iframe[\s\S]*?<\/iframe>/gi, '')
     .replace(/<object[\s\S]*?<\/object>/gi, '')
     .replace(/<embed[^>]*>/gi, '')
-    .replace(/\u00ad/g, '') // soft hyphens from Greenhouse copy-paste
+    .replace(/\u00ad/g, '') // soft hyphens
   // Replace block-level tags with newlines for readable plain text
   clean = clean
-    .replace(/<\/(p|div|li|h[1-6]|tr|br|blockquote)>/gi, '\n')
+    .replace(/<\/(p|div|li|h[1-6]|tr|blockquote|section|article)>/gi, '\n')
     .replace(/<br\s*\/?>/gi, '\n')
     .replace(/<li[^>]*>/gi, '• ')
+    .replace(/<h([1-6])[^>]*>/gi, '\n')
   // Strip all remaining tags
   clean = clean.replace(/<[^>]+>/g, '')
-  // Decode common HTML entities
+  // Decode remaining HTML entities
   clean = clean
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&nbsp;/g, ' ')
     .replace(/&ndash;/g, '–')
     .replace(/&mdash;/g, '—')
     .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)))
+    .replace(/&[a-z]+;/gi, ' ')
   // Collapse excessive whitespace/newlines
-  clean = clean.replace(/\n{3,}/g, '\n\n').trim()
+  clean = clean
+    .replace(/[ \t]{2,}/g, ' ')
+    .replace(/\n[ \t]+/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
   return clean
 }
 import { SaveJobButton } from '@/components/jobs/SaveJobButton'
