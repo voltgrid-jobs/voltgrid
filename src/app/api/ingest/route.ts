@@ -239,24 +239,70 @@ async function fetchGreenhouseJobs(): Promise<RawJob[]> {
 }
 
 /**
+ * Lever ATS board integration.
+ * Verified active boards (2026-03-28): cologix
+ */
+async function fetchLeverJobs(): Promise<RawJob[]> {
+  const companies: { slug: string; name: string }[] = [
+    { slug: 'cologix', name: 'Cologix' },
+  ]
+  const jobs: RawJob[] = []
+
+  for (const { slug, name } of companies) {
+    try {
+      const url = `https://api.lever.co/v0/postings/${slug}?mode=json`
+      const res = await fetch(url, { signal: AbortSignal.timeout(6000) })
+      if (!res.ok) continue
+      const postings: Array<{
+        id: string
+        text: string
+        categories: { location?: string; team?: string }
+        descriptionPlain?: string
+        description?: string
+        hostedUrl?: string
+        applyUrl?: string
+        salaryRange?: { min?: number; max?: number; currency?: string }
+      }> = await res.json()
+
+      for (const posting of postings) {
+        const title = posting.text?.toLowerCase() || ''
+        // Filter for trades/data center roles
+        if (!/(electrician|hvac|low.?voltage|mechanical|facilities|construction|trades|technician|data center|critical|mep|power|operations|apprentice)/.test(title)) continue
+
+        const description = (posting.descriptionPlain || posting.description || '')
+          .replace(/<[^>]+>/g, ' ')
+          .substring(0, 2000)
+
+        jobs.push({
+          source: 'greenhouse', // reuse existing enum value — no separate lever source needed
+          source_id: `lever_${posting.id}`,
+          title: posting.text,
+          company_name: name,
+          location: posting.categories?.location || 'USA',
+          description,
+          apply_url: posting.hostedUrl || posting.applyUrl,
+          salary_min: posting.salaryRange?.min ?? undefined,
+          salary_max: posting.salaryRange?.max ?? undefined,
+          ...parseTradesFields(description),
+        })
+      }
+    } catch (e) {
+      console.error(`Lever fetch error (${slug}):`, e)
+    }
+  }
+  return jobs
+}
+
+/**
  * DOL Apprenticeship API integration.
  * 
- * Investigation results (2026-03-27):
- * - https://www.apprenticeship.gov/api/jobs returns 404 (no public REST API)
- * - The site uses Drupal 10 and a USA.gov search
- * - No documented public JSON API for job listings
- * - The apprenticeship finder uses form-based search, not a REST API
- * - Returning stub implementation that gracefully fails
+ * Investigation results (confirmed 2026-03-28):
+ * - apprenticeship.gov has NO public REST API for job listings
+ * - The site is a Drupal 10 application; job finder uses form-based search
+ * - RAPIDS system requires federal registration (entbpmp.dol.gov) — not public
+ * - Lever/Greenhouse direct boards are the practical alternative for now
  */
 async function fetchDOLApprenticeshipJobs(): Promise<RawJob[]> {
-  // DOL apprenticeship.gov does not have a public REST API for job listings.
-  // The site is a Drupal 10 application with USA.gov site search integration.
-  // 
-  // Alternative: Use the DOL's O*NET API or RAPIDS system (requires registration).
-  // For now, this returns empty and logs appropriately.
-  //
-  // Future: Register for RAPIDS API at https://entbpmp.dol.gov and implement
-  // properly authenticated job listing retrieval.
   console.log('DOL Apprenticeship: No public API available — skipping')
   return []
 }
@@ -275,14 +321,15 @@ export async function POST(req: NextRequest) {
   const allJobs: RawJob[] = []
 
   // Fetch from all sources concurrently
-  const [adzunaJobs, usaJobs, greenhouseJobs, dolJobs] = await Promise.all([
+  const [adzunaJobs, usaJobs, greenhouseJobs, leverJobs, dolJobs] = await Promise.all([
     fetchAdzunaJobs(),
     fetchUSAJobs(),
     fetchGreenhouseJobs(),
+    fetchLeverJobs(),
     fetchDOLApprenticeshipJobs(),
   ])
 
-  allJobs.push(...adzunaJobs, ...usaJobs, ...greenhouseJobs, ...dolJobs)
+  allJobs.push(...adzunaJobs, ...usaJobs, ...greenhouseJobs, ...leverJobs, ...dolJobs)
 
   let inserted = 0
   let skipped = 0
@@ -346,6 +393,7 @@ export async function POST(req: NextRequest) {
       adzuna: adzunaJobs.length,
       usajobs: usaJobs.length,
       greenhouse: greenhouseJobs.length,
+      lever: leverJobs.length,
       dol_apprenticeship: dolJobs.length,
     },
   })

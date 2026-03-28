@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import type { Metadata } from 'next'
@@ -25,6 +26,22 @@ export default async function DashboardPage() {
         .eq('employer_id', employer.id)
         .order('created_at', { ascending: false })
     : { data: [] }
+
+  // Get apply click counts per job (uses admin client to bypass RLS)
+  const clickMap: Record<string, number> = {}
+  if (jobs && jobs.length > 0) {
+    const adminClient = createAdminClient()
+    const jobIds = jobs.map(j => j.id)
+    const { data: clicks } = await adminClient
+      .from('apply_clicks')
+      .select('job_id')
+      .in('job_id', jobIds)
+    if (clicks) {
+      for (const c of clicks) {
+        clickMap[c.job_id] = (clickMap[c.job_id] ?? 0) + 1
+      }
+    }
+  }
 
   // Get credits
   const { data: credits } = employer
@@ -70,19 +87,26 @@ export default async function DashboardPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
-        {[
-          { label: 'Active Listings', value: activeJobs.length },
-          { label: 'Total Posted', value: jobs?.length ?? 0 },
-          { label: 'Post Credits', value: isPro ? '∞' : postCredits },
-          { label: 'Plan', value: isPro ? 'Pro' : 'Pay-per-post' },
-        ].map(stat => (
-          <div key={stat.label} className="bg-gray-900 border border-gray-800 rounded-xl p-4">
-            <div className="text-2xl font-bold text-white">{stat.value}</div>
-            <div className="text-gray-500 text-sm mt-1">{stat.label}</div>
+      {(() => {
+        const totalClicks = Object.values(clickMap).reduce((a, b) => a + b, 0)
+        return (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
+            {[
+              { label: 'Active Listings', value: activeJobs.length },
+              { label: 'Total Posted', value: jobs?.length ?? 0 },
+              { label: 'Apply Clicks', value: totalClicks, highlight: totalClicks > 0 },
+              { label: isPro ? 'Plan' : 'Post Credits', value: isPro ? 'Pro' : postCredits },
+            ].map(stat => (
+              <div key={stat.label} className="bg-gray-900 border border-gray-800 rounded-xl p-4">
+                <div className={`text-2xl font-bold ${stat.highlight ? 'text-yellow-400' : 'text-white'}`}>
+                  {stat.value}
+                </div>
+                <div className="text-gray-500 text-sm mt-1">{stat.label}</div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        )
+      })()}
 
       {/* Active Jobs */}
       <section className="mb-10">
@@ -90,7 +114,7 @@ export default async function DashboardPage() {
         {activeJobs.length > 0 ? (
           <div className="flex flex-col gap-3">
             {activeJobs.map(job => (
-              <DashboardJobRow key={job.id} job={job} />
+              <DashboardJobRow key={job.id} job={job} clicks={clickMap[job.id] ?? 0} />
             ))}
           </div>
         ) : (
@@ -109,7 +133,7 @@ export default async function DashboardPage() {
           <h2 className="text-lg font-semibold text-gray-500 mb-4">Expired / Inactive</h2>
           <div className="flex flex-col gap-3 opacity-60">
             {expiredJobs.map(job => (
-              <DashboardJobRow key={job.id} job={job} expired />
+              <DashboardJobRow key={job.id} job={job} clicks={clickMap[job.id] ?? 0} expired />
             ))}
           </div>
         </section>
@@ -131,7 +155,7 @@ export default async function DashboardPage() {
   )
 }
 
-function DashboardJobRow({ job, expired = false }: { job: Record<string, unknown>; expired?: boolean }) {
+function DashboardJobRow({ job, expired = false, clicks = 0 }: { job: Record<string, unknown>; expired?: boolean; clicks?: number }) {
   const expiresAt = job.expires_at ? new Date(job.expires_at as string) : null
   const daysLeft = expiresAt ? Math.max(0, Math.ceil((expiresAt.getTime() - Date.now()) / 86400000)) : 0
   const isFeatured = Boolean(job.is_featured)
@@ -148,6 +172,16 @@ function DashboardJobRow({ job, expired = false }: { job: Record<string, unknown
         <p className="text-gray-500 text-sm mt-0.5">{job.location as string}</p>
       </div>
       <div className="flex items-center gap-3 flex-shrink-0">
+        {/* Apply click count */}
+        <span
+          className={`text-xs px-2 py-1 rounded-full flex items-center gap-1 ${
+            clicks > 0 ? 'bg-yellow-400/15 text-yellow-400' : 'bg-gray-800 text-gray-600'
+          }`}
+          title="Apply button clicks"
+        >
+          <span>👆</span>
+          <span>{clicks} click{clicks !== 1 ? 's' : ''}</span>
+        </span>
         {!expired && (
           <span className={`text-xs px-2 py-1 rounded-full ${
             daysLeft <= 5 ? 'bg-red-900/40 text-red-400' : 'bg-gray-800 text-gray-400'
