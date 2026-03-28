@@ -62,6 +62,8 @@ interface RawJob {
   apply_url?: string
   salary_min?: number
   salary_max?: number
+  salary_period?: 'year' | 'hour' | 'day' | 'week' | 'month'
+  salary_currency?: string
   category?: JobCategory
   job_type?: JobType
   remote?: boolean
@@ -184,6 +186,7 @@ async function fetchAdzunaJobs(): Promise<RawJob[]> {
           apply_url: job.redirect_url,
           salary_min: job.salary_min ? Math.round(job.salary_min) : undefined,
           salary_max: job.salary_max ? Math.round(job.salary_max) : undefined,
+          salary_period: 'year', // Adzuna always returns annual salary
           ...parseTradesFields(description),
         })
       }
@@ -228,6 +231,14 @@ async function fetchUSAJobs(): Promise<RawJob[]> {
           salary_max: pos.PositionRemuneration?.[0]?.MaximumRange
             ? Math.round(parseFloat(pos.PositionRemuneration[0].MaximumRange))
             : undefined,
+          salary_period: (() => {
+            const code = pos.PositionRemuneration?.[0]?.RateIntervalCode?.toLowerCase() || ''
+            if (code.includes('hour') || code === 'ph') return 'hour'
+            if (code.includes('day') || code === 'pd') return 'day'
+            if (code.includes('week') || code === 'pw') return 'week'
+            if (code.includes('month') || code === 'pm') return 'month'
+            return 'year'
+          })(),
           ...parseTradesFields(description),
         })
       }
@@ -310,7 +321,7 @@ async function fetchLeverJobs(): Promise<RawJob[]> {
         lists?: Array<{ text?: string; content?: string }>
         hostedUrl?: string
         applyUrl?: string
-        salaryRange?: { min?: number; max?: number; currency?: string }
+        salaryRange?: { min?: number; max?: number; currency?: string; interval?: string }
       }> = await res.json()
 
       for (const posting of postings) {
@@ -349,6 +360,15 @@ async function fetchLeverJobs(): Promise<RawJob[]> {
           apply_url: posting.hostedUrl || posting.applyUrl,
           salary_min: posting.salaryRange?.min ?? undefined,
           salary_max: posting.salaryRange?.max ?? undefined,
+          salary_period: (() => {
+            const interval = posting.salaryRange?.interval?.toLowerCase() || ''
+            if (interval.includes('hour')) return 'hour'
+            if (interval.includes('day')) return 'day'
+            if (interval.includes('week')) return 'week'
+            if (interval.includes('month')) return 'month'
+            return 'year'
+          })(),
+          salary_currency: posting.salaryRange?.currency || 'USD',
           ...parseTradesFields(description),
         })
       }
@@ -430,7 +450,8 @@ export async function POST(req: NextRequest) {
       remote: job.remote || false,
       salary_min: job.salary_min || null,
       salary_max: job.salary_max || null,
-      salary_currency: 'USD',
+      salary_currency: job.salary_currency || 'USD',
+      salary_period: job.salary_period || 'year',
       description: job.description,
       apply_url: job.apply_url || null,
       source: job.source,

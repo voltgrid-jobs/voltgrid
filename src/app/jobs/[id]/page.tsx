@@ -70,13 +70,19 @@ export async function generateMetadata({
   }
 }
 
-function formatSalary(min?: number, max?: number, currency = 'USD') {
+function formatSalary(min?: number, max?: number, currency = 'USD', period = 'year') {
   if (!min && !max) return null
+  const isHourly = period === 'hour'
   const fmt = (n: number) =>
-    new Intl.NumberFormat('en-US', { style: 'currency', currency, maximumFractionDigits: 0 }).format(n)
-  if (min && max) return `${fmt(min)} – ${fmt(max)} / year`
-  if (min) return `${fmt(min)}+ / year`
-  if (max) return `Up to ${fmt(max)} / year`
+    new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency,
+      maximumFractionDigits: isHourly ? 2 : 0,
+    }).format(n)
+  const suffix = isHourly ? '/ hr' : period === 'year' ? '/ year' : `/ ${period}`
+  if (min && max) return `${fmt(min)} – ${fmt(max)} ${suffix}`
+  if (min) return `${fmt(min)}+ ${suffix}`
+  if (max) return `Up to ${fmt(max)} ${suffix}`
   return null
 }
 
@@ -98,7 +104,7 @@ export default async function JobDetailPage({
     isSaved = !!saved
   }
 
-  const salary = formatSalary(job.salary_min, job.salary_max, job.salary_currency)
+  const salary = formatSalary(job.salary_min, job.salary_max, job.salary_currency, job.salary_period ?? 'year')
   const applyUrl = job.apply_url || (job.apply_email ? `mailto:${job.apply_email}` : null)
 
   // Map internal job_type values to schema.org employmentType
@@ -137,7 +143,7 @@ export default async function JobDetailPage({
           '@type': 'QuantitativeValue',
           ...(job.salary_min && { minValue: job.salary_min }),
           ...(job.salary_max && { maxValue: job.salary_max }),
-          unitText: 'YEAR',
+          unitText: (job.salary_period === 'hour' ? 'HOUR' : job.salary_period === 'month' ? 'MONTH' : 'YEAR'),
         },
       },
     }),

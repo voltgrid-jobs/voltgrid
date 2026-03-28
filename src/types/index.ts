@@ -31,6 +31,7 @@ export interface Job {
   salary_min?: number
   salary_max?: number
   salary_currency: string
+  salary_period?: 'year' | 'hour' | 'day' | 'week' | 'month'
   description: string
   apply_url?: string
   apply_email?: string

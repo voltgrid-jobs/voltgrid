@@ -1,17 +1,19 @@
 import Link from 'next/link'
 import { type Job, CATEGORY_LABELS, JOB_TYPE_LABELS, TRAVEL_LABELS, SHIFT_LABELS } from '@/types'
 
-function formatSalary(min?: number, max?: number, currency = 'USD') {
+function formatSalary(min?: number, max?: number, currency = 'USD', period = 'year') {
   if (!min && !max) return null
+  const isHourly = period === 'hour'
   const fmt = (n: number) =>
     new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency,
-      maximumFractionDigits: 0,
+      maximumFractionDigits: isHourly ? 2 : 0,
     }).format(n)
-  if (min && max) return `${fmt(min)} – ${fmt(max)}`
-  if (min) return `${fmt(min)}+`
-  if (max) return `Up to ${fmt(max)}`
+  const suffix = isHourly ? '/hr' : period === 'year' ? '/yr' : `/${period}`
+  if (min && max) return `${fmt(min)} – ${fmt(max)} ${suffix}`
+  if (min) return `${fmt(min)}+ ${suffix}`
+  if (max) return `Up to ${fmt(max)} ${suffix}`
   return null
 }
 
@@ -27,7 +29,7 @@ function timeAgo(dateStr: string) {
 }
 
 export function JobCard({ job, featured = false }: { job: Job; featured?: boolean }) {
-  const salary = formatSalary(job.salary_min, job.salary_max, job.salary_currency)
+  const salary = formatSalary(job.salary_min, job.salary_max, job.salary_currency, job.salary_period ?? 'year')
 
   const perDiemLabel = job.per_diem
     ? job.per_diem_rate
