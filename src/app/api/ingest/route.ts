@@ -306,6 +306,8 @@ async function fetchLeverJobs(): Promise<RawJob[]> {
         categories: { location?: string; team?: string }
         descriptionPlain?: string
         description?: string
+        additionalPlain?: string
+        lists?: Array<{ text?: string; content?: string }>
         hostedUrl?: string
         applyUrl?: string
         salaryRange?: { min?: number; max?: number; currency?: string }
@@ -316,7 +318,26 @@ async function fetchLeverJobs(): Promise<RawJob[]> {
         // Filter for trades/data center roles
         if (!/(electrician|hvac|low.?voltage|mechanical|facilities|construction|trades|technician|data center|critical|mep|power|operations|apprentice)/.test(title)) continue
 
-        const description = stripHtml(posting.descriptionPlain || posting.description || '').substring(0, 10000)
+        // Lever splits content across: descriptionPlain + lists (structured sections) + additionalPlain
+        // Combining all three gives the full job description
+        const listSections = (posting.lists || []).map(l => {
+          const header = l.text ? `${l.text}\n` : ''
+          const items = (l.content || '')
+            .split(/<li[^>]*>/i)
+            .map(s => s.replace(/<\/li>/i, '').replace(/<[^>]+>/g, '').trim())
+            .filter(Boolean)
+            .map(s => `• ${s}`)
+            .join('\n')
+          return header + items
+        }).join('\n\n')
+
+        const fullText = [
+          posting.descriptionPlain || '',
+          listSections,
+          posting.additionalPlain || '',
+        ].filter(Boolean).join('\n\n')
+
+        const description = stripHtml(fullText || posting.description || '').substring(0, 10000)
 
         jobs.push({
           source: 'greenhouse', // reuse existing enum value — no separate lever source needed
