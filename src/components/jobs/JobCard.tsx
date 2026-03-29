@@ -5,15 +5,47 @@ import Image from 'next/image'
 import { type Job, CATEGORY_LABELS, JOB_TYPE_LABELS, TRAVEL_LABELS, SHIFT_LABELS } from '@/types'
 import { getLogoUrl } from '@/lib/company-logos'
 
-function formatSalaryMin(min?: number, max?: number, currency = 'USD', period = 'year') {
-  // Shows only the minimum salary (dangling carrot — full range revealed on job detail when logged in)
+function formatSalary(min?: number, max?: number, currency = 'USD', period = 'year'): { primary: string; secondary?: string } | null {
   if (!min && !max) return null
   const isHourly = period === 'hour'
-  const fmt = (n: number) =>
-    new Intl.NumberFormat('en-US', { style: 'currency', currency, maximumFractionDigits: isHourly ? 2 : 0 }).format(n)
-  const suffix = isHourly ? '/hr' : period === 'year' ? '/yr' : `/${period}`
-  if (min) return `${fmt(min)}+ ${suffix}`
-  if (max) return `Up to ${fmt(max)} ${suffix}`
+  const isAnnual = period === 'year'
+
+  const fmtHourly = (n: number) =>
+    new Intl.NumberFormat('en-US', { style: 'currency', currency, maximumFractionDigits: 2 }).format(n)
+  const fmtAnnual = (n: number) =>
+    new Intl.NumberFormat('en-US', { style: 'currency', currency, maximumFractionDigits: 0 }).format(n)
+
+  const shortAnnual = (n: number) => {
+    const k = Math.round(n / 1000)
+    return `$${k}k`
+  }
+
+  if (isHourly) {
+    if (min && max) return { primary: `${fmtHourly(min)} – ${fmtHourly(max)}/hr` }
+    if (min) return { primary: `From ${fmtHourly(min)}/hr` }
+    if (max) return { primary: `Up to ${fmtHourly(max)}/hr` }
+  }
+
+  if (isAnnual) {
+    const toHourly = (n: number) => fmtHourly(Math.round(n / 2080))
+    if (min && max) {
+      const hrMin = toHourly(min)
+      const hrMax = toHourly(max)
+      return {
+        primary: `${hrMin} – ${hrMax}/hr`,
+        secondary: `(${shortAnnual(min)} – ${shortAnnual(max)}/yr)`,
+      }
+    }
+    if (min) return { primary: `~${toHourly(min)}/hr`, secondary: `(${shortAnnual(min)}/yr)` }
+    if (max) return { primary: `Up to ${toHourly(max)}/hr`, secondary: `(${shortAnnual(max)}/yr)` }
+  }
+
+  // fallback for other periods (month, etc.)
+  const fmt = (n: number) => fmtAnnual(n)
+  const suffix = `/${period}`
+  if (min && max) return { primary: `${fmt(min)} – ${fmt(max)}${suffix}` }
+  if (min) return { primary: `From ${fmt(min)}${suffix}` }
+  if (max) return { primary: `Up to ${fmt(max)}${suffix}` }
   return null
 }
 
@@ -64,21 +96,29 @@ function isClosingSoon(expiresAt?: string | null): boolean {
   return diffDays >= 0 && diffDays <= 3
 }
 
+// Shift types that are unusual enough to surface as badges (skip default "Day Shift")
+const NOTABLE_SHIFTS = new Set(['night', 'rotating', '4x10'])
+// Travel levels worth surfacing as a badge (skip local/regional)
+const NOTABLE_TRAVEL = new Set(['national'])
+
 export function JobCard({ job, featured = false }: { job: Job; featured?: boolean }) {
-  const salary = formatSalaryMin(job.salary_min, job.salary_max, job.salary_currency, job.salary_period ?? 'year')
+  const salary = formatSalary(job.salary_min, job.salary_max, job.salary_currency, job.salary_period ?? 'year')
   const logoUrl = getLogoUrl(job.company_name)
   const isCanada = isCanadaJob(job.location ?? '')
   const isFrench = isFrenchDescription(job.description ?? '')
   const closingSoon = isClosingSoon(job.expires_at)
 
-  const badges = [
+  // Priority-ordered candidate badges — max 3 shown on card
+  const allBadges = [
     job.is_featured  && { label: 'Featured',    bg: 'var(--yellow-dim)',  fg: 'var(--yellow)' },
-    job.remote       && { label: 'Remote OK',   bg: 'var(--green-dim)',   fg: 'var(--green)' },
-    job.is_union     && { label: 'Union',        bg: 'var(--blue-dim)',    fg: 'var(--blue-fg)' },
     job.per_diem     && { label: job.per_diem_rate ? `Per Diem $${job.per_diem_rate}/day` : 'Per Diem', bg: 'var(--green-dim)', fg: 'var(--green)' },
-    job.travel_required && job.travel_required !== 'none' && { label: TRAVEL_LABELS[job.travel_required], bg: 'var(--bg-raised)', fg: 'var(--fg-muted)' },
-    job.shift_type   && { label: SHIFT_LABELS[job.shift_type], bg: 'var(--bg-raised)', fg: 'var(--fg-muted)' },
+    job.is_union     && { label: 'Union',        bg: 'var(--blue-dim)',    fg: 'var(--blue-fg)' },
+    job.remote       && { label: 'Remote OK',   bg: 'var(--green-dim)',   fg: 'var(--green)' },
+    job.travel_required && NOTABLE_TRAVEL.has(job.travel_required) && { label: TRAVEL_LABELS[job.travel_required], bg: 'var(--bg-raised)', fg: 'var(--fg-muted)' },
+    job.shift_type   && NOTABLE_SHIFTS.has(job.shift_type) && { label: SHIFT_LABELS[job.shift_type], bg: 'var(--bg-raised)', fg: 'var(--fg-muted)' },
   ].filter(Boolean) as { label: string; bg: string; fg: string }[]
+
+  const badges = allBadges.slice(0, 3)
 
   return (
     <Link
@@ -168,8 +208,15 @@ export function JobCard({ job, featured = false }: { job: Job; featured?: boolea
 
         <div className="text-right flex-shrink-0 hidden sm:block">
           {salary && (
-            <div className="text-sm font-semibold mb-1" style={{ color: 'var(--green)' }}>
-              {salary}
+            <div className="mb-1">
+              <div className="text-sm font-semibold" style={{ color: 'var(--green)' }}>
+                {salary.primary}
+              </div>
+              {salary.secondary && (
+                <div className="text-xs" style={{ color: 'var(--fg-muted)' }}>
+                  {salary.secondary}
+                </div>
+              )}
             </div>
           )}
           <div className="text-xs" style={{ color: 'var(--fg-faint)' }}>
@@ -179,8 +226,15 @@ export function JobCard({ job, featured = false }: { job: Job; featured?: boolea
       </div>
 
       {salary && (
-        <div className="sm:hidden mt-2 text-sm font-semibold" style={{ color: 'var(--green)' }}>
-          {salary}
+        <div className="sm:hidden mt-2">
+          <div className="text-sm font-semibold" style={{ color: 'var(--green)' }}>
+            {salary.primary}
+          </div>
+          {salary.secondary && (
+            <div className="text-xs" style={{ color: 'var(--fg-muted)' }}>
+              {salary.secondary}
+            </div>
+          )}
         </div>
       )}
 
