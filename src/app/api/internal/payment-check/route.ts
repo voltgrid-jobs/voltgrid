@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
     )
   }
 
-  const stripe = new Stripe(stripeKey, { apiVersion: '2025-01-27.acacia' })
+  const stripe = new Stripe(stripeKey, { apiVersion: '2026-03-25.dahlia' })
 
   const sixHoursAgo = Math.floor(Date.now() / 1000) - 6 * 60 * 60
 
