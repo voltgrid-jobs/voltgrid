@@ -77,6 +77,7 @@ function isFrenchDescription(description: string): boolean {
 import { SaveJobButton } from '@/components/jobs/SaveJobButton'
 import { AlertSignupWidget } from '@/components/jobs/AlertSignupWidget'
 import { ApplyButton } from '@/components/jobs/ApplyButton'
+import { extractSalaryFromDescription } from '@/lib/salary-extract'
 
 export async function generateMetadata({
   params,
@@ -139,7 +140,11 @@ export default async function JobDetailPage({
     isSaved = !!saved
   }
 
-  const salary = formatSalary(job.salary_min, job.salary_max, job.salary_currency, job.salary_period ?? 'year')
+  const rawSalary = formatSalary(job.salary_min, job.salary_max, job.salary_currency, job.salary_period ?? 'year')
+  const extracted = (!job.salary_min && !job.salary_max && job.description)
+    ? extractSalaryFromDescription(job.description) : null
+  const salary: { primary: string; secondary?: string } | null =
+    rawSalary ?? (extracted ? { primary: extracted } : null)
   const applyUrl = job.apply_url || (job.apply_email ? `mailto:${job.apply_email}` : null)
   const isCanada = isCanadaJob(job.location ?? '')
   const isFrench = isFrenchDescription(job.description ?? '')

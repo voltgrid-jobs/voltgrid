@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { type Job, CATEGORY_LABELS, JOB_TYPE_LABELS, TRAVEL_LABELS, SHIFT_LABELS } from '@/types'
 import { getLogoUrl } from '@/lib/company-logos'
+import { extractSalaryFromDescription } from '@/lib/salary-extract'
 
 function formatSalary(min?: number, max?: number, currency = 'USD', period = 'year'): { primary: string; secondary?: string } | null {
   if (!min && !max) return null
@@ -102,7 +103,11 @@ const NOTABLE_SHIFTS = new Set(['night', 'rotating', '4x10'])
 const NOTABLE_TRAVEL = new Set(['national'])
 
 export function JobCard({ job, featured = false }: { job: Job; featured?: boolean }) {
-  const salary = formatSalary(job.salary_min, job.salary_max, job.salary_currency, job.salary_period ?? 'year')
+  const rawSalary = formatSalary(job.salary_min, job.salary_max, job.salary_currency, job.salary_period ?? 'year')
+  const extracted = (!job.salary_min && !job.salary_max && job.description)
+    ? extractSalaryFromDescription(job.description) : null
+  const salary: { primary: string; secondary?: string } | null =
+    rawSalary ?? (extracted ? { primary: extracted } : null)
   const logoUrl = getLogoUrl(job.company_name)
   const isCanada = isCanadaJob(job.location ?? '')
   const isFrench = isFrenchDescription(job.description ?? '')
