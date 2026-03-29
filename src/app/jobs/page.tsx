@@ -178,18 +178,33 @@ export default async function JobsPage({
                 totalPages={totalPages}
                 basePath={basePath}
               />
-              <JobAlertInlineForm variant="jobs" defaultTrade={activeCategory ?? ''} />
+              <div id="get-alerts"><JobAlertInlineForm variant="jobs" defaultTrade={activeCategory ?? ''} /></div>
             </>
           ) : (
-            <div className="rounded-xl p-12 text-center" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
-              <p className="font-medium mb-2" style={{ color: 'var(--fg)' }}>No jobs found</p>
+            <div className="rounded-xl p-10 text-center" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
+              <p className="text-2xl mb-3">🔍</p>
+              <p className="font-semibold mb-2" style={{ color: 'var(--fg)' }}>No jobs match your filters</p>
               {hasFilters ? (
                 <>
-                  <p className="text-sm mb-4" style={{ color: 'var(--fg-muted)' }}>Try adjusting your filters or search terms.</p>
-                  <a href="/jobs" className="inline-block text-sm px-4 py-2 rounded-lg transition-colors"
-                    style={{ color: 'var(--yellow)', border: '1px solid var(--yellow-border)' }}>
-                    Clear all filters →
-                  </a>
+                  <div className="flex flex-wrap justify-center gap-1.5 mb-5 mt-3">
+                    {params.q && <span className="text-xs px-2 py-1 rounded-full" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--fg-muted)' }}>Search: {params.q}</span>}
+                    {params.category && <span className="text-xs px-2 py-1 rounded-full" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--fg-muted)' }}>{CATEGORY_LABELS[params.category as JobCategory]}</span>}
+                    {params.location && <span className="text-xs px-2 py-1 rounded-full" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--fg-muted)' }}>{params.location}</span>}
+                    {params.type && <span className="text-xs px-2 py-1 rounded-full" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--fg-muted)' }}>{params.type}</span>}
+                    {params.remote === 'true' && <span className="text-xs px-2 py-1 rounded-full" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--fg-muted)' }}>Remote OK</span>}
+                    {params.union === 'true' && <span className="text-xs px-2 py-1 rounded-full" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--fg-muted)' }}>Union</span>}
+                    {params.per_diem === 'true' && <span className="text-xs px-2 py-1 rounded-full" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--fg-muted)' }}>Per Diem</span>}
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    <a href="/jobs" className="inline-block text-sm px-5 py-2.5 rounded-lg font-semibold transition-colors"
+                      style={{ background: 'var(--yellow)', color: '#0A0A0A' }}>
+                      Clear filters
+                    </a>
+                    <a href="#get-alerts" className="inline-block text-sm px-5 py-2.5 rounded-lg transition-colors"
+                      style={{ border: '1px solid var(--border-strong)', color: 'var(--fg-muted)' }}>
+                      Get alerts when matching jobs post
+                    </a>
+                  </div>
                 </>
               ) : (
                 <p className="text-sm" style={{ color: 'var(--fg-muted)' }}>New jobs are added daily. Check back shortly.</p>
