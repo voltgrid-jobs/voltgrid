@@ -282,8 +282,10 @@ async function fetchGreenhouseJobs(): Promise<RawJob[]> {
 
       for (const job of (data.jobs || [])) {
         const title = job.title?.toLowerCase() || ''
-        // Filter for trades-relevant roles
-        if (!/(electrician|hvac|low.?voltage|mechanical|facilities|construction|trades|technician|data.?center|critical.?(sys|fac)|mep|power engineer|apprentice|operations engineer|commissioning|electrical engineer|electrical project|chiller|generator|ups technician|mission.?critical)/.test(title)) continue
+        // Filter for trades-relevant roles — must match trades keywords AND not be a research/software/neuroscience role
+        if (!/(electrician|hvac|low.?voltage|facilities (engineer|manager|tech)|construction|trades|data.?center tech|critical.?(sys|fac|env)|mep engineer|power engineer|apprentice electrician|commissioning engineer|electrical (engineer|project|superintendent|foreman)|chiller|generator tech|ups technician|mission.?critical|building engineer|controls tech|mechanical tech|plumber|pipefitter|instrumentation tech)/.test(title)) continue
+        // Exclude non-trades roles that slip through (research, software, neuroscience, intern research, robotics)
+        if (/(surgeon|surgery|implant|robotics|software|firmware|research scientist|machine learning|neuroscien|microfab|chip|optical|biomed|device engineer|product manager|marketing|legal|finance|recruiter|brain interface)/.test(title)) continue
 
         const description = job.content
           ? stripHtml(job.content).substring(0, 10000)
@@ -342,7 +344,9 @@ async function fetchLeverJobs(): Promise<RawJob[]> {
       for (const posting of postings) {
         const title = posting.text?.toLowerCase() || ''
         // Filter for trades/data center roles
-        if (!/(electrician|hvac|low.?voltage|mechanical|facilities|construction|trades|technician|data.?center|critical|mep|power|operations|apprentice|commissioning|electrical|chiller|generator|ups|mission.?critical)/.test(title)) continue
+        if (!/(electrician|hvac|low.?voltage|facilities (engineer|manager|tech)|construction|trades|data.?center tech|critical.?(sys|fac|env)|mep|power engineer|apprentice|commissioning|electrical (engineer|project|superintendent)|chiller|generator|ups technician|mission.?critical|building engineer|controls tech|mechanical tech|plumber|pipefitter)/.test(title)) continue
+        // Exclude non-trades roles
+        if (/(surgeon|surgery|implant|robotics|software|firmware|research scientist|machine learning|neuroscien|microfab|chip|optical|biomed|product manager|marketing|legal|finance|recruiter)/.test(title)) continue
 
         // Lever splits content across: descriptionPlain + lists (structured sections) + additionalPlain
         // Combining all three gives the full job description

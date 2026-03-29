@@ -4,6 +4,7 @@
  * Usage: nominative fair use — shows logos only when company has active listings.
  */
 export const COMPANY_DOMAINS: Record<string, string> = {
+  // Legacy / ingested companies
   'Oracle': 'oracle.com',
   'Cologix': 'cologix.com',
   'Edgeconnex': 'edgeconnex.com',
@@ -19,6 +20,18 @@ export const COMPANY_DOMAINS: Record<string, string> = {
   'Manpower': 'manpower.com',
   'Accenture': 'accenture.com',
   'Insight Global': 'insightglobal.com',
+  // New sources (Greenhouse/Lever expansion)
+  'Syska Hennessy': 'syska.com',
+  'T5 Data Centers': 't5datacenters.com',
+  'Serverfarm': 'serverfarm.com',
+  'CoreWeave': 'coreweave.com',
+  'xAI': 'x.ai',
+  'Neuralink': 'neuralink.com',
+  'BRPH': 'brph.com',
+  'Align': 'align.com',
+  'Anthropic': 'anthropic.com',
+  'Core Scientific': 'corescientific.com',
+  'Aligned': 'aligned.com',
 }
 
 export function getLogoUrl(companyName: string): string | null {
