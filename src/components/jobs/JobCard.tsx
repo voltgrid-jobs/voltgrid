@@ -55,11 +55,21 @@ function isFrenchDescription(description: string): boolean {
   return count >= 3
 }
 
+function isClosingSoon(expiresAt?: string | null): boolean {
+  if (!expiresAt) return false
+  const expires = new Date(expiresAt)
+  const now = new Date()
+  const diffMs = expires.getTime() - now.getTime()
+  const diffDays = diffMs / (1000 * 60 * 60 * 24)
+  return diffDays >= 0 && diffDays <= 3
+}
+
 export function JobCard({ job, featured = false }: { job: Job; featured?: boolean }) {
   const salary = formatSalaryMin(job.salary_min, job.salary_max, job.salary_currency, job.salary_period ?? 'year')
   const logoUrl = getLogoUrl(job.company_name)
   const isCanada = isCanadaJob(job.location ?? '')
   const isFrench = isFrenchDescription(job.description ?? '')
+  const closingSoon = isClosingSoon(job.expires_at)
 
   const badges = [
     job.is_featured  && { label: 'Featured',    bg: 'var(--yellow-dim)',  fg: 'var(--yellow)' },
@@ -95,6 +105,14 @@ export function JobCard({ job, featured = false }: { job: Job; featured?: boolea
             >
               {JOB_TYPE_LABELS[job.job_type]}
             </span>
+            {closingSoon && (
+              <span
+                className="text-xs font-semibold px-2 py-0.5 rounded"
+                style={{ background: 'rgba(251,146,60,0.15)', color: '#fb923c', border: '1px solid rgba(251,146,60,0.3)' }}
+              >
+                Closing soon
+              </span>
+            )}
             {badges.map(({ label, bg, fg }) => (
               <span key={label} className="text-xs font-medium px-2 py-0.5 rounded" style={{ background: bg, color: fg }}>
                 {label}

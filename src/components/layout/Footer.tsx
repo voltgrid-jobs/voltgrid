@@ -42,6 +42,7 @@ export function Footer() {
               <li><Link href="/post-job" className="hover:text-white transition-colors">Post a Job</Link></li>
               <li><Link href="/employers" className="hover:text-white transition-colors">Why VoltGrid</Link></li>
               <li><Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
+              <li><Link href="/about" className="hover:text-white transition-colors">About</Link></li>
             </ul>
           </div>
         </div>

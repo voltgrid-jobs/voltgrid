@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { JobCard } from '@/components/jobs/JobCard'
 import { JobFilters } from '@/components/jobs/JobFilters'
 import { CATEGORY_LABELS, type JobCategory } from '@/types'
+import { JobAlertInlineForm } from '@/components/jobs/JobAlertInlineForm'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -135,11 +136,14 @@ export default async function JobsPage({
 
         <div className="flex-1">
           {jobs && jobs.length > 0 ? (
-            <div className="flex flex-col gap-4">
-              {jobs.map((job) => (
-                <JobCard key={job.id} job={job} featured={job.is_featured} />
-              ))}
-            </div>
+            <>
+              <div className="flex flex-col gap-4">
+                {jobs.map((job) => (
+                  <JobCard key={job.id} job={job} featured={job.is_featured} />
+                ))}
+              </div>
+              <JobAlertInlineForm variant="jobs" defaultTrade={activeCategory ?? ''} />
+            </>
           ) : (
             <div className="rounded-xl p-12 text-center" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
               <p className="font-medium mb-2" style={{ color: 'var(--fg)' }}>No jobs found</p>
