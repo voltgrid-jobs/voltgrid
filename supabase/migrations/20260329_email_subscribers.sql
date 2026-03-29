@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS public.email_subscribers (
 -- RLS: only service role can read
 ALTER TABLE public.email_subscribers ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Service role full access" ON public.email_subscribers;
 CREATE POLICY "Service role full access" ON public.email_subscribers
   USING (auth.role() = 'service_role')
   WITH CHECK (auth.role() = 'service_role');

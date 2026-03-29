@@ -14,11 +14,13 @@ create index if not exists apply_clicks_clicked_at_idx on public.apply_clicks(cl
 -- Public insert allowed (anon users can click Apply); no read access for anon
 alter table public.apply_clicks enable row level security;
 
+drop policy if exists "Anyone can insert apply clicks" on public.apply_clicks;
 create policy "Anyone can insert apply clicks"
   on public.apply_clicks for insert
   with check (true);
 
 -- Only authenticated service role can read (used by admin page via admin client)
+drop policy if exists "Service role can read apply clicks" on public.apply_clicks;
 create policy "Service role can read apply clicks"
   on public.apply_clicks for select
   using (auth.role() = 'service_role');
