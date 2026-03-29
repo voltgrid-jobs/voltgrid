@@ -58,7 +58,7 @@ export function Header() {
                 onMouseLeave={e => (e.currentTarget.style.color = 'var(--fg-muted)')}>
                 Dashboard
               </Link>
-              <Link href="/account" className="ml-1 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
+              <Link href="/dashboard" className="ml-1 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
                 style={{ background: 'var(--yellow-dim)', color: 'var(--yellow)' }}>
                 {user.email?.[0].toUpperCase()}
               </Link>
@@ -106,10 +106,7 @@ export function Header() {
             <Link key={href} href={href} style={{ color: 'var(--fg-muted)' }} onClick={() => setMenuOpen(false)}>{label}</Link>
           ))}
           {user ? (
-            <>
-              <Link href="/dashboard" style={{ color: 'var(--fg-muted)' }} onClick={() => setMenuOpen(false)}>Dashboard</Link>
-              <Link href="/account" style={{ color: 'var(--fg-muted)' }} onClick={() => setMenuOpen(false)}>My Account</Link>
-            </>
+            <Link href="/dashboard" style={{ color: 'var(--fg-muted)' }} onClick={() => setMenuOpen(false)}>Dashboard</Link>
           ) : (
             <Link href="/auth/login" style={{ color: 'var(--fg-muted)' }} onClick={() => setMenuOpen(false)}>Sign In</Link>
           )}

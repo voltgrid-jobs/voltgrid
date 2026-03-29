@@ -1,6 +1,6 @@
 /**
  * Maps company names (as stored in the DB) to their domain for logo resolution.
- * Logos fetched via Clearbit: https://logo.clearbit.com/{domain}
+ * Logos fetched via Logo.dev (primary) with Google favicon fallback.
  * Usage: nominative fair use — shows logos only when company has active listings.
  */
 export const COMPANY_DOMAINS: Record<string, string> = {
@@ -32,10 +32,32 @@ export const COMPANY_DOMAINS: Record<string, string> = {
   'Anthropic': 'anthropic.com',
   'Core Scientific': 'corescientific.com',
   'Aligned': 'aligned.com',
+  'QTS Data Centers': 'qtsdatacenters.com',
+  'Iron Mountain': 'ironmountain.com',
+  'Digital Realty': 'digitalrealty.com',
+  'Equinix': 'equinix.com',
+  'NTT Data': 'nttdata.com',
+  'Compass Datacenters': 'compassdatacenters.com',
+  'Stream Data Centers': 'streamdatacenters.com',
+  'CyrusOne': 'cyrusone.com',
+  'Switch': 'switch.com',
+  'Flexential': 'flexential.com',
 }
+
+const LOGO_DEV_TOKEN = 'pk_X7dkMEXSRsKNpe1kuk7uHA'
 
 export function getLogoUrl(companyName: string): string | null {
   const domain = COMPANY_DOMAINS[companyName]
   if (!domain) return null
-  return `https://logo.clearbit.com/${domain}`
+  return `https://img.logo.dev/${domain}?token=${LOGO_DEV_TOKEN}`
+}
+
+export function getLogoUrlFallback(companyName: string): string | null {
+  const domain = COMPANY_DOMAINS[companyName]
+  if (!domain) return null
+  return `https://www.google.com/s2/favicons?domain=${domain}&sz=128`
+}
+
+export function getDomain(companyName: string): string | null {
+  return COMPANY_DOMAINS[companyName] ?? null
 }

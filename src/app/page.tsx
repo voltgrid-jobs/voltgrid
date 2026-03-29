@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { JobCard } from '@/components/jobs/JobCard'
 import { CATEGORY_LABELS, type JobCategory } from '@/types'
+import { getLogoUrl, getDomain } from '@/lib/company-logos'
+import { CompanyLogo } from '@/components/employers/CompanyLogo'
 
 const CATEGORIES: { key: JobCategory; label: string }[] = [
   { key: 'electrical',          label: 'Electrical' },
@@ -38,6 +40,15 @@ export default async function HomePage() {
   const { count: jobsThisWeek } = await supabase
     .from('jobs').select('*', { count: 'exact', head: true })
     .eq('is_active', true).gte('created_at', oneWeekAgo)
+
+  // Companies for logo bar
+  const companyCounts: Record<string, number> = {}
+  companiesData?.forEach(j => { if (j.company_name) companyCounts[j.company_name] = (companyCounts[j.company_name] || 0) + 1 })
+  const logoBarCompanies = Object.entries(companyCounts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([name]) => ({ name, logoUrl: getLogoUrl(name), domain: getDomain(name) }))
+    .filter(c => c.domain)
+    .slice(0, 8)
 
   return (
     <div>
@@ -119,6 +130,24 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* COMPANY LOGO BAR */}
+      {logoBarCompanies.length > 0 && (
+        <section style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', background: 'var(--bg-subtle)' }}>
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-7">
+            <p className="text-xs uppercase tracking-widest mb-5 font-medium text-center" style={{ color: 'var(--fg-faint)' }}>
+              Companies hiring on VoltGrid
+            </p>
+            <div className="flex flex-wrap justify-center items-center gap-8">
+              {logoBarCompanies.map(({ name, logoUrl, domain }) => (
+                <div key={name} className="flex items-center justify-center" style={{ height: '28px' }}>
+                  <CompanyLogo name={name} logoUrl={logoUrl} domain={domain} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* CATEGORIES */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-12">

@@ -2,7 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
-import { getLogoUrl } from '@/lib/company-logos'
+import { getLogoUrl, getDomain } from '@/lib/company-logos'
 import { CompanyLogo } from '@/components/employers/CompanyLogo'
 
 export const metadata: Metadata = {
@@ -147,13 +147,13 @@ export default async function EmployersPage() {
 
   const featuredCompanies = Object.entries(counts)
     .sort((a, b) => b[1] - a[1])
-    .map(([name]) => ({ name, logoUrl: getLogoUrl(name) }))
-    .filter(c => c.logoUrl) // only show companies with known logos
+    .map(([name]) => ({ name, logoUrl: getLogoUrl(name), domain: getDomain(name) }))
+    .filter(c => c.domain) // only show companies with known domains
     .slice(0, 8)
 
   const displayCompanies = featuredCompanies.length >= 4
     ? featuredCompanies
-    : FEATURED_COMPANIES_FALLBACK.map(name => ({ name, logoUrl: getLogoUrl(name) }))
+    : FEATURED_COMPANIES_FALLBACK.map(name => ({ name, logoUrl: getLogoUrl(name), domain: getDomain(name) }))
   return (
     <>
       <script
@@ -200,9 +200,9 @@ export default async function EmployersPage() {
               Companies with active listings on VoltGrid
             </p>
             <div className="flex flex-wrap justify-center items-center gap-8">
-              {displayCompanies.map(({ name, logoUrl }) => (
+              {displayCompanies.map(({ name, logoUrl, domain }) => (
                 <div key={name} className="flex items-center justify-center" style={{ height: '32px' }}>
-                  <CompanyLogo name={name} logoUrl={logoUrl} />
+                  <CompanyLogo name={name} logoUrl={logoUrl} domain={domain} />
                 </div>
               ))}
             </div>
