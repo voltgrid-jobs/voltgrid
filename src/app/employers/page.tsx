@@ -3,6 +3,7 @@ import Image from 'next/image'
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { getLogoUrl } from '@/lib/company-logos'
+import { CompanyLogo } from '@/components/employers/CompanyLogo'
 
 export const metadata: Metadata = {
   title: 'Post a Job — VoltGrid Jobs | Hire Data Center Trades Workers',
@@ -201,21 +202,7 @@ export default async function EmployersPage() {
             <div className="flex flex-wrap justify-center items-center gap-8">
               {displayCompanies.map(({ name, logoUrl }) => (
                 <div key={name} className="flex items-center justify-center" style={{ height: '32px' }}>
-                  {logoUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={logoUrl}
-                      alt={`${name} logo`}
-                      style={{ maxHeight: '32px', width: 'auto', filter: 'grayscale(100%) brightness(2)', opacity: 0.6 }}
-                      onError={e => {
-                        const el = e.target as HTMLImageElement
-                        el.style.display = 'none'
-                        const fallback = el.nextElementSibling as HTMLElement
-                        if (fallback) fallback.style.display = 'block'
-                      }}
-                    />
-                  ) : null}
-                  <span className="text-sm font-semibold" style={{ color: 'var(--fg-muted)', display: logoUrl ? 'none' : 'block' }}>{name}</span>
+                  <CompanyLogo name={name} logoUrl={logoUrl} />
                 </div>
               ))}
             </div>
