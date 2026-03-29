@@ -145,6 +145,19 @@ export default async function JobsPage({
         <p style={{ color: 'var(--fg-muted)' }}>
           {totalJobs} {hasFilters ? 'matching' : 'open'} position{totalJobs !== 1 ? 's' : ''} at data centers and AI infrastructure projects
         </p>
+        {params.q && (
+          <div className="flex items-center gap-2 mt-3">
+            <span className="inline-flex items-center gap-1.5 text-sm px-3 py-1 rounded-full"
+              style={{ background: 'var(--yellow-dim)', color: 'var(--yellow)', border: '1px solid var(--yellow-border)' }}>
+              Searching for: <strong>{params.q}</strong>
+            </span>
+            <a href={buildBasePath({ ...params, q: undefined })}
+              className="text-xs transition-colors"
+              style={{ color: 'var(--fg-faint)' }}>
+              ✕ clear
+            </a>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col lg:flex-row gap-8">
