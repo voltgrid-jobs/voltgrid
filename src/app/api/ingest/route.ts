@@ -280,7 +280,7 @@ async function fetchGreenhouseJobs(): Promise<RawJob[]> {
       if (!res.ok) continue
       const data = await res.json()
 
-      for (const job of (data.jobs || []).slice(0, 25)) {
+      for (const job of (data.jobs || [])) {
         const title = job.title?.toLowerCase() || ''
         // Filter for trades-relevant roles
         if (!/(electrician|hvac|low.?voltage|mechanical|facilities|construction|trades|technician|data.?center|critical.?(sys|fac)|mep|power engineer|apprentice|operations engineer|commissioning|electrical engineer|electrical project|chiller|generator|ups technician|mission.?critical)/.test(title)) continue
