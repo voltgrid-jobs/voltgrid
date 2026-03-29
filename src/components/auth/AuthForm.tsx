@@ -33,7 +33,7 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) setError(error.message)
-      else window.location.href = '/account'
+      else window.location.href = '/dashboard'
     }
 
     setLoading(false)

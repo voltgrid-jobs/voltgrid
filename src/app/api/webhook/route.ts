@@ -91,6 +91,7 @@ export async function POST(req: NextRequest) {
         .from('jobs')
         .insert({
           employer_id: employerId,
+          employer_email: meta.company_email || null,
           title: meta.title,
           company_name: meta.company_name,
           category: (meta.category as JobCategory) || 'other',
@@ -156,6 +157,63 @@ export async function POST(req: NextRequest) {
       })
 
       console.log('Job created:', (job as { id: string }).id)
+
+      // AUTOMATION 4: Auto-feature all active Pro employer listings
+      if (meta.plan === 'pro_monthly' && meta.company_email) {
+        try {
+          await supabase
+            .from('jobs')
+            .update({ featured: true })
+            .eq('employer_email', meta.company_email)
+            .eq('is_active', true)
+          console.log('[webhook] Pro listings featured for:', meta.company_email)
+        } catch (featErr) {
+          console.error('[webhook] Auto-feature error:', featErr)
+        }
+      }
+
+      // AUTOMATION 5: Alert on first-ever paid listing
+      const isPaidPlan = ['single_post', 'five_pack', 'pro_monthly'].includes(meta.plan)
+      if (isPaidPlan && meta.company_email) {
+        try {
+          // Count prior completed payments for this employer (exclude current session)
+          const { count: priorCount } = await supabase
+            .from('payments')
+            .select('*', { count: 'exact', head: true })
+            .eq('employer_id', employerId as string)
+            .eq('status', 'complete')
+            .neq('stripe_session_id', session.id)
+
+          if (priorCount === 0) {
+            // First ever paid listing — notify via OpenClaw gateway
+            const gatewayPayload = {
+              channel: 'telegram',
+              to: '7824040963',
+              text: `🎉 First paid VoltGrid listing! Employer: ${meta.company_email}, Plan: ${meta.plan}`,
+            }
+            try {
+              const gwRes = await fetch('http://127.0.0.1:18789/api/v1/outbound', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': 'Bearer 583304355e980be587bf6ffdd3d4ef021a0b42876f11df0d',
+                },
+                body: JSON.stringify(gatewayPayload),
+              })
+              if (!gwRes.ok) {
+                console.error('[webhook] Gateway notification failed:', gwRes.status, await gwRes.text())
+              } else {
+                console.log('[webhook] First-paid alert sent for:', meta.company_email)
+              }
+            } catch (gwErr) {
+              console.error('[webhook] Gateway call error (non-critical):', gwErr)
+            }
+          }
+        } catch (firstPaidErr) {
+          console.error('[webhook] First-paid check error:', firstPaidErr)
+        }
+      }
+
     } catch (err) {
       console.error('Webhook processing error:', err)
       return NextResponse.json({ error: 'Processing failed' }, { status: 500 })

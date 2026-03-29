@@ -52,21 +52,17 @@ export function Header() {
             </Link>
           ))}
           {user ? (
-            <>
-              <Link href="/dashboard" className="px-3 py-1.5 rounded-lg transition-colors" style={{ color: 'var(--fg-muted)' }}
-                onMouseEnter={e => (e.currentTarget.style.color = 'var(--fg)')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'var(--fg-muted)')}>
-                Dashboard
-              </Link>
-              <Link href="/dashboard" className="ml-1 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
-                style={{ background: 'var(--yellow-dim)', color: 'var(--yellow)' }}>
-                {user.email?.[0].toUpperCase()}
-              </Link>
-            </>
+            <Link href="/dashboard" className="ml-1 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
+              title="Dashboard"
+              style={{ background: 'var(--yellow-dim)', color: 'var(--yellow)', border: '1px solid var(--yellow-border)' }}>
+              {user.email?.[0].toUpperCase()}
+            </Link>
           ) : (
-            <Link href="/auth/login" className="px-3 py-1.5 rounded-lg transition-colors" style={{ color: 'var(--fg-muted)' }}
-              onMouseEnter={e => (e.currentTarget.style.color = 'var(--fg)')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'var(--fg-muted)')}>
+            <Link href="/auth/login"
+              className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+              style={{ border: '1px solid var(--border-strong)', color: 'var(--fg)', background: 'transparent' }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--yellow)')}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border-strong)')}>
               Sign In
             </Link>
           )}

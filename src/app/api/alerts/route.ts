@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { NextRequest, NextResponse } from 'next/server'
+import { Resend } from 'resend'
 
 // In-memory rate limit store (per cold-start instance)
 // For production scale, replace with Redis/KV — adequate for current traffic
@@ -83,5 +84,53 @@ export async function POST(req: NextRequest) {
   })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  // AUTOMATION 1: Notify employers of matching active listings
+  try {
+    if (process.env.RESEND_API_KEY) {
+      const resend = new Resend(process.env.RESEND_API_KEY)
+      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://voltgridjobs.com'
+
+      // Build query for active jobs matching this alert's criteria
+      let jobQuery = adminClient
+        .from('jobs')
+        .select('id, title, company_name, location, category, employer_email')
+        .eq('is_active', true)
+
+      if (category) jobQuery = jobQuery.eq('category', category)
+      if (location) jobQuery = jobQuery.ilike('location', `%${location}%`)
+
+      const { data: matchingJobs } = await jobQuery.limit(20)
+
+      if (matchingJobs?.length) {
+        const categoryLabel = category || 'trades'
+        const locationLabel = location || 'your area'
+
+        for (const job of matchingJobs) {
+          if (!job.employer_email) continue
+          try {
+            await resend.emails.send({
+              from: `VoltGrid Jobs <${process.env.RESEND_FROM_EMAIL || 'alerts@voltgridjobs.com'}>`,
+              to: job.employer_email,
+              subject: 'A candidate is looking for your role 👀',
+              html: `<div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:32px 24px;background:#030712;color:#f9fafb">
+                <p style="font-size:16px;line-height:1.6;color:#d1d5db">
+                  Good news — someone just signed up for job alerts matching <strong style="color:#facc15">${categoryLabel}</strong> jobs in <strong style="color:#facc15">${locationLabel}</strong>.
+                  Your listing <strong style="color:#fff">'${job.title}'</strong> is a great match.
+                  Make sure it's up to date: <a href="${baseUrl}" style="color:#facc15">${baseUrl}</a>
+                </p>
+              </div>`,
+            })
+          } catch (emailErr) {
+            console.error('[alerts] Failed to notify employer:', emailErr)
+          }
+        }
+      }
+    }
+  } catch (notifyErr) {
+    // Non-critical — log and continue
+    console.error('[alerts] Employer notification error:', notifyErr)
+  }
+
   return NextResponse.json({ success: true })
 }
