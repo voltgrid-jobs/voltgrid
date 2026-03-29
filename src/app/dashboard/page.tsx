@@ -6,19 +6,47 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Employer Dashboard — VoltGrid Jobs' }
 
+// ── Trade category → short badge label ──────────────────────────────────────
+const TRADE_LABELS: Record<string, string> = {
+  electrician:          'Electrician',
+  plumber:              'Plumber',
+  hvac:                 'HVAC',
+  welder:               'Welder',
+  carpenter:            'Carpenter',
+  pipefitter:           'Pipefitter',
+  ironworker:           'Ironworker',
+  pipewelding:          'Pipe Welding',
+  instrumentation:      'Instrumentation',
+  millwright:           'Millwright',
+  boilermaker:          'Boilermaker',
+  rigger:               'Rigger',
+  scaffolding:          'Scaffolding',
+  concrete:             'Concrete',
+  insulation:           'Insulation',
+  sheet_metal:          'Sheet Metal',
+  heavy_equipment:      'Heavy Equipment',
+  general_labour:       'General Labour',
+  safety:               'Safety',
+  superintendent:       'Superintendent',
+  project_manager:      'Project Manager',
+  estimator:            'Estimator',
+  foreman:              'Foreman',
+  other:                'Trades',
+}
+
 export default async function DashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login?next=/dashboard')
 
-  // Get or create employer profile
-  let { data: employer } = await supabase
+  // Get employer profile
+  const { data: employer } = await supabase
     .from('employers')
     .select('*')
     .eq('user_id', user.id)
     .single()
 
-  // Get active jobs
+  // Get all jobs for this employer
   const { data: jobs } = employer
     ? await supabase
         .from('jobs')
@@ -27,7 +55,7 @@ export default async function DashboardPage() {
         .order('created_at', { ascending: false })
     : { data: [] }
 
-  // Get apply click counts per job (uses admin client to bypass RLS)
+  // Get apply click counts (admin client bypasses RLS)
   const clickMap: Record<string, number> = {}
   if (jobs && jobs.length > 0) {
     const adminClient = createAdminClient()
@@ -52,154 +80,302 @@ export default async function DashboardPage() {
         .single()
     : { data: null }
 
-  const activeJobs = jobs?.filter(j => j.is_active) ?? []
+  const activeJobs  = jobs?.filter(j => j.is_active) ?? []
   const expiredJobs = jobs?.filter(j => !j.is_active) ?? []
   const postCredits = credits?.post_credits ?? 0
-  const isPro = credits?.is_pro ?? false
+  const isPro       = credits?.is_pro ?? false
+
+  // Summary stats
+  const totalClicks = Object.values(clickMap).reduce((a, b) => a + b, 0)
+  const bestJob = jobs && jobs.length > 0
+    ? jobs.reduce((best, j) => (clickMap[j.id] ?? 0) >= (clickMap[best.id] ?? 0) ? j : best, jobs[0])
+    : null
+  const bestClicks = bestJob ? (clickMap[bestJob.id] ?? 0) : 0
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
-      {/* Header */}
+
+      {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-white">
+          <h1 className="text-2xl font-bold" style={{ color: 'var(--fg)' }}>
             {employer ? employer.company_name : 'Employer Dashboard'}
           </h1>
-          <p className="text-gray-500 text-sm mt-1">{user.email}</p>
+          <p className="text-sm mt-1" style={{ color: 'var(--fg-faint)' }}>{user.email}</p>
         </div>
         <div className="flex items-center gap-3">
           {isPro ? (
-            <span className="bg-yellow-400/20 text-yellow-400 text-xs font-semibold px-3 py-1 rounded-full">
+            <span style={{
+              background: 'var(--yellow-dim)',
+              color: 'var(--yellow)',
+              border: '1px solid var(--yellow-border)',
+            }} className="text-xs font-semibold px-3 py-1 rounded-full">
               ⚡ Pro
             </span>
           ) : postCredits > 0 ? (
-            <span className="bg-gray-800 text-gray-300 text-xs px-3 py-1 rounded-full">
+            <span style={{
+              background: 'var(--bg-raised)',
+              color: 'var(--fg-muted)',
+              border: '1px solid var(--border)',
+            }} className="text-xs px-3 py-1 rounded-full">
               {postCredits} post credit{postCredits !== 1 ? 's' : ''} remaining
             </span>
           ) : null}
           <Link
             href="/post-job"
-            className="bg-yellow-400 text-gray-950 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-yellow-300 transition-colors"
+            style={{ background: 'var(--yellow)', color: '#0D0D0D' }}
+            className="px-4 py-2 rounded-lg font-semibold text-sm hover:opacity-90 transition-opacity"
           >
             + Post a Job
           </Link>
         </div>
       </div>
 
-      {/* Stats */}
-      {(() => {
-        const totalClicks = Object.values(clickMap).reduce((a, b) => a + b, 0)
-        return (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
-            {[
-              { label: 'Active Listings', value: activeJobs.length },
-              { label: 'Total Posted', value: jobs?.length ?? 0 },
-              { label: 'Apply Clicks', value: totalClicks, highlight: totalClicks > 0 },
-              { label: isPro ? 'Plan' : 'Post Credits', value: isPro ? 'Pro' : postCredits },
-            ].map(stat => (
-              <div key={stat.label} className="bg-gray-900 border border-gray-800 rounded-xl p-4">
-                <div className={`text-2xl font-bold ${stat.highlight ? 'text-yellow-400' : 'text-white'}`}>
-                  {stat.value}
-                </div>
-                <div className="text-gray-500 text-sm mt-1">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        )
-      })()}
+      {/* ── Summary stats ──────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
+        <StatCard label="Active Listings" value={activeJobs.length} />
+        <StatCard label="Total Posted"    value={jobs?.length ?? 0} />
+        <StatCard
+          label="Apply Clicks"
+          value={totalClicks}
+          highlight={totalClicks > 0}
+          sub={totalClicks === 0 ? 'Tracking active' : 'all time'}
+        />
+        <StatCard
+          label="Best Listing"
+          value={bestJob ? (bestClicks > 0 ? `${bestClicks} clicks` : '—') : '—'}
+          highlight={bestClicks > 0}
+          sub={bestJob && bestClicks > 0 ? truncate(bestJob.title as string, 18) : undefined}
+        />
+      </div>
 
-      {/* Active Jobs */}
+      {/* ── Active listings ────────────────────────────────────────────────── */}
       <section className="mb-10">
-        <h2 className="text-lg font-semibold text-white mb-4">Active Listings</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-base font-semibold tracking-wide uppercase text-xs" style={{ color: 'var(--fg-faint)', letterSpacing: '0.08em' }}>
+            Active Listings
+          </h2>
+          <span className="text-xs" style={{ color: 'var(--fg-faint)' }}>
+            {activeJobs.length} listing{activeJobs.length !== 1 ? 's' : ''}
+          </span>
+        </div>
+
         {activeJobs.length > 0 ? (
           <div className="flex flex-col gap-3">
             {activeJobs.map(job => (
-              <DashboardJobRow key={job.id} job={job} clicks={clickMap[job.id] ?? 0} />
+              <JobStatsCard key={job.id} job={job} clicks={clickMap[job.id] ?? 0} />
             ))}
           </div>
         ) : (
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-8 text-center">
-            <p className="text-gray-500 mb-3">No active listings.</p>
-            <Link href="/post-job" className="text-yellow-400 hover:text-yellow-300 text-sm">
+          <div style={{
+            background: 'var(--bg-raised)',
+            border: '1px solid var(--border)',
+          }} className="rounded-xl p-8 text-center">
+            <p className="text-sm mb-3" style={{ color: 'var(--fg-faint)' }}>No active listings yet.</p>
+            <Link href="/post-job" style={{ color: 'var(--yellow)' }} className="text-sm hover:opacity-80 transition-opacity">
               Post your first job →
             </Link>
           </div>
         )}
       </section>
 
-      {/* Expired Jobs */}
+      {/* ── Expired listings ───────────────────────────────────────────────── */}
       {expiredJobs.length > 0 && (
-        <section>
-          <h2 className="text-lg font-semibold text-gray-500 mb-4">Expired / Inactive</h2>
-          <div className="flex flex-col gap-3 opacity-60">
+        <section className="mb-10">
+          <h2 className="text-xs font-semibold tracking-wide uppercase mb-4" style={{ color: 'var(--fg-faint)', letterSpacing: '0.08em' }}>
+            Expired / Inactive
+          </h2>
+          <div className="flex flex-col gap-3 opacity-50">
             {expiredJobs.map(job => (
-              <DashboardJobRow key={job.id} job={job} clicks={clickMap[job.id] ?? 0} expired />
+              <JobStatsCard key={job.id} job={job} clicks={clickMap[job.id] ?? 0} expired />
             ))}
           </div>
         </section>
       )}
 
-      {/* No employer profile yet */}
+      {/* ── No employer profile ────────────────────────────────────────────── */}
       {!employer && (
-        <div className="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-6 text-center">
-          <p className="text-yellow-400 font-medium mb-2">No employer profile yet</p>
-          <p className="text-gray-400 text-sm mb-4">
+        <div style={{
+          background: 'var(--yellow-dim)',
+          border: '1px solid var(--yellow-border)',
+        }} className="rounded-xl p-6 text-center">
+          <p className="font-medium mb-2" style={{ color: 'var(--yellow)' }}>No employer profile yet</p>
+          <p className="text-sm mb-4" style={{ color: 'var(--fg-muted)' }}>
             Post your first job to automatically create your employer profile.
           </p>
-          <Link href="/post-job" className="bg-yellow-400 text-gray-950 px-6 py-2 rounded-lg font-semibold text-sm hover:bg-yellow-300 transition-colors">
+          <Link
+            href="/post-job"
+            style={{ background: 'var(--yellow)', color: '#0D0D0D' }}
+            className="inline-block px-6 py-2 rounded-lg font-semibold text-sm hover:opacity-90 transition-opacity"
+          >
             Post a Job
           </Link>
         </div>
       )}
+
+      {/* ── Click tracking note ────────────────────────────────────────────── */}
+      <p className="text-xs text-center mt-8" style={{ color: 'var(--fg-faint)' }}>
+        ⚡ Apply click tracking is live — data updates in real time as workers engage with your listings.
+      </p>
     </div>
   )
 }
 
-function DashboardJobRow({ job, expired = false, clicks = 0 }: { job: Record<string, unknown>; expired?: boolean; clicks?: number }) {
-  const expiresAt = job.expires_at ? new Date(job.expires_at as string) : null
-  const daysLeft = expiresAt ? Math.max(0, Math.ceil((expiresAt.getTime() - Date.now()) / 86400000)) : 0
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function truncate(s: string, n: number) {
+  return s.length > n ? s.slice(0, n) + '…' : s
+}
+
+// ── Summary stat card ─────────────────────────────────────────────────────────
+function StatCard({
+  label,
+  value,
+  highlight = false,
+  sub,
+}: {
+  label: string
+  value: number | string
+  highlight?: boolean
+  sub?: string
+}) {
+  return (
+    <div style={{
+      background: 'var(--bg-raised)',
+      border: '1px solid var(--border)',
+    }} className="rounded-xl p-4">
+      <div
+        className="text-2xl font-bold tabular-nums"
+        style={{ color: highlight ? 'var(--yellow)' : 'var(--fg)' }}
+      >
+        {value}
+      </div>
+      <div className="text-xs mt-1" style={{ color: 'var(--fg-faint)' }}>{label}</div>
+      {sub && <div className="text-xs mt-0.5 truncate" style={{ color: 'var(--fg-muted)' }}>{sub}</div>}
+    </div>
+  )
+}
+
+// ── Job stats card ────────────────────────────────────────────────────────────
+function JobStatsCard({
+  job,
+  clicks,
+  expired = false,
+}: {
+  job: Record<string, unknown>
+  clicks: number
+  expired?: boolean
+}) {
+  const expiresAt  = job.expires_at ? new Date(job.expires_at as string) : null
+  const daysLeft   = expiresAt ? Math.ceil((expiresAt.getTime() - Date.now()) / 86400000) : null
   const isFeatured = Boolean(job.is_featured)
+  const category   = (job.category as string) ?? ''
+  const tradeLabel = TRADE_LABELS[category] ?? (category ? category : 'Trades')
+
+  // Days remaining pill color
+  let daysStyle: React.CSSProperties = {}
+  let daysText = ''
+  if (expired || (daysLeft !== null && daysLeft <= 0)) {
+    daysStyle = { background: 'rgba(239,68,68,0.12)', color: '#F87171', border: '1px solid rgba(239,68,68,0.2)' }
+    daysText  = 'Expired'
+  } else if (daysLeft !== null && daysLeft <= 5) {
+    daysStyle = { background: 'rgba(251,191,36,0.12)', color: 'var(--yellow)', border: '1px solid var(--yellow-border)' }
+    daysText  = 'Expires soon'
+  } else if (daysLeft !== null) {
+    daysStyle = { background: 'var(--green-dim)', color: 'var(--green)', border: '1px solid rgba(74,222,128,0.2)' }
+    daysText  = `${daysLeft}d left`
+  }
 
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div style={{
+      background: 'var(--bg-raised)',
+      border: '1px solid var(--border)',
+    }} className="rounded-xl p-4 flex flex-col sm:flex-row sm:items-center gap-4">
+
+      {/* Left: job info */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 flex-wrap">
-          <h3 className="font-medium text-white truncate">{job.title as string}</h3>
+        <div className="flex items-center gap-2 flex-wrap mb-1">
+          <h3 className="font-semibold truncate" style={{ color: 'var(--fg)' }}>
+            {job.title as string}
+          </h3>
           {isFeatured && (
-            <span className="bg-yellow-400/20 text-yellow-400 text-xs px-2 py-0.5 rounded">Featured</span>
+            <span style={{
+              background: 'var(--yellow-dim)',
+              color: 'var(--yellow)',
+              border: '1px solid var(--yellow-border)',
+            }} className="text-xs px-2 py-0.5 rounded-full font-medium">
+              ⚡ Featured
+            </span>
           )}
         </div>
-        <p className="text-gray-500 text-sm mt-0.5">{job.location as string}</p>
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-sm" style={{ color: 'var(--fg-faint)' }}>
+            {job.location as string}
+          </span>
+          {tradeLabel && (
+            <span style={{
+              background: 'var(--bg-subtle)',
+              color: 'var(--fg-muted)',
+              border: '1px solid var(--border)',
+            }} className="text-xs px-2 py-0.5 rounded-full">
+              {tradeLabel}
+            </span>
+          )}
+        </div>
       </div>
-      <div className="flex items-center gap-3 flex-shrink-0">
-        {/* Apply click count */}
+
+      {/* Right: stats + actions */}
+      <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap flex-shrink-0">
+
+        {/* ⚡ Apply clicks pill */}
         <span
-          className={`text-xs px-2 py-1 rounded-full flex items-center gap-1 ${
-            clicks > 0 ? 'bg-yellow-400/15 text-yellow-400' : 'bg-gray-800 text-gray-600'
-          }`}
+          style={clicks > 0
+            ? { background: 'var(--yellow-dim)', color: 'var(--yellow)', border: '1px solid var(--yellow-border)' }
+            : { background: 'var(--bg-subtle)', color: 'var(--fg-faint)', border: '1px solid var(--border)' }
+          }
+          className="text-xs px-3 py-1 rounded-full font-medium whitespace-nowrap"
           title="Apply button clicks"
         >
-          <span>👆</span>
-          <span>{clicks} click{clicks !== 1 ? 's' : ''}</span>
+          ⚡ {clicks} {clicks === 1 ? 'click' : 'clicks'}
         </span>
-        {!expired && (
-          <span className={`text-xs px-2 py-1 rounded-full ${
-            daysLeft <= 5 ? 'bg-red-900/40 text-red-400' : 'bg-gray-800 text-gray-400'
-          }`}>
-            {daysLeft}d left
+
+        {/* Days remaining pill */}
+        {daysText && (
+          <span style={daysStyle} className="text-xs px-3 py-1 rounded-full font-medium whitespace-nowrap">
+            {daysText}
           </span>
         )}
+
+        {/* View listing */}
         <Link
           href={`/jobs/${job.id as string}`}
-          className="text-xs text-gray-500 hover:text-white transition-colors"
           target="_blank"
+          style={{ color: 'var(--fg-faint)' }}
+          className="text-xs hover:opacity-80 transition-opacity whitespace-nowrap"
         >
-          View ↗
+          View listing →
         </Link>
+
+        {/* Boost listing (upsell) */}
+        {!expired && (
+          <Link
+            href="/post-job"
+            style={{ color: 'var(--yellow)' }}
+            className="text-xs hover:opacity-80 transition-opacity whitespace-nowrap"
+            title="Boost this listing for more visibility"
+          >
+            Boost ↑
+          </Link>
+        )}
+
+        {/* Deactivate */}
         {!expired && (
           <form action="/api/dashboard/deactivate" method="POST" className="inline">
             <input type="hidden" name="job_id" value={job.id as string} />
-            <button className="text-xs text-gray-600 hover:text-red-400 transition-colors">
+            <button
+              style={{ color: 'var(--fg-faint)' }}
+              className="text-xs hover:text-red-400 transition-colors"
+            >
               Deactivate
             </button>
           </form>
