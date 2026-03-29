@@ -96,17 +96,29 @@ export async function generateMetadata({
 function formatSalary(min?: number, max?: number, currency = 'USD', period = 'year') {
   if (!min && !max) return null
   const isHourly = period === 'hour'
-  const fmt = (n: number) =>
-    new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency,
-      maximumFractionDigits: isHourly ? 2 : 0,
-    }).format(n)
-  const suffix = isHourly ? '/ hr' : period === 'year' ? '/ year' : `/ ${period}`
-  if (min && max) return { display: `${fmt(min)} – ${fmt(max)} ${suffix}` }
-  if (min) return { display: `${fmt(min)}+ ${suffix}` }
-  if (max) return { display: `Up to ${fmt(max)} ${suffix}` }
-  return null
+  const fmtHr = (n: number) =>
+    new Intl.NumberFormat('en-US', { style: 'currency', currency, maximumFractionDigits: 0 }).format(n)
+  const fmtK = (n: number) => `$${Math.round(n / 1000)}k`
+
+  if (isHourly) {
+    if (min && max) return { primary: `${fmtHr(min)} – ${fmtHr(max)}/hr` }
+    if (min) return { primary: `From ${fmtHr(min)}/hr` }
+    return { primary: `Up to ${fmtHr(max!)}/hr` }
+  }
+
+  // Annual — show hourly equivalent as primary
+  const toHr = (n: number) => Math.round(n / 2080)
+  if (min && max && min !== max) {
+    return {
+      primary: `~${fmtHr(toHr(min))} – ${fmtHr(toHr(max))}/hr`,
+      secondary: `(${fmtK(min)} – ${fmtK(max)}/yr)`
+    }
+  }
+  const val = min || max!
+  return {
+    primary: `~${fmtHr(toHr(val))}/hr`,
+    secondary: `(${fmtK(val)}/yr)`
+  }
 }
 
 export default async function JobDetailPage({
@@ -216,7 +228,8 @@ export default async function JobDetailPage({
               <p className="text-sm mt-1" style={{ color: 'var(--fg-faint)' }}>{job.location}</p>
               {salary && (
                 <div className="mt-2">
-                  <p className="font-semibold" style={{ color: 'var(--green)' }}>{salary.display}</p>
+                  <p className="font-semibold" style={{ color: 'var(--green)' }}>{salary.primary}</p>
+                  {salary.secondary && <p className="text-sm" style={{ color: 'var(--fg-muted)' }}>{salary.secondary}</p>}
                 </div>
               )}
             </div>
