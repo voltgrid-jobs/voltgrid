@@ -1,5 +1,6 @@
 'use client'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { CATEGORY_LABELS, JOB_TYPE_LABELS, TRAVEL_LABELS, SHIFT_LABELS } from '@/types'
 
 interface Props {
@@ -21,6 +22,7 @@ interface Props {
 
 export function JobFilters({ currentParams, topCompanies = [] }: Props) {
   const router = useRouter()
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   function updateFilter(key: string, value: string) {
     const params = new URLSearchParams()
@@ -41,11 +43,24 @@ export function JobFilters({ currentParams, topCompanies = [] }: Props) {
   })
 
   return (
-    <div className="rounded-xl p-5 space-y-6" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
+    <div>
+      {/* Mobile toggle button */}
+      <button
+        className="lg:hidden w-full flex items-center justify-between px-4 py-3 rounded-xl mb-2 font-semibold text-sm"
+        style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)', color: 'var(--fg)', minHeight: '44px' }}
+        onClick={() => setMobileOpen(!mobileOpen)}
+        aria-expanded={mobileOpen}
+        aria-controls="filter-panel"
+      >
+        <span>Filters{hasFilters ? ` (active)` : ''}</span>
+        <span style={{ color: 'var(--fg-faint)' }}>{mobileOpen ? '▲' : '▼'}</span>
+      </button>
+
+    <div id="filter-panel" className={`rounded-xl p-5 space-y-6 ${mobileOpen ? 'block' : 'hidden'} lg:block`} style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
       <div className="flex items-center justify-between">
         <h2 className="font-semibold text-sm" style={{ color: 'var(--fg)' }}>Filters</h2>
         {hasFilters && (
-          <button onClick={clearFilters} className="text-xs transition-colors" style={{ color: 'var(--yellow)' }}>
+          <button onClick={clearFilters} className="text-xs transition-colors" style={{ color: 'var(--yellow)', minHeight: '44px', padding: '0 8px' }}>
             Clear all
           </button>
         )}
@@ -204,10 +219,11 @@ export function JobFilters({ currentParams, topCompanies = [] }: Props) {
         <button
           onClick={() => updateFilter('union', currentParams.union === 'true' ? '' : 'true')}
           className="w-full text-left px-3 py-2 rounded-lg text-sm transition-colors"
-          {...filterBtn(currentParams.union === 'true', 'blue')}>
+          style={{ minHeight: '44px', ...(filterBtn(currentParams.union === 'true', 'blue').style) }}>
           Union / CBA
         </button>
       </div>
+    </div>
     </div>
   )
 }

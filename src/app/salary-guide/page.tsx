@@ -79,7 +79,8 @@ function SalaryTable({ rows, title }: { rows: MarketRow[]; title: string }) {
       <h4 style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--fg-faint)', marginBottom: '0.75rem' }}>
         {title}
       </h4>
-      <div style={{ border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden' }}>
+      <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+      <div style={{ border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden', minWidth: '480px' }}>
         {rows.map((row, i) => (
           <div
             key={i}
@@ -107,6 +108,7 @@ function SalaryTable({ rows, title }: { rows: MarketRow[]; title: string }) {
             </div>
           </div>
         ))}
+      </div>
       </div>
     </div>
   )
