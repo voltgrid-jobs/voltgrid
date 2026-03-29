@@ -5,13 +5,13 @@ import Image from 'next/image'
 import { type Job, CATEGORY_LABELS, JOB_TYPE_LABELS, TRAVEL_LABELS, SHIFT_LABELS } from '@/types'
 import { getLogoUrl } from '@/lib/company-logos'
 
-function formatSalary(min?: number, max?: number, currency = 'USD', period = 'year') {
+function formatSalaryMin(min?: number, max?: number, currency = 'USD', period = 'year') {
+  // Shows only the minimum salary (dangling carrot — full range revealed on job detail when logged in)
   if (!min && !max) return null
   const isHourly = period === 'hour'
   const fmt = (n: number) =>
     new Intl.NumberFormat('en-US', { style: 'currency', currency, maximumFractionDigits: isHourly ? 2 : 0 }).format(n)
   const suffix = isHourly ? '/hr' : period === 'year' ? '/yr' : `/${period}`
-  if (min && max) return `${fmt(min)} – ${fmt(max)} ${suffix}`
   if (min) return `${fmt(min)}+ ${suffix}`
   if (max) return `Up to ${fmt(max)} ${suffix}`
   return null
@@ -60,7 +60,7 @@ function isFrenchDescription(description: string): boolean {
 }
 
 export function JobCard({ job, featured = false }: { job: Job; featured?: boolean }) {
-  const salary = formatSalary(job.salary_min, job.salary_max, job.salary_currency, job.salary_period ?? 'year')
+  const salary = formatSalaryMin(job.salary_min, job.salary_max, job.salary_currency, job.salary_period ?? 'year')
   const logoUrl = getLogoUrl(job.company_name)
   const isCanada = isCanadaJob(job.location ?? '')
   const isFrench = isFrenchDescription(job.description ?? '')
@@ -153,49 +153,20 @@ export function JobCard({ job, featured = false }: { job: Job; featured?: boolea
         </div>
 
         <div className="text-right flex-shrink-0 hidden sm:block">
-          {/* CHANGE 6: Blur salary for guest users */}
           {salary && (
-            <div className="mb-1">
-              <div
-                className="text-sm font-semibold select-none"
-                style={{ color: 'var(--green)', filter: 'blur(4px)', userSelect: 'none', pointerEvents: 'none' }}
-              >
-                $●●,●●● – $●●●,●●● /yr
-              </div>
-              <Link
-                href="/auth/login"
-                onClick={(e) => e.stopPropagation()}
-                className="text-xs"
-                style={{ color: 'var(--yellow)' }}
-              >
-                Sign in to view salary →
-              </Link>
+            <div className="text-sm font-semibold mb-1" style={{ color: 'var(--green)' }}>
+              {salary}
             </div>
           )}
-          {/* CHANGE 1: Freshness signal */}
           <div className="text-xs" style={{ color: 'var(--fg-faint)' }}>
             Posted {timeAgo(job.created_at)}
           </div>
         </div>
       </div>
 
-      {/* Mobile salary blur */}
       {salary && (
-        <div className="sm:hidden mt-2">
-          <div
-            className="text-sm font-semibold select-none inline-block"
-            style={{ color: 'var(--green)', filter: 'blur(4px)', userSelect: 'none', pointerEvents: 'none' }}
-          >
-            $●●,●●● – $●●●,●●● /yr
-          </div>
-          <Link
-            href="/auth/login"
-            onClick={(e) => e.stopPropagation()}
-            className="text-xs ml-2"
-            style={{ color: 'var(--yellow)' }}
-          >
-            Sign in to view →
-          </Link>
+        <div className="sm:hidden mt-2 text-sm font-semibold" style={{ color: 'var(--green)' }}>
+          {salary}
         </div>
       )}
 

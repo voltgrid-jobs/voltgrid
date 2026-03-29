@@ -93,7 +93,7 @@ export async function generateMetadata({
   }
 }
 
-function formatSalary(min?: number, max?: number, currency = 'USD', period = 'year') {
+function formatSalary(min?: number, max?: number, currency = 'USD', period = 'year', loggedIn = true) {
   if (!min && !max) return null
   const isHourly = period === 'hour'
   const fmt = (n: number) =>
@@ -103,9 +103,13 @@ function formatSalary(min?: number, max?: number, currency = 'USD', period = 'ye
       maximumFractionDigits: isHourly ? 2 : 0,
     }).format(n)
   const suffix = isHourly ? '/ hr' : period === 'year' ? '/ year' : `/ ${period}`
-  if (min && max) return `${fmt(min)} – ${fmt(max)} ${suffix}`
-  if (min) return `${fmt(min)}+ ${suffix}`
-  if (max) return `Up to ${fmt(max)} ${suffix}`
+  if (min && max) {
+    // Logged-out users see min + hidden max (dangling carrot)
+    if (!loggedIn) return { display: `${fmt(min)} – ••••••• ${suffix}`, partial: true }
+    return { display: `${fmt(min)} – ${fmt(max)} ${suffix}`, partial: false }
+  }
+  if (min) return { display: `${fmt(min)}+ ${suffix}`, partial: false }
+  if (max) return { display: `Up to ${fmt(max)} ${suffix}`, partial: false }
   return null
 }
 
@@ -127,7 +131,7 @@ export default async function JobDetailPage({
     isSaved = !!saved
   }
 
-  const salary = formatSalary(job.salary_min, job.salary_max, job.salary_currency, job.salary_period ?? 'year')
+  const salary = formatSalary(job.salary_min, job.salary_max, job.salary_currency, job.salary_period ?? 'year', !!user)
   const applyUrl = job.apply_url || (job.apply_email ? `mailto:${job.apply_email}` : null)
   const isCanada = isCanadaJob(job.location ?? '')
   const isFrench = isFrenchDescription(job.description ?? '')
@@ -213,27 +217,19 @@ export default async function JobDetailPage({
               </h1>
               <p className="text-base" style={{ color: 'var(--fg-muted)' }}>{job.company_name}</p>
               <p className="text-sm mt-1" style={{ color: 'var(--fg-faint)' }}>{job.location}</p>
-              {/* CHANGE 6: Blur salary for guests */}
               {salary && (
-                user ? (
-                  <p className="font-semibold mt-2" style={{ color: 'var(--green)' }}>{salary}</p>
-                ) : (
-                  <div className="mt-2 flex items-center gap-2 flex-wrap">
-                    <span
-                      className="font-semibold select-none"
-                      style={{ color: 'var(--green)', filter: 'blur(5px)', userSelect: 'none', pointerEvents: 'none' }}
-                    >
-                      $●●,●●● – $●●●,●●● / year
-                    </span>
+                <div className="mt-2 flex items-center gap-2 flex-wrap">
+                  <p className="font-semibold" style={{ color: 'var(--green)' }}>{salary.display}</p>
+                  {salary.partial && (
                     <Link
                       href={`/auth/login?next=/jobs/${job.id}`}
                       className="text-xs px-2.5 py-1 rounded-full font-medium transition-opacity"
                       style={{ background: 'var(--yellow-dim)', color: 'var(--yellow)', border: '1px solid var(--yellow-border)' }}
                     >
-                      Sign in to see full salary — it&apos;s free
+                      Sign in to see full range →
                     </Link>
-                  </div>
-                )
+                  )}
+                </div>
               )}
             </div>
 
