@@ -28,6 +28,9 @@ export function CompanyLogo({
         <img
           src={src}
           alt={`${name} logo`}
+          width={100}
+          height={28}
+          loading="lazy"
           style={{
             maxHeight: '28px',
             width: 'auto',

@@ -185,6 +185,7 @@ export function JobCard({ job, featured = false }: { job: Job; featured?: boolea
                 alt={`${job.company_name} logo`}
                 width={24}
                 height={24}
+                loading="lazy"
                 className="flex-shrink-0 w-6 h-6 rounded object-contain"
                 style={{ background: 'var(--bg-subtle)' }}
                 onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
