@@ -251,29 +251,39 @@ async function fetchUSAJobs(): Promise<RawJob[]> {
 
 async function fetchGreenhouseJobs(): Promise<RawJob[]> {
   // Verified active Greenhouse boards for data center / trades roles
-  const companies = [
-    // Core data center operators
-    'coreweave',    // 263 jobs — Data Center Technicians, Apprentice Program, Facilities Managers
-    'edgeconnex',   // ~50 jobs — Critical Systems/MEP Engineers, Electrical/Mechanical Operations
-    'aligned',      // ~4 jobs — Data Center ops roles
-    // NECA member electrical contractors (verified 2026-03-27)
-    // Note: All slugs below returned 404 and are excluded:
-    // rosendin, acco, myi, bergelectric, harrisonconstruction, criticalprojectsllc,
-    // faith-technologies, myriad-supply, amelco, westphal
+  // All slugs verified 2026-03-29 against live API
+  const companies: { slug: string; name: string }[] = [
+    // Core data center operators & hyperscalers
+    { slug: 'coreweave', name: 'CoreWeave' },       // 266 jobs — Data Center Technicians, Apprentice Program
+    { slug: 'edgeconnex', name: 'EdgeConneX' },     // 48 jobs — Critical Systems/MEP Engineers, Electrical Ops
+    { slug: 'aligned', name: 'Aligned' },            // 4 jobs — Data Center ops roles
+    { slug: 'xai', name: 'xAI' },                   // 227 jobs — DC Ops Technician, Electrical Engineer, Construction
+    { slug: 'corescientific', name: 'Core Scientific' }, // 12 jobs — Critical Facilities Technician
+    // Architecture/engineering firms specializing in data centers
+    { slug: 'syskahennessy', name: 'Syska Hennessy' }, // 131 jobs — Commissioning Agents, Electrical Engineers
+    { slug: 'brph', name: 'BRPH' },                 // 56 jobs — Construction Project Managers, Electrical Engineers
+    { slug: 'align46', name: 'Align' },             // 11 jobs — DC Construction Admin, Electrical PM
+    // Tech/AI companies with large data center buildouts
+    { slug: 'anthropic', name: 'Anthropic' },       // 447 jobs — DC Mechanical/Electrical Engineers
+    { slug: 'neuralink', name: 'Neuralink' },       // 65 jobs — Facilities Electrician, HVAC Technician
+    // Note: All other slugs tested (equinix, digitalrealty, ironmountain, qts, cyrusone,
+    // vantage, switch, rosendin, bergelectric, faithtechnologies, qualtek, southland,
+    // acco, amelco, vertiv, carrier, johnsoncontrols, etc.) returned 404 on Greenhouse.
+    // These companies use Workday, iCIMS, SAP/SuccessFactors, or other ATS systems.
   ]
   const jobs: RawJob[] = []
 
-  for (const company of companies) {
+  for (const { slug, name } of companies) {
     try {
-      const url = `https://boards-api.greenhouse.io/v1/boards/${company}/jobs?content=true`
+      const url = `https://boards-api.greenhouse.io/v1/boards/${slug}/jobs?content=true`
       const res = await fetch(url, { signal: AbortSignal.timeout(5000) })
       if (!res.ok) continue
       const data = await res.json()
 
-      for (const job of (data.jobs || []).slice(0, 10)) {
+      for (const job of (data.jobs || []).slice(0, 25)) {
         const title = job.title?.toLowerCase() || ''
         // Filter for trades-relevant roles
-        if (!/(electrician|hvac|low.?voltage|mechanical|facilities|construction|trades|technician|data center|critical systems|mep|power engineer|apprentice|operations engineer)/.test(title)) continue
+        if (!/(electrician|hvac|low.?voltage|mechanical|facilities|construction|trades|technician|data.?center|critical.?(sys|fac)|mep|power engineer|apprentice|operations engineer|commissioning|electrical engineer|electrical project|chiller|generator|ups technician|mission.?critical)/.test(title)) continue
 
         const description = job.content
           ? stripHtml(job.content).substring(0, 10000)
@@ -282,7 +292,7 @@ async function fetchGreenhouseJobs(): Promise<RawJob[]> {
           source: 'greenhouse',
           source_id: String(job.id),
           title: job.title,
-          company_name: company.charAt(0).toUpperCase() + company.slice(1),
+          company_name: name,
           location: job.location?.name || 'USA',
           description,
           apply_url: job.absolute_url,
@@ -298,11 +308,16 @@ async function fetchGreenhouseJobs(): Promise<RawJob[]> {
 
 /**
  * Lever ATS board integration.
- * Verified active boards (2026-03-28): cologix
+ * Verified active boards (2026-03-29): cologix, t5datacenters, serverfarm
  */
 async function fetchLeverJobs(): Promise<RawJob[]> {
   const companies: { slug: string; name: string }[] = [
-    { slug: 'cologix', name: 'Cologix' },
+    { slug: 'cologix', name: 'Cologix' },           // 38 jobs — DC Technician, HVAC Technician, DC Manager
+    { slug: 't5datacenters', name: 'T5 Data Centers' }, // 98 jobs — Critical Facilities Technician, Construction PM
+    { slug: 'serverfarm', name: 'Serverfarm' },      // 63 jobs — Critical Facilities Tech, DC Manager, DC Director
+    // Note: equinix, digitalrealty, ironmountain, qts, cyrusone, vantage, switch, flexential,
+    // databank, cbre, vertiv, carrier, johnsoncontrols, bergelectric, rosendin, qualtek
+    // all returned 404 on Lever. They use other ATS systems.
   ]
   const jobs: RawJob[] = []
 
@@ -327,7 +342,7 @@ async function fetchLeverJobs(): Promise<RawJob[]> {
       for (const posting of postings) {
         const title = posting.text?.toLowerCase() || ''
         // Filter for trades/data center roles
-        if (!/(electrician|hvac|low.?voltage|mechanical|facilities|construction|trades|technician|data center|critical|mep|power|operations|apprentice)/.test(title)) continue
+        if (!/(electrician|hvac|low.?voltage|mechanical|facilities|construction|trades|technician|data.?center|critical|mep|power|operations|apprentice|commissioning|electrical|chiller|generator|ups|mission.?critical)/.test(title)) continue
 
         // Lever splits content across: descriptionPlain + lists (structured sections) + additionalPlain
         // Combining all three gives the full job description
