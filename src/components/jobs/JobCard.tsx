@@ -1,5 +1,9 @@
+'use client'
+
 import Link from 'next/link'
+import Image from 'next/image'
 import { type Job, CATEGORY_LABELS, JOB_TYPE_LABELS, TRAVEL_LABELS, SHIFT_LABELS } from '@/types'
+import { getLogoUrl } from '@/lib/company-logos'
 
 function formatSalary(min?: number, max?: number, currency = 'USD', period = 'year') {
   if (!min && !max) return null
@@ -57,6 +61,7 @@ function isFrenchDescription(description: string): boolean {
 
 export function JobCard({ job, featured = false }: { job: Job; featured?: boolean }) {
   const salary = formatSalary(job.salary_min, job.salary_max, job.salary_currency, job.salary_period ?? 'year')
+  const logoUrl = getLogoUrl(job.company_name)
   const isCanada = isCanadaJob(job.location ?? '')
   const isFrench = isFrenchDescription(job.description ?? '')
 
@@ -113,14 +118,35 @@ export function JobCard({ job, featured = false }: { job: Job; featured?: boolea
             )}
           </div>
 
-          <h3
-            className="font-semibold text-base sm:text-lg mb-1 truncate transition-colors"
-            style={{ color: 'var(--fg)', fontFamily: 'var(--font-sans), system-ui, sans-serif' }}
-          >
-            {job.title}
-          </h3>
+          <div className="flex items-center gap-2.5 mb-1.5">
+            {logoUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={logoUrl}
+                alt={`${job.company_name} logo`}
+                width={24}
+                height={24}
+                className="flex-shrink-0 w-6 h-6 rounded object-contain"
+                style={{ background: 'var(--bg-subtle)' }}
+                onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+              />
+            )}
+            <h3
+              className="font-semibold text-base sm:text-lg truncate transition-colors"
+              style={{ color: 'var(--fg)', fontFamily: 'var(--font-sans), system-ui, sans-serif' }}
+            >
+              {job.title}
+            </h3>
+          </div>
           <p className="text-sm" style={{ color: 'var(--fg-muted)' }}>
-            {job.company_name}
+            <Link
+              href={`/jobs?company=${encodeURIComponent(job.company_name)}`}
+              className="hover:underline transition-colors"
+              style={{ color: 'var(--fg-muted)' }}
+              onClick={e => e.stopPropagation()}
+            >
+              {job.company_name}
+            </Link>
             <span style={{ color: 'var(--fg-faint)' }}> · </span>
             {job.location}
           </p>
