@@ -28,7 +28,7 @@ export function AlertSignupWidget({ keywords, category }: { keywords?: string; c
     return (
       <div className="rounded-xl p-5 text-center" style={{ background: 'var(--green-dim)', border: '1px solid rgba(74,222,128,0.2)' }}>
         <p className="font-semibold text-sm" style={{ color: 'var(--green)' }}>✓ Alert set up</p>
-        <p className="text-xs mt-1" style={{ color: 'var(--fg-muted)' }}>We&apos;ll email you daily when new matching jobs are posted.</p>
+        <p className="text-xs mt-1" style={{ color: 'var(--fg-muted)' }}>You&apos;ll get daily alerts + a weekly digest of top opportunities.</p>
       </div>
     )
   }
@@ -37,7 +37,7 @@ export function AlertSignupWidget({ keywords, category }: { keywords?: string; c
     <div className="rounded-xl p-5" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
       <h3 className="font-semibold text-sm mb-1" style={{ color: 'var(--fg)' }}>Get job alerts</h3>
       <p className="text-xs mb-4" style={{ color: 'var(--fg-muted)' }}>
-        Daily email when new {keywords || category || 'trades'} jobs are posted.
+        Get notified when new {keywords || category || 'trades'} jobs are posted. Plus a weekly digest of top opportunities.
       </p>
       <form onSubmit={handleSubmit} className="flex gap-2">
         <input
