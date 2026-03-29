@@ -74,7 +74,9 @@ export function JobAlertInlineForm({
           Get notified when new jobs match your search.
         </p>
         <form onSubmit={handleSubmit} className="flex gap-2 flex-wrap sm:flex-nowrap">
+          <label htmlFor="job-alert-sidebar-email" className="sr-only">Email address</label>
           <input
+            id="job-alert-sidebar-email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -125,7 +127,9 @@ export function JobAlertInlineForm({
           onSubmit={handleSubmit}
           className="flex flex-col sm:flex-row gap-2 max-w-2xl"
         >
+          <label htmlFor="job-alert-email" className="sr-only">Email address</label>
           <input
+            id="job-alert-email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -138,7 +142,9 @@ export function JobAlertInlineForm({
               color: 'var(--fg)',
             }}
           />
+          <label htmlFor="job-alert-trade" className="sr-only">Trade</label>
           <select
+            id="job-alert-trade"
             value={trade}
             onChange={(e) => setTrade(e.target.value)}
             className="px-3 py-2.5 rounded-lg text-sm focus:outline-none"

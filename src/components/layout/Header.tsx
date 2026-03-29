@@ -82,6 +82,8 @@ export function Header() {
           style={{ color: 'var(--fg-muted)' }}
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle menu"
+          aria-expanded={menuOpen}
+          aria-controls="mobile-menu"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             {menuOpen
@@ -92,7 +94,7 @@ export function Header() {
       </div>
 
       {menuOpen && (
-        <div style={{ borderTop: '1px solid var(--border)', background: 'var(--bg)' }} className="md:hidden px-4 py-4 flex flex-col gap-3 text-sm">
+        <div id="mobile-menu" style={{ borderTop: '1px solid var(--border)', background: 'var(--bg)' }} className="md:hidden px-4 py-4 flex flex-col gap-3 text-sm">
           {[
             { href: '/jobs', label: 'Browse Jobs' },
             { href: '/trades', label: 'Trades' },

@@ -63,8 +63,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${barlowCondensed.variable} ${barlow.variable}`}>
       <body style={{ background: 'var(--bg)', color: 'var(--fg)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <a href="#main-content" className="skip-link">Skip to main content</a>
         <Header />
-        <main style={{ flex: 1 }}>{children}</main>
+        <main id="main-content" style={{ flex: 1 }}>{children}</main>
         <Footer />
       </body>
     </html>

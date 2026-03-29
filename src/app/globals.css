@@ -75,6 +75,52 @@ body {
   margin-bottom: 0.5rem;
 }
 
+/* ── Accessibility ── */
+/* Skip link — visually hidden until focused */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.skip-link:focus {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 9999;
+  width: auto;
+  height: auto;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: var(--yellow);
+  color: #0a0a0a;
+  outline: none;
+}
+
+/* Global keyboard focus ring — applies only on keyboard nav, not mouse clicks */
+:focus-visible {
+  outline: 2px solid var(--yellow);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Screen-reader-only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
 /* ── Stagger animation ── */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(16px); }

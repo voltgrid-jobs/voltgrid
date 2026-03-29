@@ -115,8 +115,10 @@ export function SaveJobButton({
             Enter your email to save this job and get alerts for similar roles.
           </p>
           <form onSubmit={handleEmailSubmit} className="flex flex-col gap-2">
+            <label htmlFor="save-job-email" className="sr-only">Email address</label>
             <input
               ref={inputRef}
+              id="save-job-email"
               type="email"
               placeholder="you@example.com"
               value={email}
@@ -143,6 +145,7 @@ export function SaveJobButton({
               <button
                 type="button"
                 onClick={() => setShowEmailPrompt(false)}
+                aria-label="Close"
                 className="px-3 py-2 rounded-lg text-sm transition-colors"
                 style={{ border: '1px solid var(--border)', color: 'var(--fg-muted)' }}
               >

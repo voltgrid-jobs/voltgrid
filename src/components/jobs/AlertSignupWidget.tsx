@@ -40,7 +40,9 @@ export function AlertSignupWidget({ keywords, category }: { keywords?: string; c
         Get notified when new {keywords || category || 'trades'} jobs are posted. Plus a weekly digest of top opportunities.
       </p>
       <form onSubmit={handleSubmit} className="flex gap-2">
+        <label htmlFor="alert-signup-email" className="sr-only">Email address</label>
         <input
+          id="alert-signup-email"
           type="email"
           value={email}
           onChange={e => setEmail(e.target.value)}
