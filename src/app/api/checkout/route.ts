@@ -2,7 +2,37 @@ import { NextRequest, NextResponse } from 'next/server'
 import { stripe, PLANS } from '@/lib/stripe'
 import { createAdminClient } from '@/lib/supabase/admin'
 
+// In-memory rate limit: 10 checkout attempts per IP per hour
+// For production scale, replace with Redis/KV (e.g. Upstash: UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN)
+const rateLimitStore = new Map<string, { count: number; resetAt: number }>()
+const RATE_LIMIT_MAX = 10
+const RATE_LIMIT_WINDOW = 60 * 60 * 1000
+
+function getClientIp(req: NextRequest): string {
+  return (
+    req.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
+    req.headers.get('x-real-ip') ||
+    'unknown'
+  )
+}
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now()
+  const record = rateLimitStore.get(ip)
+  if (!record || now > record.resetAt) {
+    rateLimitStore.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW })
+    return true
+  }
+  if (record.count >= RATE_LIMIT_MAX) return false
+  record.count++
+  return true
+}
+
 export async function POST(req: NextRequest) {
+  if (!checkRateLimit(getClientIp(req))) {
+    return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
+  }
+
   try {
     const body = await req.json()
     const {
