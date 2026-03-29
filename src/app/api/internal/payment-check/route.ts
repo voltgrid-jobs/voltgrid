@@ -4,7 +4,7 @@ import Stripe from 'stripe'
 const INGEST_SECRET = process.env.INGEST_SECRET
 
 export async function GET(req: NextRequest) {
-  // Auth check (same pattern as other cron routes)
+  // Auth check
   const authHeader = req.headers.get('authorization')
 
   if (!authHeader || authHeader !== `Bearer ${INGEST_SECRET}` || !INGEST_SECRET) {
@@ -19,27 +19,39 @@ export async function GET(req: NextRequest) {
     )
   }
 
-  const stripe = new Stripe(stripeKey, { apiVersion: '2026-03-25.dahlia' })
+  try {
+    const stripe = new Stripe(stripeKey, { apiVersion: '2026-03-25.dahlia' })
 
-  const sixHoursAgo = Math.floor(Date.now() / 1000) - 6 * 60 * 60
+    const sixHoursAgo = Math.floor(Date.now() / 1000) - 6 * 60 * 60
 
-  const charges = await stripe.charges.list({
-    limit: 10,
-    created: { gte: sixHoursAgo },
-  })
+    const charges = await stripe.charges.list({
+      limit: 10,
+      created: { gte: sixHoursAgo },
+    })
 
-  const payments = charges.data.map((charge) => ({
-    id: charge.id,
-    amount: charge.amount,
-    currency: charge.currency,
-    status: charge.status,
-    created: charge.created,
-    customer_email: charge.billing_details?.email ?? charge.receipt_email ?? null,
-  }))
+    const payments = charges.data
+      .filter((charge) => charge.status === 'succeeded')
+      .map((charge) => ({
+        id: charge.id,
+        amount: charge.amount,
+        currency: charge.currency,
+        status: charge.status,
+        created: charge.created,
+        customer_email: charge.billing_details?.email ?? charge.receipt_email ?? null,
+        description: charge.description ?? null,
+      }))
 
-  return NextResponse.json({
-    payments,
-    count: payments.length,
-    timestamp: new Date().toISOString(),
-  })
+    return NextResponse.json({
+      payments,
+      count: payments.length,
+      timestamp: new Date().toISOString(),
+    })
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    console.error('[payment-check] Stripe error:', message)
+    return NextResponse.json(
+      { error: 'Stripe API error', detail: message },
+      { status: 500 }
+    )
+  }
 }
