@@ -85,6 +85,33 @@ export async function POST(req: NextRequest) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
+  // Confirmation email to the subscriber
+  try {
+    if (process.env.RESEND_API_KEY) {
+      const resend = new Resend(process.env.RESEND_API_KEY)
+      const tradeLabel = category
+        ? category.replace(/_/g, ' ')
+        : 'trades'
+      await resend.emails.send({
+        from: `VoltGrid Jobs <alerts@voltgridjobs.com>`,
+        to: email.toLowerCase().trim(),
+        subject: "Job alerts set up — you're on the list",
+        html: `<div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:32px 24px;background:#030712;color:#f9fafb">
+          <p style="font-size:16px;line-height:1.6;color:#d1d5db">
+            You'll get notified when new <strong style="color:#facc15">${tradeLabel}</strong> jobs land at data centers and AI sites.
+            Manage your alerts at <a href="https://voltgridjobs.com" style="color:#facc15">voltgridjobs.com</a>.
+          </p>
+          <p style="font-size:13px;color:#6b7280;margin-top:24px">
+            VoltGrid Jobs &mdash; Built for trades workers in the data center industry.
+          </p>
+        </div>`,
+      })
+    }
+  } catch (confirmErr) {
+    // Non-critical — don't break the signup flow
+    console.error('[alerts] Confirmation email error:', confirmErr)
+  }
+
   // AUTOMATION 1: Notify employers of matching active listings
   try {
     if (process.env.RESEND_API_KEY) {

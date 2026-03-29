@@ -197,7 +197,7 @@ export default async function EmployersPage() {
         <section style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', background: 'var(--bg-subtle)' }}>
           <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
             <p className="text-xs uppercase tracking-widest mb-6 font-medium text-center" style={{ color: 'var(--fg-faint)' }}>
-              Companies with active listings on VoltGrid
+              Companies currently hiring via VoltGrid
             </p>
             <div className="flex flex-wrap justify-center items-center gap-8">
               {displayCompanies.map(({ name, logoUrl, domain }) => (

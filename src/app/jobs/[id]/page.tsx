@@ -238,7 +238,7 @@ export default async function JobDetailPage({
               {applyUrl && (
                 <ApplyButton jobId={job.id} applyUrl={applyUrl} isExternalUrl={!!job.apply_url} source="top_button" />
               )}
-              <SaveJobButton jobId={job.id} initialSaved={isSaved} />
+              <SaveJobButton jobId={job.id} initialSaved={isSaved} isLoggedIn={!!user} jobCategory={job.category} />
             </div>
           </div>
         </div>
