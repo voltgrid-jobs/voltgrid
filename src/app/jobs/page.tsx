@@ -1,7 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { JobCard } from '@/components/jobs/JobCard'
 import { JobFilters } from '@/components/jobs/JobFilters'
-import { CATEGORY_LABELS, type JobCategory } from '@/types'
+import { Pagination } from '@/components/jobs/Pagination'
+import { CATEGORY_LABELS, type JobCategory, type Job } from '@/types'
 import { JobAlertInlineForm } from '@/components/jobs/JobAlertInlineForm'
 import type { Metadata } from 'next'
 
@@ -9,6 +10,8 @@ export const metadata: Metadata = {
   title: 'Browse Data Center & AI Infrastructure Jobs',
   description: 'Browse electrician, HVAC, low voltage, and construction jobs at data centers and AI infrastructure projects.',
 }
+
+const PAGE_SIZE = 20
 
 interface SearchParams {
   category?: string
@@ -23,6 +26,58 @@ interface SearchParams {
   company?: string
   remote?: string
   salary?: string
+  page?: string
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function applyFilters(query: any, params: SearchParams): any {
+  let q = query
+  if (params.category && params.category in CATEGORY_LABELS) {
+    q = q.eq('category', params.category as JobCategory)
+  }
+  if (params.q) {
+    q = q.or(`title.ilike.%${params.q}%,company_name.ilike.%${params.q}%,description.ilike.%${params.q}%`)
+  }
+  if (params.location) {
+    q = q.ilike('location', `%${params.location}%`)
+  }
+  if (params.type) {
+    q = q.eq('job_type', params.type)
+  }
+  if (params.featured === 'true') {
+    q = q.eq('is_featured', true)
+  }
+  if (params.per_diem === 'true') {
+    q = q.eq('per_diem', true)
+  }
+  if (params.travel) {
+    q = q.eq('travel_required', params.travel)
+  }
+  if (params.shift) {
+    q = q.eq('shift_type', params.shift)
+  }
+  if (params.union === 'true') {
+    q = q.eq('is_union', true)
+  }
+  if (params.company) {
+    q = q.ilike('company_name', `%${params.company}%`)
+  }
+  if (params.remote === 'true') {
+    q = q.eq('remote', true)
+  }
+  if (params.salary === 'true') {
+    q = q.not('salary_min', 'is', null)
+  }
+  return q
+}
+
+function buildBasePath(params: SearchParams): string {
+  const filtered: Record<string, string> = {}
+  for (const [k, v] of Object.entries(params)) {
+    if (k !== 'page' && v) filtered[k] = v
+  }
+  const qs = new URLSearchParams(filtered).toString()
+  return qs ? `/jobs?${qs}` : '/jobs'
 }
 
 export default async function JobsPage({
@@ -33,69 +88,31 @@ export default async function JobsPage({
   const params = await searchParams
   const supabase = await createClient()
 
-  let query = supabase
-    .from('jobs')
-    .select('*')
-    .eq('is_active', true)
-    .order('is_featured', { ascending: false })
-    .order('created_at', { ascending: false })
-    .limit(200)
+  const currentPage = Math.max(1, parseInt(params.page ?? '1', 10) || 1)
 
-  if (params.category && params.category in CATEGORY_LABELS) {
-    query = query.eq('category', params.category as JobCategory)
-  }
+  // Count query — exact count with filters applied
+  const { count: filteredCount } = await applyFilters(
+    supabase
+      .from('jobs')
+      .select('*', { count: 'exact', head: true })
+      .eq('is_active', true),
+    params
+  )
 
-  if (params.q) {
-    query = query.or(`title.ilike.%${params.q}%,company_name.ilike.%${params.q}%,description.ilike.%${params.q}%`)
-  }
+  const totalJobs = filteredCount ?? 0
+  const totalPages = Math.max(1, Math.ceil(totalJobs / PAGE_SIZE))
+  const safePage = Math.min(currentPage, totalPages)
 
-  if (params.location) {
-    query = query.ilike('location', `%${params.location}%`)
-  }
-
-  if (params.type) {
-    query = query.eq('job_type', params.type)
-  }
-
-  if (params.featured === 'true') {
-    query = query.eq('is_featured', true)
-  }
-
-  if (params.per_diem === 'true') {
-    query = query.eq('per_diem', true)
-  }
-
-  if (params.travel) {
-    query = query.eq('travel_required', params.travel)
-  }
-
-  if (params.shift) {
-    query = query.eq('shift_type', params.shift)
-  }
-
-  if (params.union === 'true') {
-    query = query.eq('is_union', true)
-  }
-
-  if (params.company) {
-    query = query.ilike('company_name', `%${params.company}%`)
-  }
-
-  if (params.remote === 'true') {
-    query = query.eq('remote', true)
-  }
-
-  if (params.salary === 'true') {
-    query = query.not('salary_min', 'is', null)
-  }
-
-  const { data: jobs, error } = await query
-
-  // Get the true total count (unfiltered) for display — matches homepage count
-  const { count: totalCount } = await supabase
-    .from('jobs')
-    .select('*', { count: 'exact', head: true })
-    .eq('is_active', true)
+  // Data query — paginated with .range()
+  const { data: jobs, error } = await applyFilters(
+    supabase
+      .from('jobs')
+      .select('*')
+      .eq('is_active', true)
+      .order('is_featured', { ascending: false })
+      .order('created_at', { ascending: false }),
+    params
+  ).range((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE - 1)
 
   // Get top companies for filter dropdown
   const { data: allJobs } = await supabase
@@ -104,7 +121,9 @@ export default async function JobsPage({
     .eq('is_active', true)
 
   const companyCounts: Record<string, number> = {}
-  allJobs?.forEach(j => { if (j.company_name) companyCounts[j.company_name] = (companyCounts[j.company_name] || 0) + 1 })
+  allJobs?.forEach((j: { company_name?: string }) => {
+    if (j.company_name) companyCounts[j.company_name] = (companyCounts[j.company_name] || 0) + 1
+  })
   const topCompanies = Object.entries(companyCounts)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 12)
@@ -115,6 +134,7 @@ export default async function JobsPage({
     params.remote || params.salary
 
   const activeCategory = params.category as JobCategory | undefined
+  const basePath = buildBasePath(params)
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
@@ -123,9 +143,7 @@ export default async function JobsPage({
           {params.company ? `${params.company} Jobs` : activeCategory ? `${CATEGORY_LABELS[activeCategory]} Jobs` : 'All Jobs'}
         </h1>
         <p style={{ color: 'var(--fg-muted)' }}>
-          {hasFilters
-            ? `${jobs?.length ?? 0} matching positions`
-            : `${totalCount ?? 0} open positions`} at data centers and AI infrastructure projects
+          {totalJobs} {hasFilters ? 'matching' : 'open'} position{totalJobs !== 1 ? 's' : ''} at data centers and AI infrastructure projects
         </p>
       </div>
 
@@ -138,10 +156,15 @@ export default async function JobsPage({
           {jobs && jobs.length > 0 ? (
             <>
               <div className="flex flex-col gap-4">
-                {jobs.map((job) => (
+                {(jobs as Job[]).map((job) => (
                   <JobCard key={job.id} job={job} featured={job.is_featured} />
                 ))}
               </div>
+              <Pagination
+                currentPage={safePage}
+                totalPages={totalPages}
+                basePath={basePath}
+              />
               <JobAlertInlineForm variant="jobs" defaultTrade={activeCategory ?? ''} />
             </>
           ) : (
