@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { Resend } from 'resend'
 import type { JobCategory, JobType } from '@/types'
 
 export async function POST(req: NextRequest) {
@@ -156,7 +157,46 @@ export async function POST(req: NextRequest) {
         credits_added: creditsToAdd + 1,
       })
 
-      console.log('Job created:', (job as { id: string }).id)
+      const jobId = (job as { id: string }).id
+      console.log('Job created:', jobId)
+
+      // Employer confirmation email
+      const employerEmail = meta.company_email || session.customer_email
+      if (employerEmail && process.env.RESEND_API_KEY) {
+        try {
+          const resend = new Resend(process.env.RESEND_API_KEY)
+          const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://voltgridjobs.com'
+          const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+          const expiresFormatted = expiresAt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+          await resend.emails.send({
+            from: `VoltGrid Jobs <${process.env.RESEND_FROM_EMAIL || 'alerts@voltgridjobs.com'}>`,
+            to: employerEmail,
+            subject: 'Your job listing is live on VoltGrid Jobs',
+            html: `<div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:32px 24px;background:#030712;color:#f9fafb">
+              <p style="font-size:18px;font-weight:700;color:#facc15;margin-bottom:16px">⚡ Your listing is live</p>
+              <p style="font-size:15px;line-height:1.6;color:#d1d5db;margin-bottom:8px">
+                <strong style="color:#fff">${meta.title}</strong> at <strong style="color:#fff">${meta.company_name}</strong> is now live on VoltGrid Jobs.
+              </p>
+              <p style="margin-bottom:20px">
+                <a href="${baseUrl}/jobs/${jobId}" style="color:#facc15;font-size:15px">${baseUrl}/jobs/${jobId}</a>
+              </p>
+              <table style="width:100%;border-collapse:collapse;margin-bottom:20px">
+                <tr><td style="padding:8px 0;color:#9ca3af;font-size:14px;border-bottom:1px solid #1f2937">Duration</td><td style="padding:8px 0;color:#f9fafb;font-size:14px;border-bottom:1px solid #1f2937;text-align:right">30 days</td></tr>
+                <tr><td style="padding:8px 0;color:#9ca3af;font-size:14px">Expires</td><td style="padding:8px 0;color:#f9fafb;font-size:14px;text-align:right">${expiresFormatted}</td></tr>
+              </table>
+              <p style="font-size:14px;line-height:1.6;color:#d1d5db;margin-bottom:20px">
+                Candidates will apply directly via your listing. You don't need to do anything else.
+              </p>
+              <p style="font-size:13px;color:#6b7280">
+                Questions? Reply to this email or contact <a href="mailto:hello@voltgridjobs.com" style="color:#facc15">hello@voltgridjobs.com</a>
+              </p>
+            </div>`,
+          })
+        } catch (emailErr) {
+          // Non-critical — don't fail the webhook
+          console.error('[webhook] Employer confirmation email error:', emailErr)
+        }
+      }
 
       // AUTOMATION 4: Auto-feature all active Pro employer listings
       if (meta.plan === 'pro_monthly' && meta.company_email) {
