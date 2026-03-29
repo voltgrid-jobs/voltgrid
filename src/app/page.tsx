@@ -100,14 +100,18 @@ export default async function HomePage() {
                 <span>🏢</span>
                 <span>{distinctCompanies} companies hiring</span>
               </div>
-              <span style={{ color: 'var(--fg-faint)' }}>·</span>
-              <div
-                className="inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-full"
-                style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)', color: 'var(--fg)' }}
-              >
-                <span style={{ color: 'var(--green)' }}>↑</span>
-                <span>{jobsThisWeek ?? 0} added this week</span>
-              </div>
+              {jobsThisWeek != null && totalJobs != null && jobsThisWeek < totalJobs * 0.8 && jobsThisWeek > 0 && (
+                <>
+                  <span style={{ color: 'var(--fg-faint)' }}>·</span>
+                  <div
+                    className="inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-full"
+                    style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)', color: 'var(--fg)' }}
+                  >
+                    <span style={{ color: 'var(--green)' }}>↑</span>
+                    <span>{jobsThisWeek} added this week</span>
+                  </div>
+                </>
+              )}
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 animate-fade-up delay-300">

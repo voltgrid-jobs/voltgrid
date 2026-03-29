@@ -51,7 +51,10 @@ export function Footer() {
             © {new Date().getFullYear()} VoltGrid Jobs. All rights reserved.
           </span>
           <span className="text-xs" style={{ color: 'var(--fg-faint)' }}>
-            Built for the trades workers powering AI.
+            Questions?{' '}
+            <a href="mailto:hello@voltgridjobs.com" style={{ color: 'var(--fg-muted)' }} className="hover:text-white transition-colors">
+              hello@voltgridjobs.com
+            </a>
           </span>
         </div>
       </div>

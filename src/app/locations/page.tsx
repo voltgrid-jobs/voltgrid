@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Data Center Job Hubs — VoltGrid Jobs',
+  title: 'Data Center Job Hubs by City',
   description:
     'Browse electrician, HVAC, and trades jobs at the biggest data center markets in the US — Northern Virginia, Phoenix, Dallas, Chicago, Portland, and Atlanta.',
 }

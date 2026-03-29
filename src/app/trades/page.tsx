@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Data Center Trades Jobs by Specialty — VoltGrid Jobs',
+  title: 'Trades Specialties for Data Center Work',
   description:
     'Browse data center jobs by trade specialty — electricians, HVAC techs, low voltage, construction, project management, and operations roles at hyperscale and colocation facilities.',
 }

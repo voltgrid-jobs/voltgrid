@@ -17,20 +17,16 @@ function formatSalaryMin(min?: number, max?: number, currency = 'USD', period = 
   return null
 }
 
-function timeAgo(dateStr: string) {
-  const diff = Date.now() - new Date(dateStr).getTime()
-  const minutes = Math.floor(diff / 60000)
-  const hours = Math.floor(diff / 3600000)
-  const days = Math.floor(diff / 86400000)
-  if (minutes < 60) return minutes <= 1 ? 'just now' : `${minutes} minutes ago`
-  if (hours < 24) return hours === 1 ? '1 hour ago' : `${hours} hours ago`
-  if (days === 1) return '1 day ago'
-  if (days < 7) return `${days} days ago`
-  if (days < 14) return '1 week ago'
-  if (days < 30) return `${Math.floor(days / 7)} weeks ago`
-  const weeks = Math.floor(days / 7)
-  if (weeks < 8) return `${weeks}w ago`
-  return `${Math.floor(days / 30)}mo ago`
+function formatDate(dateStr: string) {
+  const date = new Date(dateStr)
+  const now = new Date()
+  const currentYear = now.getFullYear()
+  const year = date.getFullYear()
+  const opts: Intl.DateTimeFormatOptions =
+    year === currentYear
+      ? { month: 'short', day: 'numeric' }
+      : { month: 'short', day: 'numeric', year: 'numeric' }
+  return date.toLocaleDateString('en-US', opts)
 }
 
 // Canada province/territory detection
@@ -159,7 +155,7 @@ export function JobCard({ job, featured = false }: { job: Job; featured?: boolea
             </div>
           )}
           <div className="text-xs" style={{ color: 'var(--fg-faint)' }}>
-            Posted {timeAgo(job.created_at)}
+            Posted {formatDate(job.created_at)}
           </div>
         </div>
       </div>
@@ -172,7 +168,7 @@ export function JobCard({ job, featured = false }: { job: Job; featured?: boolea
 
       {/* Mobile freshness signal */}
       <div className="sm:hidden mt-1 text-xs" style={{ color: 'var(--fg-faint)' }}>
-        Posted {timeAgo(job.created_at)}
+        Posted {formatDate(job.created_at)}
       </div>
     </Link>
   )

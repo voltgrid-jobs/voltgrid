@@ -164,6 +164,7 @@ export default async function JobDetailPage({
     datePosted: job.created_at,
     ...(job.expires_at && { validThrough: job.expires_at }),
     ...(applyUrl && { url: applyUrl }),
+    directApply: true,
     ...(job.salary_min && {
       baseSalary: {
         '@type': 'MonetaryAmount',

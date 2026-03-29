@@ -6,7 +6,7 @@ import { getLogoUrl, getDomain } from '@/lib/company-logos'
 import { CompanyLogo } from '@/components/employers/CompanyLogo'
 
 export const metadata: Metadata = {
-  title: 'Post a Job — VoltGrid Jobs | Hire Data Center Trades Workers',
+  title: 'Post Trades Jobs for Data Centers',
   description:
     'Reach electricians, HVAC techs, and low voltage specialists who already know what a data center is. Flat pricing from $149. Go live in 5 minutes.',
 }
@@ -360,14 +360,21 @@ export default async function EmployersPage() {
                 </div>
               ))}
             </div>
-            {/* CHANGE 4B: Guarantee badge */}
-            <div className="flex justify-center mb-6">
+            {/* Guarantee badges */}
+            <div className="flex flex-col items-center gap-3 mb-6">
               <div
                 className="inline-flex items-center gap-2 text-sm px-4 py-2 rounded-full"
                 style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)', color: 'var(--fg-muted)' }}
               >
                 <span style={{ color: 'var(--green)' }}>✓</span>
                 <span>14-day listing guarantee — if you have a technical issue, we&apos;ll make it right.</span>
+              </div>
+              <div
+                className="inline-flex items-center gap-2 text-sm px-4 py-2 rounded-full"
+                style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)', color: 'var(--fg-muted)' }}
+              >
+                <span style={{ color: 'var(--green)' }}>✓</span>
+                <span>Not getting traction? We&apos;ll extend your listing free — no questions asked.</span>
               </div>
             </div>
 

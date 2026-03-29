@@ -13,17 +13,12 @@ export function CompanyLogo({
   domain?: string | null
   showName?: boolean
 }) {
-  const [src, setSrc] = useState<string | null>(logoUrl)
-  const fallback = domain ? `https://www.google.com/s2/favicons?domain=${domain}&sz=128` : null
-  const [triedFallback, setTriedFallback] = useState(false)
+  const LOGO_DEV_TOKEN = 'pk_X7dkMEXSRsKNpe1kuk7uHA'
+  const logoDevUrl = domain ? `https://img.logo.dev/${domain}?token=${LOGO_DEV_TOKEN}` : logoUrl
+  const [src, setSrc] = useState<string | null>(logoDevUrl ?? logoUrl)
 
   const handleError = () => {
-    if (!triedFallback && fallback) {
-      setSrc(fallback)
-      setTriedFallback(true)
-    } else {
-      setSrc(null)
-    }
+    setSrc(null)
   }
 
   return (

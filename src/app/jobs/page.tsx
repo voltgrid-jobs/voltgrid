@@ -5,7 +5,7 @@ import { CATEGORY_LABELS, type JobCategory } from '@/types'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Browse Jobs — VoltGrid Jobs',
+  title: 'Browse Data Center & AI Infrastructure Jobs',
   description: 'Browse electrician, HVAC, low voltage, and construction jobs at data centers and AI infrastructure projects.',
 }
 

@@ -21,8 +21,8 @@ const barlow = Barlow({
 export const metadata: Metadata = {
   metadataBase: new URL('https://voltgridjobs.com'),
   title: {
-    default: 'VoltGrid Jobs — Data Center & AI Infrastructure Trades',
-    template: '%s — VoltGrid Jobs',
+    default: 'Data Center Electrician, HVAC & Trades Jobs | VoltGrid Jobs',
+    template: '%s | VoltGrid Jobs',
   },
   description:
     'Find electrician, HVAC, low voltage, and construction jobs at data centers and AI infrastructure projects. The job board built for trades workers powering the AI boom.',
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     'data center jobs, electrician jobs, HVAC jobs, low voltage technician, construction trades, AI infrastructure, hyperscale, data center electrician, HVAC technician hiring',
   authors: [{ name: 'VoltGrid Jobs', url: 'https://voltgridjobs.com' }],
   openGraph: {
-    title: 'VoltGrid Jobs — Data Center & AI Infrastructure Trades',
+    title: 'Data Center Electrician, HVAC & Trades Jobs | VoltGrid Jobs',
     description: 'Electrician, HVAC, and low voltage jobs at data centers and AI infrastructure sites. Find high-paying trades roles powering the AI boom.',
     url: 'https://voltgridjobs.com',
     siteName: 'VoltGrid Jobs',
