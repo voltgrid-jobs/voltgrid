@@ -19,6 +19,9 @@ interface SearchParams {
   travel?: string
   shift?: string
   union?: string
+  company?: string
+  remote?: string
+  salary?: string
 }
 
 export default async function JobsPage({
@@ -35,7 +38,7 @@ export default async function JobsPage({
     .eq('is_active', true)
     .order('is_featured', { ascending: false })
     .order('created_at', { ascending: false })
-    .limit(50)
+    .limit(200)
 
   if (params.category && params.category in CATEGORY_LABELS) {
     query = query.eq('category', params.category as JobCategory)
@@ -73,16 +76,42 @@ export default async function JobsPage({
     query = query.eq('is_union', true)
   }
 
+  if (params.company) {
+    query = query.ilike('company_name', `%${params.company}%`)
+  }
+
+  if (params.remote === 'true') {
+    query = query.eq('remote', true)
+  }
+
+  if (params.salary === 'true') {
+    query = query.not('salary_min', 'is', null)
+  }
+
   const { data: jobs, error } = await query
 
-  // Get the true total count (unflitered) for display — matches homepage count
+  // Get the true total count (unfiltered) for display — matches homepage count
   const { count: totalCount } = await supabase
     .from('jobs')
     .select('*', { count: 'exact', head: true })
     .eq('is_active', true)
 
+  // Get top companies for filter dropdown
+  const { data: allJobs } = await supabase
+    .from('jobs')
+    .select('company_name')
+    .eq('is_active', true)
+
+  const companyCounts: Record<string, number> = {}
+  allJobs?.forEach(j => { if (j.company_name) companyCounts[j.company_name] = (companyCounts[j.company_name] || 0) + 1 })
+  const topCompanies = Object.entries(companyCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 12)
+    .map(([name, count]) => ({ name, count }))
+
   const hasFilters = params.category || params.q || params.location || params.type ||
-    params.featured || params.per_diem || params.travel || params.shift || params.union
+    params.featured || params.per_diem || params.travel || params.shift || params.union || params.company ||
+    params.remote || params.salary
 
   const activeCategory = params.category as JobCategory | undefined
 
@@ -90,7 +119,7 @@ export default async function JobsPage({
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif', letterSpacing: '-0.01em' }}>
-          {activeCategory ? `${CATEGORY_LABELS[activeCategory]} Jobs` : 'All Jobs'}
+          {params.company ? `${params.company} Jobs` : activeCategory ? `${CATEGORY_LABELS[activeCategory]} Jobs` : 'All Jobs'}
         </h1>
         <p style={{ color: 'var(--fg-muted)' }}>
           {hasFilters
@@ -101,7 +130,7 @@ export default async function JobsPage({
 
       <div className="flex flex-col lg:flex-row gap-8">
         <aside className="lg:w-64 flex-shrink-0">
-          <JobFilters currentParams={params} />
+          <JobFilters currentParams={params} topCompanies={topCompanies} />
         </aside>
 
         <div className="flex-1">

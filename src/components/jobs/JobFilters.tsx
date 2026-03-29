@@ -12,10 +12,14 @@ interface Props {
     travel?: string
     shift?: string
     union?: string
+    company?: string
+    remote?: string
+    salary?: string
   }
+  topCompanies?: { name: string; count: number }[]
 }
 
-export function JobFilters({ currentParams }: Props) {
+export function JobFilters({ currentParams, topCompanies = [] }: Props) {
   const router = useRouter()
 
   function updateFilter(key: string, value: string) {
@@ -59,6 +63,26 @@ export function JobFilters({ currentParams }: Props) {
           onKeyDown={(e) => { if (e.key === 'Enter') updateFilter('q', (e.target as HTMLInputElement).value) }}
         />
       </div>
+
+      {/* Company */}
+      {topCompanies.length > 0 && (
+        <div>
+          <label className="block text-xs font-medium tracking-widest uppercase mb-2" style={{ color: 'var(--fg-faint)' }}>Company</label>
+          <div className="space-y-0.5">
+            {topCompanies.map(({ name, count }) => {
+              const active = currentParams.company === name
+              return (
+                <button key={name} onClick={() => updateFilter('company', active ? '' : name)}
+                  className="w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center justify-between"
+                  {...filterBtn(active)}>
+                  <span>{name}</span>
+                  <span className="text-xs ml-2" style={{ color: active ? 'var(--yellow)' : 'var(--fg-faint)' }}>{count}</span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Category */}
       <div>
@@ -139,6 +163,28 @@ export function JobFilters({ currentParams }: Props) {
             )
           })}
         </div>
+      </div>
+
+      {/* Remote */}
+      <div>
+        <label className="block text-xs font-medium tracking-widest uppercase mb-2" style={{ color: 'var(--fg-faint)' }}>Remote</label>
+        <button
+          onClick={() => updateFilter('remote', currentParams.remote === 'true' ? '' : 'true')}
+          className="w-full text-left px-3 py-2 rounded-lg text-sm transition-colors"
+          {...filterBtn(currentParams.remote === 'true', 'green')}>
+          Remote OK
+        </button>
+      </div>
+
+      {/* Salary */}
+      <div>
+        <label className="block text-xs font-medium tracking-widest uppercase mb-2" style={{ color: 'var(--fg-faint)' }}>Salary</label>
+        <button
+          onClick={() => updateFilter('salary', currentParams.salary === 'true' ? '' : 'true')}
+          className="w-full text-left px-3 py-2 rounded-lg text-sm transition-colors"
+          {...filterBtn(currentParams.salary === 'true', 'yellow')}>
+          With Salary Listed
+        </button>
       </div>
 
       {/* Per Diem */}

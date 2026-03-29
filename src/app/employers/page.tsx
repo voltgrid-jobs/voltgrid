@@ -1,5 +1,8 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import type { Metadata } from 'next'
+import { createClient } from '@/lib/supabase/server'
+import { getLogoUrl } from '@/lib/company-logos'
 
 export const metadata: Metadata = {
   title: 'Post a Job — VoltGrid Jobs | Hire Data Center Trades Workers',
@@ -61,37 +64,37 @@ const PLANS = [
 const PAIN_POINTS = [
   {
     platform: 'Indeed',
-    problem: 'Buries your listing in 10,000 results',
+    problem: 'Your listing competes with baristas',
     detail:
-      'Your electrician role competes with fast food and warehouse jobs. Candidates who respond often have no idea what a data center is.',
-    solution: 'VoltGrid is 100% data center and AI infrastructure roles. No noise.',
-    icon: '📉',
+      'A journeyman electrician posting sits next to warehouse and fast-food roles. Most applicants have never been inside a data center. You spend hours filtering.',
+    solution: 'Every candidate on VoltGrid is specifically looking for data center or AI infrastructure work.',
   },
   {
     platform: 'LinkedIn',
-    problem: '$500+ per slot with zero niche targeting',
+    problem: 'CPC pricing with no niche targeting',
     detail:
-      'You pay CPC whether or not the applicant has ever touched a PDU. Budget burns fast with nothing to show for it.',
-    solution: 'VoltGrid is flat pricing — $149, no surprises, no bidding wars.',
-    icon: '💸',
+      'You pay per click whether or not the applicant knows what a PDU is. A $500 budget evaporates before you see a qualified resume.',
+    solution: 'VoltGrid is $149 flat. Post once, active for 30 days, applications direct to you.',
   },
   {
-    platform: 'Trade Forums',
-    problem: 'Requires posting manually in 50 different places',
+    platform: 'Staffing Agencies',
+    problem: '$3,000–$8,000 per placement',
     detail:
-      "Reddit threads, Facebook groups, Discord servers — it works, but it's a full-time job to maintain and impossible to track.",
-    solution: 'One post on VoltGrid reaches the audience across all those channels.',
-    icon: '😩',
+      'Agency fees run 15–25% of first-year salary. For a journeyman electrician at $80k, that\'s $12,000–$20,000 per hire — before you know if they\'ll work out.',
+    solution: 'At $149 per listing, one hire on VoltGrid pays for 50 more postings.',
   },
 ]
 
 const WHO_POSTS = [
-  { title: 'General Contractors', desc: 'Mortensons, Holders, Skanskas — GCs managing data center site builds who need licensed electricians and HVAC crews fast.' },
-  { title: 'Data Center Operators', desc: 'Equinix, Digital Realty, QTS — operators with in-house facilities teams hiring for critical environment maintenance roles.' },
-  { title: 'MEP Subcontractors', desc: 'Rosendin, Faith Technologies, Helix Electric — electrical and mechanical subs who live and die by trades headcount.' },
-  { title: 'Staffing Firms', desc: 'Aerotek, Tradesmen International — firms placing skilled trades workers on data center projects for their clients.' },
-  { title: 'Facility Management Firms', desc: 'CBRE, JLL, Cushman & Wakefield — facility managers overseeing data center O&M who need certified, experienced techs.' },
+  { title: 'General Contractors', desc: 'GCs managing hyperscale and colocation builds who need licensed electricians and HVAC crews on tight timelines.' },
+  { title: 'Data Center Operators', desc: 'Cologix, Equinix, EdgeConneX — operators with in-house facilities teams hiring for critical environment roles.' },
+  { title: 'MEP Subcontractors', desc: 'Helix Electric, Faith Technologies, Rosendin — electrical and mechanical subs whose project schedules depend on headcount.' },
+  { title: 'Staffing Firms', desc: 'Aerotek, Insight Global — firms placing trades workers on data center projects who need a niche sourcing channel.' },
+  { title: 'Facility Management', desc: 'CBRE, Cushman & Wakefield — facility managers overseeing data center O&M who need certified, experienced technicians.' },
 ]
+
+// Kept as fallback for static export — dynamic version used in component below
+const FEATURED_COMPANIES_FALLBACK = ['Cologix', 'Oracle', 'Helix Electric', 'CBRE', 'Aerotek', 'EdgeConneX', 'Vertiv', 'Carrier']
 
 const FAQS = [
   {
@@ -129,7 +132,27 @@ const faqSchema = {
   })),
 }
 
-export default function EmployersPage() {
+export default async function EmployersPage() {
+  // Fetch top companies with active listings dynamically
+  const supabase = await createClient()
+  const { data: jobRows } = await supabase
+    .from('jobs')
+    .select('company_name')
+    .eq('is_active', true)
+
+  // Get top companies by listing count, with known logos first
+  const counts: Record<string, number> = {}
+  jobRows?.forEach(j => { if (j.company_name) counts[j.company_name] = (counts[j.company_name] || 0) + 1 })
+
+  const featuredCompanies = Object.entries(counts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([name]) => ({ name, logoUrl: getLogoUrl(name) }))
+    .filter(c => c.logoUrl) // only show companies with known logos
+    .slice(0, 8)
+
+  const displayCompanies = featuredCompanies.length >= 4
+    ? featuredCompanies
+    : FEATURED_COMPANIES_FALLBACK.map(name => ({ name, logoUrl: getLogoUrl(name) }))
   return (
     <>
       <script
@@ -139,43 +162,74 @@ export default function EmployersPage() {
 
       <div>
         {/* ── Hero ── */}
-        <section className="max-w-5xl mx-auto px-4 sm:px-6 pt-20 pb-16 text-center">
-          <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest uppercase px-3 py-1.5 rounded-full mb-6"
+        <section className="max-w-5xl mx-auto px-4 sm:px-6 pt-20 pb-16">
+          <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest uppercase px-3 py-1.5 rounded-full mb-8"
             style={{ background: 'var(--yellow-dim)', color: 'var(--yellow)', border: '1px solid var(--yellow-border)' }}>
-            ⚡ The only job board built for data center trades
+            ⚡ Built for data center trades hiring
           </div>
-          <h1 className="leading-tight mb-5"
-            style={{ fontFamily: 'var(--font-display), system-ui, sans-serif', fontSize: 'clamp(2.5rem, 6vw, 4rem)', fontWeight: 800, color: 'var(--fg)' }}>
-            Stop filtering out nurses.<br />
-            <span style={{ color: 'var(--yellow)' }}>Hire the people who build AI infrastructure.</span>
+          <h1 className="leading-none mb-6"
+            style={{ fontFamily: 'var(--font-display), system-ui, sans-serif', fontSize: 'clamp(2.8rem, 7vw, 5rem)', fontWeight: 800, color: 'var(--fg)', maxWidth: '800px' }}>
+            The trades workers who keep data centers running are hard to find.<br />
+            <span style={{ color: 'var(--yellow)' }}>Until now.</span>
           </h1>
-          <p className="text-lg max-w-2xl mx-auto mb-8" style={{ color: 'var(--fg-muted)' }}>
-            VoltGrid reaches electricians, HVAC techs, and low voltage specialists who already know
-            what a data center is. Flat pricing. Live in 5 minutes. No account manager required.
+          <p className="text-lg mb-4" style={{ color: 'var(--fg-muted)', maxWidth: '580px', lineHeight: 1.7 }}>
+            VoltGrid is a niche job board for electricians, HVAC techs, and low voltage specialists
+            who specifically seek data center and AI infrastructure work.
+            Every applicant already knows what a PDU is.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/post-job" className="px-8 py-4 rounded-xl font-bold text-lg transition-opacity"
+          <p className="text-base mb-10 font-semibold" style={{ color: 'var(--fg)' }}>
+            $149 flat. No CPC. No account manager. Live in 5 minutes.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Link href="/post-job" className="px-8 py-4 rounded-xl font-bold text-lg transition-opacity inline-block"
               style={{ background: 'var(--yellow)', color: '#0A0A0A' }}>
               Post a Job — $149
             </Link>
-            <a href="#pricing" className="px-8 py-4 rounded-xl font-semibold text-lg transition-colors"
+            <a href="#pricing" className="px-8 py-4 rounded-xl font-semibold text-lg transition-colors inline-block"
               style={{ border: '1px solid var(--border-strong)', color: 'var(--fg-muted)' }}>
               See all plans
             </a>
           </div>
         </section>
 
-        {/* ── Trust Bar ── */}
+        {/* ── Company trust bar — dynamic, logo-based ── */}
         <section style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', background: 'var(--bg-subtle)' }}>
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
-            <p className="text-center text-xs uppercase tracking-widest mb-8 font-medium" style={{ color: 'var(--fg-faint)' }}>
-              Why the urgency is real
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+            <p className="text-xs uppercase tracking-widest mb-6 font-medium text-center" style={{ color: 'var(--fg-faint)' }}>
+              Companies with active listings on VoltGrid
             </p>
+            <div className="flex flex-wrap justify-center items-center gap-8">
+              {displayCompanies.map(({ name, logoUrl }) => (
+                <div key={name} className="flex items-center justify-center" style={{ height: '32px' }}>
+                  {logoUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={logoUrl}
+                      alt={`${name} logo`}
+                      style={{ maxHeight: '32px', width: 'auto', filter: 'grayscale(100%) brightness(2)', opacity: 0.6 }}
+                      onError={e => {
+                        const el = e.target as HTMLImageElement
+                        el.style.display = 'none'
+                        const fallback = el.nextElementSibling as HTMLElement
+                        if (fallback) fallback.style.display = 'block'
+                      }}
+                    />
+                  ) : null}
+                  <span className="text-sm font-semibold" style={{ color: 'var(--fg-muted)', display: logoUrl ? 'none' : 'block' }}>{name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Market context ── */}
+        <section style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-subtle)' }}>
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
               {[
                 { stat: '2,800+ MW', label: 'of US data center capacity currently under construction' },
                 { stat: '$1T+', label: 'committed by hyperscalers to AI infrastructure through 2030' },
-                { stat: '500,000+', label: 'additional trades workers needed to build and operate these facilities' },
+                { stat: '500,000+', label: 'additional trades workers needed before 2030' },
               ].map(({ stat, label }) => (
                 <div key={stat}>
                   <div className="text-3xl font-extrabold mb-1" style={{ color: 'var(--yellow)', fontFamily: 'var(--font-display), system-ui, sans-serif' }}>{stat}</div>
@@ -197,12 +251,12 @@ export default function EmployersPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             {PAIN_POINTS.map((item) => (
               <div key={item.platform} className="rounded-2xl p-6 flex flex-col" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
-                <div className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--fg-faint)' }}>{item.platform}</div>
+                <div className="text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: 'var(--fg-faint)' }}>{item.platform}</div>
                 <h3 className="text-base font-bold mb-2" style={{ color: 'var(--fg)' }}>{item.problem}</h3>
-                <p className="text-sm mb-4 flex-1" style={{ color: 'var(--fg-muted)' }}>{item.detail}</p>
+                <p className="text-sm mb-4 flex-1" style={{ color: 'var(--fg-muted)', lineHeight: 1.7 }}>{item.detail}</p>
                 <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
-                  <div className="flex items-start gap-2 text-sm" style={{ color: 'var(--green)' }}>
-                    <span className="flex-shrink-0 mt-0.5">✓</span>
+                  <div className="flex items-start gap-2 text-sm font-medium" style={{ color: 'var(--green)' }}>
+                    <span className="flex-shrink-0">✓</span>
                     <span>{item.solution}</span>
                   </div>
                 </div>
@@ -356,10 +410,10 @@ export default function EmployersPage() {
         <section style={{ background: 'var(--yellow)' }}>
           <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 text-center">
             <h2 className="text-3xl font-extrabold mb-3" style={{ color: '#0A0A0A', fontFamily: 'var(--font-display), system-ui, sans-serif' }}>
-              Ready to find your next crew?
+              The electricians you want are getting three offers right now.
             </h2>
-            <p className="mb-8 text-lg" style={{ color: 'rgba(10,10,10,0.7)' }}>
-              Post a job in 5 minutes. No account manager. No bidding.
+            <p className="mb-8 text-lg" style={{ color: 'rgba(10,10,10,0.75)' }}>
+              Post today. Live in 5 minutes. $149 flat — no bidding, no account manager, no agency fees.
             </p>
             <Link href="/post-job" className="inline-block px-10 py-4 rounded-xl font-bold text-lg transition-opacity"
               style={{ background: '#0A0A0A', color: 'var(--yellow)' }}>
