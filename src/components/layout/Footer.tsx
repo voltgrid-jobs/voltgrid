@@ -31,6 +31,11 @@ export function Footer() {
               <li><Link href="/jobs?category=electrical" className="hover:text-white transition-colors">Electrical Jobs</Link></li>
               <li><Link href="/jobs?category=hvac" className="hover:text-white transition-colors">HVAC Jobs</Link></li>
               <li><Link href="/jobs?category=low_voltage" className="hover:text-white transition-colors">Low Voltage Jobs</Link></li>
+              <li>
+                <Link href="/salary-guide" className="hover:text-white transition-colors" style={{ color: 'var(--yellow)' }}>
+                  📊 2026 Salary Guide
+                </Link>
+              </li>
             </ul>
           </div>
 
