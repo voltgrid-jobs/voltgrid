@@ -2,9 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Resend } from 'resend'
 
-const INGEST_SECRET = process.env.INGEST_SECRET || 'voltgrid-ingest-dev'
+const INGEST_SECRET = process.env.INGEST_SECRET
 
 export async function GET(req: NextRequest) {
+  if (!INGEST_SECRET) {
+    console.error('[send-alerts] INGEST_SECRET is not configured')
+    return NextResponse.json({ error: 'Not configured' }, { status: 500 })
+  }
   const authHeader = req.headers.get('authorization')
   if (authHeader !== `Bearer ${INGEST_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

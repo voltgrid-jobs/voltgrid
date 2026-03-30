@@ -424,9 +424,10 @@ export async function POST(req: NextRequest) {
 
   const supabase = createAdminClient()
   const allJobs: RawJob[] = []
+  const sourceErrors: Record<string, string> = {}
 
-  // Fetch from all sources concurrently
-  const [adzunaJobs, usaJobs, greenhouseJobs, leverJobs, dolJobs] = await Promise.all([
+  // Fetch from all sources concurrently — track failures per source
+  const [adzunaResult, usaResult, greenhouseResult, leverResult, dolResult] = await Promise.allSettled([
     fetchAdzunaJobs(),
     fetchUSAJobs(),
     fetchGreenhouseJobs(),
@@ -434,10 +435,29 @@ export async function POST(req: NextRequest) {
     fetchDOLApprenticeshipJobs(),
   ])
 
+  const adzunaJobs = adzunaResult.status === 'fulfilled' ? adzunaResult.value : (sourceErrors.adzuna = adzunaResult.reason?.message ?? 'unknown', [])
+  const usaJobs = usaResult.status === 'fulfilled' ? usaResult.value : (sourceErrors.usajobs = usaResult.reason?.message ?? 'unknown', [])
+  const greenhouseJobs = greenhouseResult.status === 'fulfilled' ? greenhouseResult.value : (sourceErrors.greenhouse = greenhouseResult.reason?.message ?? 'unknown', [])
+  const leverJobs = leverResult.status === 'fulfilled' ? leverResult.value : (sourceErrors.lever = leverResult.reason?.message ?? 'unknown', [])
+  const dolJobs = dolResult.status === 'fulfilled' ? dolResult.value : []
+
   allJobs.push(...adzunaJobs, ...usaJobs, ...greenhouseJobs, ...leverJobs, ...dolJobs)
 
   let inserted = 0
   let skipped = 0
+
+  // Batch dedup: fetch all existing source_ids in a single query instead of N+1 selects
+  const incomingSourceIds = allJobs.map(j => j.source_id).filter(Boolean)
+  const existingSet = new Set<string>()
+  if (incomingSourceIds.length > 0) {
+    const { data: existingJobs } = await supabase
+      .from('jobs')
+      .select('source, source_id')
+      .in('source_id', incomingSourceIds)
+    for (const j of existingJobs ?? []) {
+      existingSet.add(`${j.source}:${j.source_id}`)
+    }
+  }
 
   for (const job of allJobs) {
     if (!job.title || !job.description || !job.company_name) {
@@ -447,15 +467,8 @@ export async function POST(req: NextRequest) {
 
     const category = job.category || classifyCategory(job.title, job.description)
 
-    // Dedup check
-    const { data: existing } = await supabase
-      .from('jobs')
-      .select('id')
-      .eq('source', job.source)
-      .eq('source_id', job.source_id)
-      .single()
-
-    if (existing) {
+    // Dedup check against pre-fetched set (O(1) vs N queries)
+    if (existingSet.has(`${job.source}:${job.source_id}`)) {
       skipped++
       continue
     }
@@ -491,7 +504,7 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json({
-    success: true,
+    success: Object.keys(sourceErrors).length === 0,
     fetched: allJobs.length,
     inserted,
     skipped,
@@ -502,6 +515,7 @@ export async function POST(req: NextRequest) {
       lever: leverJobs.length,
       dol_apprenticeship: dolJobs.length,
     },
+    ...(Object.keys(sourceErrors).length > 0 && { source_errors: sourceErrors }),
   })
 }
 

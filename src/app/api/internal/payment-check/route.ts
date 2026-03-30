@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
     const message = err instanceof Error ? err.message : String(err)
     console.error('[payment-check] Stripe error:', message)
     return NextResponse.json(
-      { error: 'Stripe API error', detail: message },
+      { error: 'Failed to fetch payment data' },
       { status: 500 }
     )
   }

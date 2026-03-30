@@ -30,6 +30,19 @@ export async function POST(req: NextRequest) {
     const meta = session.metadata || {}
     const supabase = createAdminClient()
 
+    // --- Idempotency guard: Stripe may retry webhooks on 5xx ---
+    // If this session was already processed, return 200 immediately to stop retries.
+    const { data: existingPayment } = await supabase
+      .from('payments')
+      .select('id')
+      .eq('stripe_session_id', session.id)
+      .maybeSingle()
+
+    if (existingPayment) {
+      console.log('[webhook] Already processed session (duplicate):', session.id)
+      return NextResponse.json({ received: true, duplicate: true })
+    }
+
     try {
       // Get full description from draft if available
       let description = meta.description || ''
@@ -226,17 +239,23 @@ export async function POST(req: NextRequest) {
 
           if (priorCount === 0) {
             // First ever paid listing — notify via OpenClaw gateway
+            const gatewayToken = process.env.OPENCLAW_GATEWAY_TOKEN
+            const gatewayUrl = process.env.OPENCLAW_GATEWAY_URL || 'http://127.0.0.1:18789'
+            const telegramId = process.env.OPENCLAW_TELEGRAM_ID
+            if (!gatewayToken || !telegramId) {
+              console.log('[webhook] Gateway env vars not configured — skipping first-paid alert')
+            } else {
             const gatewayPayload = {
               channel: 'telegram',
-              to: '7824040963',
+              to: telegramId,
               text: `🎉 First paid VoltGrid listing! Employer: ${meta.company_email}, Plan: ${meta.plan}`,
             }
             try {
-              const gwRes = await fetch('http://127.0.0.1:18789/api/v1/outbound', {
+              const gwRes = await fetch(`${gatewayUrl}/api/v1/outbound`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
-                  'Authorization': 'Bearer 583304355e980be587bf6ffdd3d4ef021a0b42876f11df0d',
+                  'Authorization': `Bearer ${gatewayToken}`,
                 },
                 body: JSON.stringify(gatewayPayload),
               })
@@ -248,6 +267,7 @@ export async function POST(req: NextRequest) {
             } catch (gwErr) {
               console.error('[webhook] Gateway call error (non-critical):', gwErr)
             }
+            } // end if gatewayToken
           }
         } catch (firstPaidErr) {
           console.error('[webhook] First-paid check error:', firstPaidErr)

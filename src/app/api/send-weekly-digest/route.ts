@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Resend } from 'resend'
 
-const INGEST_SECRET = process.env.INGEST_SECRET || 'voltgrid-ingest-dev'
+const INGEST_SECRET = process.env.INGEST_SECRET
 
 interface Job {
   id: string
@@ -132,6 +132,10 @@ function buildEmailHtml(jobs: Job[], alert: JobAlert, baseUrl: string, totalJobs
 
 export async function GET(req: NextRequest) {
   // Auth: accept Bearer token OR Vercel cron header
+  if (!INGEST_SECRET) {
+    console.error('[send-weekly-digest] INGEST_SECRET is not configured')
+    return NextResponse.json({ error: 'Not configured' }, { status: 500 })
+  }
   const authHeader = req.headers.get('authorization')
   const isVercelCron = req.headers.get('x-vercel-cron') === '1'
   const isAuthorized = authHeader === `Bearer ${INGEST_SECRET}` || isVercelCron
