@@ -56,20 +56,30 @@ input:-webkit-autofill:active {
   transition: background-color 9999s ease-in-out 0s !important;
 }
 
-/* Dashlane + other password managers inject autofill via JS/extension CSS.
-   They set color: black or color: initial — override with !important targeting
-   their data attributes and the general filled-input state. */
-input[data-dashlane-rid],
-input[data-form-type],
-input[data-lpignore],
-input:-webkit-autofill {
-  color: #F0F0ED !important;
-  background-color: #1F2937 !important;
+/* Password manager autofill text fix (Dashlane, 1Password, etc.)
+   Extensions inject background with extension-level !important — we can't override that.
+   Instead: guarantee text is always light so it's readable on any dark bg (navy, black, grey).
+   The @keyframes trick re-applies color after extension CSS loads (~50-200ms delay). */
+@keyframes autofillTextFix {
+  from { color: #F0F0ED; }
+  to   { color: #F0F0ED; }
 }
 
-/* Firefox autofill highlight: suppresses the browser's built-in navy/yellow overlay.
-   color-scheme: dark tells Firefox to use its dark-mode autofill style (dark bg, light text)
-   instead of the default navy-blue highlight. */
+input[data-dashlane-rid],
+input[data-form-type],
+input[data-lpignore] {
+  animation: autofillTextFix 1ms linear 200ms forwards !important;
+  color: #F0F0ED !important;
+  -webkit-text-fill-color: #F0F0ED !important;
+}
+
+/* Also target any input that has been value-filled (catches generic PM fill) */
+input:not(:placeholder-shown) {
+  color: #F0F0ED !important;
+  -webkit-text-fill-color: #F0F0ED !important;
+}
+
+/* Firefox: dark color-scheme suppresses navy autofill highlight where possible */
 input {
   color-scheme: dark;
 }
