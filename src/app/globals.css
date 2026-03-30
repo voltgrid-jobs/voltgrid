@@ -44,16 +44,27 @@ body {
   overflow-x: hidden;
 }
 
-/* ── Browser autofill — prevent dark overlay making text invisible ── */
-/* Chrome/Safari override the background via internal styles; box-shadow trick restores it */
+/* ── Browser autofill + password manager injection fix ── */
+/* Native browser autofill: box-shadow inset trick overrides UA stylesheet */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 1000px #1F2937 inset !important; /* matches bg-gray-800 used on inputs */
-  -webkit-text-fill-color: var(--fg) !important;
-  caret-color: var(--fg);
+  -webkit-box-shadow: 0 0 0 1000px #1F2937 inset !important;
+  -webkit-text-fill-color: #F0F0ED !important;
+  caret-color: #F0F0ED;
   transition: background-color 9999s ease-in-out 0s !important;
+}
+
+/* Dashlane + other password managers inject autofill via JS/extension CSS.
+   They set color: black or color: initial — override with !important targeting
+   their data attributes and the general filled-input state. */
+input[data-dashlane-rid],
+input[data-form-type],
+input[data-lpignore],
+input:-webkit-autofill {
+  color: #F0F0ED !important;
+  background-color: #1F2937 !important;
 }
 
 /* Prevent iOS Safari from zooming on input focus (requires >= 16px font) */
