@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 
-export function AlertSignupWidget({ keywords, category }: { keywords?: string; category?: string }) {
+export function AlertSignupWidget({ keywords, category, subscriberCount }: { keywords?: string; category?: string; subscriberCount?: number }) {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
@@ -61,6 +61,11 @@ export function AlertSignupWidget({ keywords, category }: { keywords?: string; c
         </button>
       </form>
       {error && <p className="text-xs mt-2" style={{ color: '#F87171' }}>{error}</p>}
+      {subscriberCount != null && subscriberCount > 0 && (
+        <p className="text-xs mt-2" style={{ color: 'var(--fg-faint)' }}>
+          ✓ Join {subscriberCount >= 1000 ? `${Math.floor(subscriberCount / 100) * 100}+` : `${subscriberCount}+`} trades workers already getting alerts
+        </p>
+      )}
     </div>
   )
 }

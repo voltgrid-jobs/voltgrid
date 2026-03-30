@@ -39,9 +39,10 @@ export default async function HomePage() {
 
   // Jobs added this week
   const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-  const { count: jobsThisWeek } = await supabase
-    .from('jobs').select('*', { count: 'exact', head: true })
-    .eq('is_active', true).gte('created_at', oneWeekAgo)
+  const [{ count: jobsThisWeek }, { count: alertSubscribers }] = await Promise.all([
+    supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('is_active', true).gte('created_at', oneWeekAgo),
+    supabase.from('job_alerts').select('*', { count: 'exact', head: true }),
+  ])
 
   // Companies for logo bar
   const companyCounts: Record<string, number> = {}
@@ -141,7 +142,7 @@ export default async function HomePage() {
       <NewsletterCaptureWidget />
 
       {/* JOB ALERT CAPTURE */}
-      <JobAlertInlineForm variant="homepage" />
+      <JobAlertInlineForm variant="homepage" subscriberCount={alertSubscribers ?? undefined} />
 
       {/* COMPANY LOGO BAR */}
       {logoBarCompanies.length > 0 && (

@@ -12,9 +12,11 @@ const TRADE_OPTIONS = [
 export function JobAlertInlineForm({
   variant = 'homepage',
   defaultTrade = '',
+  subscriberCount,
 }: {
   variant?: 'homepage' | 'jobs'
   defaultTrade?: string
+  subscriberCount?: number
 }) {
   const [email, setEmail] = useState('')
   const [trade, setTrade] = useState(defaultTrade)
@@ -103,6 +105,11 @@ export function JobAlertInlineForm({
             {error}
           </p>
         )}
+        {subscriberCount != null && subscriberCount > 0 && (
+          <p className="text-xs mt-2" style={{ color: 'var(--fg-faint)' }}>
+            ✓ Join {subscriberCount >= 1000 ? `${Math.floor(subscriberCount / 100) * 100}+` : `${subscriberCount}+`} trades workers already subscribed
+          </p>
+        )}
       </div>
     )
   }
@@ -172,6 +179,11 @@ export function JobAlertInlineForm({
         {error && (
           <p className="text-xs mt-2" style={{ color: '#F87171' }}>
             {error}
+          </p>
+        )}
+        {subscriberCount != null && subscriberCount > 0 && (
+          <p className="text-xs mt-3" style={{ color: 'var(--fg-faint)' }}>
+            ✓ Join {subscriberCount >= 1000 ? `${Math.floor(subscriberCount / 100) * 100}+` : `${subscriberCount}+`} electricians, HVAC techs, and trades workers already subscribed
           </p>
         )}
       </div>

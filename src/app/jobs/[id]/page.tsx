@@ -134,7 +134,7 @@ export default async function JobDetailPage({
   const { data: job } = await supabase.from('jobs').select('*').eq('id', id).eq('is_active', true).single()
   if (!job) notFound()
 
-  const [{ data: { user } }, { data: similarJobs }] = await Promise.all([
+  const [{ data: { user } }, { data: similarJobs }, { count: alertSubscribers }] = await Promise.all([
     supabase.auth.getUser(),
     supabase
       .from('jobs')
@@ -145,6 +145,7 @@ export default async function JobDetailPage({
       .order('is_featured', { ascending: false })
       .order('created_at', { ascending: false })
       .limit(3),
+    supabase.from('job_alerts').select('*', { count: 'exact', head: true }),
   ])
 
   let isSaved = false
@@ -386,7 +387,7 @@ export default async function JobDetailPage({
         )}
 
         <div className="mt-4">
-          <AlertSignupWidget keywords={job.title} category={job.category} />
+          <AlertSignupWidget keywords={job.title} category={job.category} subscriberCount={alertSubscribers ?? undefined} />
         </div>
       </div>
     </>
