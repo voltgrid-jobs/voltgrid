@@ -117,12 +117,14 @@ export default async function JobsPage({
   // Get top companies for filter dropdown
   const { data: allJobs } = await supabase
     .from('jobs')
-    .select('company_name')
+    .select('company_name, category')
     .eq('is_active', true)
 
   const companyCounts: Record<string, number> = {}
-  allJobs?.forEach((j: { company_name?: string }) => {
+  const categoryCounts: Record<string, number> = {}
+  allJobs?.forEach((j: { company_name?: string; category?: string }) => {
     if (j.company_name) companyCounts[j.company_name] = (companyCounts[j.company_name] || 0) + 1
+    if (j.category) categoryCounts[j.category] = (categoryCounts[j.category] || 0) + 1
   })
   const topCompanies = Object.entries(companyCounts)
     .sort((a, b) => b[1] - a[1])
@@ -162,7 +164,7 @@ export default async function JobsPage({
 
       <div className="flex flex-col lg:flex-row gap-8">
         <aside className="lg:w-64 flex-shrink-0">
-          <JobFilters currentParams={params} topCompanies={topCompanies} />
+          <JobFilters currentParams={params} topCompanies={topCompanies} categoryCounts={categoryCounts} />
         </aside>
 
         <div className="flex-1">

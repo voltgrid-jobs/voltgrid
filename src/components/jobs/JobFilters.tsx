@@ -18,9 +18,10 @@ interface Props {
     salary?: string
   }
   topCompanies?: { name: string; count: number }[]
+  categoryCounts?: Record<string, number>
 }
 
-export function JobFilters({ currentParams, topCompanies = [] }: Props) {
+export function JobFilters({ currentParams, topCompanies = [], categoryCounts = {} }: Props) {
   const router = useRouter()
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -105,11 +106,18 @@ export function JobFilters({ currentParams, topCompanies = [] }: Props) {
         <div className="space-y-0.5">
           {Object.entries(CATEGORY_LABELS).map(([key, label]) => {
             const active = currentParams.category === key
+            const count = categoryCounts[key]
             return (
               <button key={key} onClick={() => updateFilter('category', active ? '' : key)}
-                className="w-full text-left px-3 py-2 rounded-lg text-sm transition-colors"
+                className="w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center justify-between"
                 {...filterBtn(active)}>
-                {label}
+                <span>{label}</span>
+                {count != null && count > 0 && (
+                  <span className="ml-2 text-xs px-1.5 py-0.5 rounded tabular-nums flex-shrink-0"
+                    style={{ background: active ? 'rgba(0,0,0,0.2)' : 'var(--bg)', color: active ? 'inherit' : 'var(--fg-faint)', minWidth: '1.5rem', textAlign: 'center' }}>
+                    {count}
+                  </span>
+                )}
               </button>
             )
           })}
