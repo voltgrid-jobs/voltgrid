@@ -65,6 +65,7 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
               onChange={e => setFullName(e.target.value)}
               placeholder="John Smith"
               className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 text-sm"
+              style={{ color: '#F0F0ED', backgroundColor: '#1F2937' }}
             />
           </div>
         )}
@@ -78,6 +79,7 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
             required
             placeholder="you@example.com"
             className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 text-sm"
+            style={{ color: '#F0F0ED', backgroundColor: '#1F2937' }}
           />
         </div>
 
@@ -91,6 +93,7 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
             minLength={8}
             placeholder="8+ characters"
             className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400 text-sm"
+            style={{ color: '#F0F0ED', backgroundColor: '#1F2937' }}
           />
         </div>
 
