@@ -13,9 +13,10 @@ function verifySignature(body: string, signature: string | null, secret: string)
 }
 
 export async function POST(req: NextRequest) {
-  const secret = process.env.GITHUB_WEBHOOK_SECRET
-  const botToken = process.env.TELEGRAM_BOT_TOKEN
-  const chatId = process.env.TELEGRAM_FELIX_CHAT_ID // Felix's DM chat ID
+  // .trim() guards against trailing newlines from env var injection (echo vs printf)
+  const secret = process.env.GITHUB_WEBHOOK_SECRET?.trim()
+  const botToken = process.env.TELEGRAM_BOT_TOKEN?.trim()
+  const chatId = process.env.TELEGRAM_FELIX_CHAT_ID?.trim() // Felix's DM chat ID
 
   if (!secret || !botToken || !chatId) {
     return NextResponse.json({ error: 'Webhook not configured' }, { status: 500 })
