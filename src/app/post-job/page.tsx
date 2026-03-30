@@ -51,22 +51,9 @@ export default async function PostJobPage() {
   const jobCount = count ?? 350
 
   return (
-    <>
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-12 pb-4">
-        <h1
-          className="text-3xl font-bold mb-2"
-          style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif' }}
-        >
-          Post a Job
-        </h1>
-        <p style={{ color: 'var(--fg-muted)' }}>
-          Reach electricians, HVAC techs, and low voltage specialists actively looking for data center work.
-        </p>
-      </div>
-
-      {/* PostJobPageClient holds selectedPlan state and renders the sticky selector + form.
-          TrustRail is a server component passed as a prop — Next.js allows this pattern. */}
-      <PostJobPageClient trustRail={<TrustRail jobCount={jobCount} />} />
-    </>
+    <PostJobPageClient
+      trustRail={<TrustRail jobCount={jobCount} />}
+      jobCount={jobCount}
+    />
   )
 }

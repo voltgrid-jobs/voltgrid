@@ -44,7 +44,7 @@ export function PersistentPricingSelector({
 
   return (
     <div
-      className="sticky top-0 z-50"
+      className="fixed inset-x-0 top-14 z-40"
       style={{ background: 'var(--bg-raised)', borderBottom: '1px solid var(--border)' }}
     >
       {/* Compact bar */}
