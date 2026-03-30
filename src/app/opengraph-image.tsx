@@ -1,90 +1,86 @@
 import { ImageResponse } from 'next/og'
+import { readFileSync } from 'fs'
+import { join } from 'path'
 
 export const runtime = 'nodejs'
 export const contentType = 'image/png'
 export const size = { width: 1200, height: 630 }
 
 export default function Image() {
+  // Load logo as base64 for embedding
+  const logoPath = join(process.cwd(), 'public', 'logo-wordmark-dark.png')
+  const logoData = readFileSync(logoPath)
+  const logoBase64 = `data:image/png;base64,${logoData.toString('base64')}`
+
   return new ImageResponse(
     (
       <div
         style={{
           width: '1200px',
           height: '630px',
-          background: '#030712',
+          background: '#0D0D0D',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          padding: '64px 72px',
+          padding: '72px 80px',
           fontFamily: 'system-ui, sans-serif',
         }}
       >
-        {/* Logo row */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <div style={{
-            width: '44px',
-            height: '44px',
-            borderRadius: '12px',
-            background: '#facc15',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '24px',
-          }}>
-            ⚡
-          </div>
-          <span style={{ color: '#6b7280', fontSize: '20px', fontWeight: 600, letterSpacing: '0.01em' }}>
-            voltgridjobs.com
-          </span>
-        </div>
+        {/* Logo */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={logoBase64}
+          alt="VoltGrid Jobs"
+          style={{ height: '52px', width: 'auto', objectFit: 'contain', objectPosition: 'left' }}
+        />
 
         {/* Main text block */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          {/* Primary headline */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
           <div style={{
-            fontSize: '80px',
+            fontSize: '72px',
             fontWeight: 800,
             color: '#F0F0ED',
             lineHeight: 1.0,
             letterSpacing: '-0.03em',
           }}>
-            VoltGrid Jobs
+            Trades Jobs at<br />Data Centers &amp; AI Sites
           </div>
 
-          {/* Secondary line */}
           <div style={{
-            fontSize: '32px',
-            fontWeight: 600,
-            color: '#facc15',
-            lineHeight: 1.2,
-            letterSpacing: '-0.01em',
-          }}>
-            Trades Jobs at Data Centers &amp; AI Sites
-          </div>
-
-          {/* Tertiary trades list */}
-          <div style={{
-            fontSize: '20px',
-            fontWeight: 400,
-            color: '#F0F0ED',
-            opacity: 0.45,
-            letterSpacing: '0.02em',
+            fontSize: '28px',
+            fontWeight: 500,
+            color: '#FACC15',
+            lineHeight: 1.3,
           }}>
             Electricians · HVAC · Low Voltage · Construction
           </div>
         </div>
 
-        {/* Bottom bar */}
+        {/* Stats bar */}
         <div style={{
           display: 'flex',
-          justifyContent: 'flex-end',
           alignItems: 'center',
-          borderTop: '1px solid rgba(255,255,255,0.08)',
-          paddingTop: '24px',
+          gap: '0px',
+          borderTop: '1px solid rgba(255,255,255,0.10)',
+          paddingTop: '28px',
         }}>
-          <span style={{ color: '#facc15', fontSize: '18px', fontWeight: 500 }}>
-            voltgridjobs.com
-          </span>
+          {[
+            { value: '351', label: 'open roles' },
+            { value: '$45–85/hr', label: 'typical pay' },
+            { value: 'CoreWeave · xAI · T5', label: 'hiring now' },
+          ].map((stat, i) => (
+            <div key={i} style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '4px',
+              flex: 1,
+              borderLeft: i > 0 ? '1px solid rgba(255,255,255,0.10)' : 'none',
+              paddingLeft: i > 0 ? '32px' : '0',
+            }}>
+              <span style={{ color: '#FACC15', fontSize: '22px', fontWeight: 700 }}>{stat.value}</span>
+              <span style={{ color: '#C0C0B8', fontSize: '14px', fontWeight: 400 }}>{stat.label}</span>
+            </div>
+          ))}
         </div>
       </div>
     ),
