@@ -164,6 +164,26 @@ export default function BreakIntoDataCenterWork() {
           </p>
         </Section>
 
+        {/* Industrial / automation background */}
+        <Section title="Coming From Industrial or Automation? You're Already Ahead">
+          <p>
+            If your background is industrial electrical — VFDs (variable frequency drives), PLCs, contactors, motor controls, or process automation — you may be better positioned for data center work than most commercial electricians. DC facilities run sophisticated power and cooling systems that require exactly these skills.
+          </p>
+          <p>
+            Specifically, industrial and automation experience that transfers directly to DC work:
+          </p>
+          <BulletList items={[
+            'VFD programming and troubleshooting — used extensively in DC cooling and mechanical systems',
+            'PLC/SCADA experience — DC facilities use BMS (Building Management Systems) that work on similar principles',
+            'Motor controls, contactors, and thermal overload relays — standard in DC mechanical rooms',
+            'Panel building and controls wiring — critical infrastructure DC employers actively recruit for',
+            'Industrial power distribution (480V, 3-phase) — directly applicable to DC power infrastructure',
+          ]} />
+          <p>
+            <strong style={{ color: 'var(--fg)' }}>For internationally trained electricians:</strong> If you trained and worked in Europe, Latin America, or elsewhere, your industrial and automation background is recognized by US DC employers — especially for controls and BMS roles. The technology is universal even if voltages and code references differ. Focus your resume on the equipment and systems you worked with (specific VFD brands, PLC platforms, automation software) rather than local certifications, and be upfront that you&apos;re working toward US licensure. Many DC contractors will hire experienced controls electricians in a tech or specialist capacity while you complete the licensing process.
+          </p>
+        </Section>
+
         {/* What transfers */}
         <Section title="What Transfers From Your Current Trade">
           <p>
