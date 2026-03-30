@@ -26,14 +26,8 @@ export function DashboardTabs({
 
   return (
     <div>
-      {/* Tab bar */}
+      {/* Tab bar — Postings first for employers */}
       <div className="flex items-center gap-1 mb-8" style={{ borderBottom: '1px solid var(--border)', paddingBottom: '0' }}>
-        <TabButton
-          active={activeTab === 'searches'}
-          onClick={() => setActiveTab('searches')}
-        >
-          My Job Searches
-        </TabButton>
         {showPostings && (
           <TabButton
             active={activeTab === 'postings'}
@@ -42,6 +36,12 @@ export function DashboardTabs({
             My Postings
           </TabButton>
         )}
+        <TabButton
+          active={activeTab === 'searches'}
+          onClick={() => setActiveTab('searches')}
+        >
+          My Job Searches
+        </TabButton>
       </div>
 
       {/* Tab content */}

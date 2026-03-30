@@ -73,17 +73,23 @@ export default async function DashboardPage({
   }
 
   // ── Fetch employer data ────────────────────────────────────────────────────
-  const { data: employer } = await supabase
+  // Use array fetch — a user can have multiple employer records (e.g. posted under
+  // different company names before linking). .single() would 406 in that case.
+  const { data: employers } = await supabase
     .from('employers')
     .select('*')
     .eq('user_id', user.id)
-    .single()
+    .order('created_at', { ascending: false })
 
-  const { data: jobs } = employer
+  // Primary employer used for display (most recent); jobs pulled across all records
+  const employer = employers?.[0] ?? null
+  const employerIds = employers?.map((e: { id: string }) => e.id) ?? []
+
+  const { data: jobs } = employerIds.length > 0
     ? await supabase
         .from('jobs')
         .select('*')
-        .eq('employer_id', employer.id)
+        .in('employer_id', employerIds)
         .order('created_at', { ascending: false })
     : { data: [] }
 
