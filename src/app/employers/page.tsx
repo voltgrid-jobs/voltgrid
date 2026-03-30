@@ -361,6 +361,11 @@ export default async function EmployersPage() {
                 </div>
               ))}
             </div>
+            {/* Launch urgency */}
+            <p className="text-center text-sm mt-4 mb-2" style={{ color: 'var(--yellow)' }}>
+              🚀 Launch pricing — rates increase after April 30
+            </p>
+
             {/* Guarantee badges */}
             <div className="flex flex-col items-center gap-3 mb-6">
               <div

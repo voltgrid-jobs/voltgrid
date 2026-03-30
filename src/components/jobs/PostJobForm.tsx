@@ -181,6 +181,11 @@ export function PostJobForm() {
           </div>
         </div>
 
+        {/* Launch urgency */}
+        <p className="text-xs text-center mb-2" style={{ color: 'var(--yellow)' }}>
+          🚀 Launch pricing — rates increase after April 30
+        </p>
+
         {error && (
           <div className="rounded-lg px-4 py-3 text-sm mb-4" style={{ background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.3)', color: '#F87171' }}>
             {error}
