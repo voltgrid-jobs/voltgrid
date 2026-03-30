@@ -424,10 +424,9 @@ export async function POST(req: NextRequest) {
 
   const supabase = createAdminClient()
   const allJobs: RawJob[] = []
-  const sourceErrors: Record<string, string> = {}
 
-  // Fetch from all sources concurrently — track failures per source
-  const [adzunaResult, usaResult, greenhouseResult, leverResult, dolResult] = await Promise.allSettled([
+  // Fetch from all sources concurrently
+  const [adzunaJobs, usaJobs, greenhouseJobs, leverJobs, dolJobs] = await Promise.all([
     fetchAdzunaJobs(),
     fetchUSAJobs(),
     fetchGreenhouseJobs(),
@@ -435,43 +434,41 @@ export async function POST(req: NextRequest) {
     fetchDOLApprenticeshipJobs(),
   ])
 
-  const adzunaJobs = adzunaResult.status === 'fulfilled' ? adzunaResult.value : (sourceErrors.adzuna = adzunaResult.reason?.message ?? 'unknown', [])
-  const usaJobs = usaResult.status === 'fulfilled' ? usaResult.value : (sourceErrors.usajobs = usaResult.reason?.message ?? 'unknown', [])
-  const greenhouseJobs = greenhouseResult.status === 'fulfilled' ? greenhouseResult.value : (sourceErrors.greenhouse = greenhouseResult.reason?.message ?? 'unknown', [])
-  const leverJobs = leverResult.status === 'fulfilled' ? leverResult.value : (sourceErrors.lever = leverResult.reason?.message ?? 'unknown', [])
-  const dolJobs = dolResult.status === 'fulfilled' ? dolResult.value : []
-
   allJobs.push(...adzunaJobs, ...usaJobs, ...greenhouseJobs, ...leverJobs, ...dolJobs)
 
   let inserted = 0
   let skipped = 0
 
-  // Batch dedup: fetch all existing source_ids in a single query instead of N+1 selects
-  const incomingSourceIds = allJobs.map(j => j.source_id).filter(Boolean)
+  // Batch dedup check — fetch all existing source_ids in one query to avoid N+1
+  const validJobs = allJobs.filter(j => j.title && j.description && j.company_name)
+  skipped += allJobs.length - validJobs.length
+
+  const sourceIdPairs = validJobs.map(j => `${j.source}:${j.source_id}`)
   const existingSet = new Set<string>()
-  if (incomingSourceIds.length > 0) {
-    const { data: existingJobs } = await supabase
-      .from('jobs')
-      .select('source, source_id')
-      .in('source_id', incomingSourceIds)
-    for (const j of existingJobs ?? []) {
-      existingSet.add(`${j.source}:${j.source_id}`)
+  if (sourceIdPairs.length > 0) {
+    // Fetch existing in chunks of 500 to avoid query size limits
+    const chunkSize = 500
+    for (let i = 0; i < sourceIdPairs.length; i += chunkSize) {
+      const chunk = validJobs.slice(i, i + chunkSize)
+      const sourceIds = chunk.map(j => j.source_id)
+      const { data: existing } = await supabase
+        .from('jobs')
+        .select('source, source_id')
+        .in('source_id', sourceIds)
+      for (const row of existing ?? []) {
+        existingSet.add(`${row.source}:${row.source_id}`)
+      }
     }
   }
 
-  for (const job of allJobs) {
-    if (!job.title || !job.description || !job.company_name) {
+  for (const job of validJobs) {
+    const key = `${job.source}:${job.source_id}`
+    if (existingSet.has(key)) {
       skipped++
       continue
     }
 
     const category = job.category || classifyCategory(job.title, job.description)
-
-    // Dedup check against pre-fetched set (O(1) vs N queries)
-    if (existingSet.has(`${job.source}:${job.source_id}`)) {
-      skipped++
-      continue
-    }
 
     const { error } = await supabase.from('jobs').insert({
       title: job.title,
@@ -504,7 +501,7 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json({
-    success: Object.keys(sourceErrors).length === 0,
+    success: true,
     fetched: allJobs.length,
     inserted,
     skipped,
@@ -515,7 +512,6 @@ export async function POST(req: NextRequest) {
       lever: leverJobs.length,
       dol_apprenticeship: dolJobs.length,
     },
-    ...(Object.keys(sourceErrors).length > 0 && { source_errors: sourceErrors }),
   })
 }
 
@@ -525,7 +521,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Not configured' }, { status: 500 })
   }
   const authHeader = req.headers.get('authorization')
-  if (authHeader !== `Bearer ${INGEST_SECRET}`) {
+  const isVercelCron = req.headers.get('x-vercel-cron') === '1'
+  if (!isVercelCron && authHeader !== `Bearer ${INGEST_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
   return POST(req)

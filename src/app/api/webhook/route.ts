@@ -44,6 +44,17 @@ export async function POST(req: NextRequest) {
     }
 
     try {
+      // Idempotency check — if this stripe_session_id was already processed, skip
+      const { data: existingPayment } = await supabase
+        .from('payments')
+        .select('id')
+        .eq('stripe_session_id', session.id)
+        .single()
+      if (existingPayment) {
+        console.log('[webhook] Duplicate event for session', session.id, '— skipping')
+        return NextResponse.json({ received: true })
+      }
+
       // Get full description from draft if available
       let description = meta.description || ''
       let applyUrl = meta.apply_url || ''
@@ -216,7 +227,7 @@ export async function POST(req: NextRequest) {
         try {
           await supabase
             .from('jobs')
-            .update({ featured: true })
+            .update({ is_featured: true })
             .eq('employer_email', meta.company_email)
             .eq('is_active', true)
           console.log('[webhook] Pro listings featured for:', meta.company_email)
