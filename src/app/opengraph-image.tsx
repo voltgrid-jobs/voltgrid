@@ -1,16 +1,14 @@
 import { ImageResponse } from 'next/og'
-import { readFileSync } from 'fs'
-import { join } from 'path'
 
 export const runtime = 'nodejs'
 export const contentType = 'image/png'
 export const size = { width: 1200, height: 630 }
 
-export default function Image() {
-  // Load logo as base64 for embedding
-  const logoPath = join(process.cwd(), 'public', 'logo-wordmark-dark.png')
-  const logoData = readFileSync(logoPath)
-  const logoBase64 = `data:image/png;base64,${logoData.toString('base64')}`
+export default async function Image() {
+  // Fetch logo as base64 at request time
+  const logoRes = await fetch(new URL('/logo-wordmark-dark.png', 'https://voltgridjobs.com'))
+  const logoBuffer = await logoRes.arrayBuffer()
+  const logoBase64 = `data:image/png;base64,${Buffer.from(logoBuffer).toString('base64')}`
 
   return new ImageResponse(
     (
@@ -60,7 +58,6 @@ export default function Image() {
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '0px',
           borderTop: '1px solid rgba(255,255,255,0.10)',
           paddingTop: '28px',
         }}>
