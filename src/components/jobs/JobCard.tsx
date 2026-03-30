@@ -226,7 +226,10 @@ export function JobCard({ job, featured = false }: { job: Job; featured?: boolea
             </div>
           ) : (
             <div className="mb-1 text-xs" style={{ color: 'var(--fg-faint)' }}>
-              Salary not disclosed
+              Salary not disclosed ·{' '}
+              <Link href="/salary-guide" className="underline" style={{ color: 'var(--yellow)' }} onClick={e => e.stopPropagation()}>
+                See market rates →
+              </Link>
             </div>
           )}
           <div className="text-xs" style={{ color: 'var(--fg-faint)' }}>
@@ -248,7 +251,10 @@ export function JobCard({ job, featured = false }: { job: Job; featured?: boolea
         </div>
       ) : (
         <div className="sm:hidden mt-2 text-xs" style={{ color: 'var(--fg-faint)' }}>
-          Salary not disclosed
+          Salary not disclosed ·{' '}
+          <Link href="/salary-guide" className="underline" style={{ color: 'var(--yellow)' }} onClick={e => e.stopPropagation()}>
+            See market rates →
+          </Link>
         </div>
       )}
 
