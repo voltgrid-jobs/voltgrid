@@ -6,6 +6,8 @@ const TRADE_OPTIONS = [
   { value: 'electrical', label: 'Electrical' },
   { value: 'hvac', label: 'HVAC' },
   { value: 'low_voltage', label: 'Low Voltage' },
+  { value: 'project_management', label: 'Project Mgmt' },
+  { value: 'operations', label: 'Operations' },
   { value: 'construction', label: 'Construction' },
 ]
 
