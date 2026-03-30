@@ -52,6 +52,26 @@ export default async function DashboardPage({
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login?next=/dashboard')
 
+  // ── Auto-link employer records to auth account ─────────────────────────────
+  // Jobs posted via Stripe checkout have employer_email set but employer.user_id = null
+  // (no auth account exists at payment time). On first dashboard load, link them.
+  {
+    const admin = createAdminClient()
+    const { data: emailJobs } = await admin
+      .from('jobs')
+      .select('employer_id')
+      .eq('employer_email', user.email!)
+      .not('employer_id', 'is', null)
+    if (emailJobs && emailJobs.length > 0) {
+      const ids = [...new Set(emailJobs.map(j => (j as { employer_id: string }).employer_id))]
+      await admin
+        .from('employers')
+        .update({ user_id: user.id })
+        .in('id', ids)
+        .is('user_id', null)
+    }
+  }
+
   // ── Fetch employer data ────────────────────────────────────────────────────
   const { data: employer } = await supabase
     .from('employers')
