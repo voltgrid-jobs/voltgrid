@@ -2,11 +2,11 @@
 import { useState } from 'react'
 import { CATEGORY_LABELS, JOB_TYPE_LABELS, TRAVEL_LABELS, SHIFT_LABELS } from '@/types'
 
-const PLANS = [
-  { id: 'single_post', name: 'Single Post', price: '$149', description: '1 listing · 30 days' },
-  { id: 'five_pack', name: '5-Pack', price: '$499', description: '5 listings · $99 each · use any time' },
-  { id: 'pro_monthly', name: 'Pro Monthly', price: '$799/mo', description: 'Unlimited listings' },
-]
+const PLAN_DISPLAY: Record<string, { name: string; price: string; description: string }> = {
+  single_post: { name: 'Single Listing', price: '$149', description: '1 listing · 30 days active' },
+  five_pack: { name: '5-Pack', price: '$499', description: '5 listings at $99 each · use any time' },
+  pro_monthly: { name: 'Pro Monthly', price: '$799/mo', description: 'Unlimited listings' },
+}
 
 const inputCls = 'w-full px-3 py-2.5 rounded-lg text-sm transition-colors focus:outline-none'
 const inputStyle = {
@@ -57,8 +57,12 @@ function StepIndicator({ step }: { step: 1 | 2 }) {
   )
 }
 
-export function PostJobForm() {
-  const [plan, setPlan] = useState('single_post')
+interface PostJobFormProps {
+  selectedPlan: string
+  setSelectedPlan: (plan: string) => void
+}
+
+export function PostJobForm({ selectedPlan, setSelectedPlan: _setSelectedPlan }: PostJobFormProps) {
   const [step, setStep] = useState<1 | 2>(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -150,8 +154,8 @@ export function PostJobForm() {
       return
     }
 
-    // Stripe checkout path
-    const data = { plan, ...vals }
+    // Stripe checkout path — uses selectedPlan from sticky selector
+    const data = { plan: selectedPlan, ...vals }
     try {
       const res = await fetch('/api/checkout', {
         method: 'POST',
@@ -171,7 +175,7 @@ export function PostJobForm() {
     }
   }
 
-  const selectedPlan = PLANS.find(p => p.id === plan)!
+  const currentPlan = PLAN_DISPLAY[selectedPlan] ?? PLAN_DISPLAY.single_post
   const hasCredits = creditBalance && (creditBalance.is_pro || creditBalance.post_credits > 0)
 
   // ── STEP 2: Review & Pay ──
@@ -216,24 +220,25 @@ export function PostJobForm() {
           </div>
         )}
 
-        {/* Plan selector — only shown when no credits */}
+        {/* Selected plan — read-only when no credits; plan is managed by sticky selector above */}
         {!hasCredits && (
           <div className="mb-6">
-            <p className="text-sm font-medium mb-3" style={{ color: 'var(--fg)' }}>Plan</p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {PLANS.map((p) => (
-                <button key={p.id} type="button" onClick={() => setPlan(p.id)}
-                  className="rounded-xl p-4 text-left transition-colors"
-                  style={{
-                    border: `1px solid ${plan === p.id ? 'var(--yellow)' : 'var(--border)'}`,
-                    background: plan === p.id ? 'var(--yellow-dim)' : 'var(--bg-raised)',
-                  }}>
-                  <div className="font-semibold text-sm" style={{ color: 'var(--fg)' }}>{p.name}</div>
-                  <div className="font-bold mt-1" style={{ color: 'var(--yellow)' }}>{p.price}</div>
-                  <div className="text-xs mt-1" style={{ color: 'var(--fg-faint)' }}>{p.description}</div>
-                </button>
-              ))}
+            <p className="text-sm font-medium mb-2" style={{ color: 'var(--fg)' }}>Selected plan</p>
+            <div
+              className="rounded-xl p-4 flex items-center justify-between gap-4"
+              style={{ border: '1px solid var(--yellow)', background: 'var(--yellow-dim)' }}
+            >
+              <div>
+                <p className="font-semibold text-sm" style={{ color: 'var(--fg)' }}>{currentPlan.name}</p>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--fg-faint)' }}>{currentPlan.description}</p>
+              </div>
+              <span className="text-xl font-bold flex-shrink-0" style={{ color: 'var(--yellow)' }}>
+                {currentPlan.price}
+              </span>
             </div>
+            <p className="text-xs mt-2" style={{ color: 'var(--fg-faint)' }}>
+              To change plan, use the selector at the top of the page.
+            </p>
           </div>
         )}
 
@@ -259,7 +264,7 @@ export function PostJobForm() {
             ? (hasCredits ? 'Posting your job...' : 'Redirecting to checkout...')
             : hasCredits
               ? 'Post Job — Use 1 Credit →'
-              : `Pay ${selectedPlan.price} — Continue to Stripe →`
+              : `Pay ${currentPlan.price} — Continue to Stripe →`
           }
         </button>
 

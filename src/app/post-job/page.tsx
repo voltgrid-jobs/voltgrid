@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
-import { PostJobForm } from '@/components/jobs/PostJobForm'
 import { createClient } from '@/lib/supabase/server'
+import { PostJobPageClient } from '@/components/jobs/PostJobPageClient'
 
 export const revalidate = 3600
 
@@ -51,9 +51,12 @@ export default async function PostJobPage() {
   const jobCount = count ?? 350
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif' }}>
+    <>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-12 pb-4">
+        <h1
+          className="text-3xl font-bold mb-2"
+          style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif' }}
+        >
           Post a Job
         </h1>
         <p style={{ color: 'var(--fg-muted)' }}>
@@ -61,23 +64,9 @@ export default async function PostJobPage() {
         </p>
       </div>
 
-      {/* Mobile: trust rail above form */}
-      <div className="lg:hidden mb-6">
-        <TrustRail jobCount={jobCount} />
-      </div>
-
-      {/* Desktop: 2-col layout */}
-      <div className="flex flex-col lg:flex-row gap-8 items-start">
-        {/* Left: form (2/3) */}
-        <div className="flex-1 lg:max-w-none w-full">
-          <PostJobForm />
-        </div>
-
-        {/* Right: trust rail (1/3) — hidden on mobile, shown on desktop */}
-        <div className="hidden lg:block w-80 flex-shrink-0 sticky top-8">
-          <TrustRail jobCount={jobCount} />
-        </div>
-      </div>
-    </div>
+      {/* PostJobPageClient holds selectedPlan state and renders the sticky selector + form.
+          TrustRail is a server component passed as a prop — Next.js allows this pattern. */}
+      <PostJobPageClient trustRail={<TrustRail jobCount={jobCount} />} />
+    </>
   )
 }
