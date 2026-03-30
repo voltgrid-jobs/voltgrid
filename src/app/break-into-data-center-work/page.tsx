@@ -87,6 +87,42 @@ export default function BreakIntoDataCenterWork() {
           </p>
         </div>
 
+        {/* Starting from zero */}
+        <Section title="Not Licensed Yet? Here's the Path Into Data Center Trades">
+          <p>
+            If you&apos;re considering the trades because of the AI infrastructure boom — you&apos;re thinking about it at exactly the right time. The construction cycle for data centers is a decade-long wave. Getting into electrical or HVAC now means you&apos;ll be a journeyman right as demand peaks.
+          </p>
+          <p>
+            Here&apos;s the realistic path from zero to data center work:
+          </p>
+
+          <div className="space-y-3 my-4">
+            {[
+              { step: '1', title: 'Apprenticeship (4–5 years)', note: 'The standard path into commercial electrical or HVAC. You earn while you learn — typically starting at 40–50% of journeyman wage, rising each year. No prior experience required to apply.' },
+              { step: '2', title: 'Journeyman license', note: 'After completing your apprenticeship hours and passing your state exam, you\'re a licensed journeyman. This is the minimum credential most DC employers want.' },
+              { step: '3', title: '2+ years commercial experience', note: 'Most DC-focused employers want to see commercial or industrial work — not residential. Hospital, industrial, or large commercial buildings are all good stepping stones.' },
+              { step: '4', title: 'Data center work', note: 'With a journeyman license and solid commercial background, you\'re competitive for DC roles paying $45–$85/hr. Add specialty certifications (NFPA 70E, OSHA-30) to jump the line.' },
+            ].map(({ step, title, note }) => (
+              <div key={step} className="flex gap-4 rounded-lg p-4" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
+                <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
+                  style={{ background: 'var(--yellow-dim)', color: 'var(--yellow)', border: '1px solid var(--yellow-border)' }}>
+                  {step}
+                </div>
+                <div>
+                  <p className="font-semibold text-sm mb-1" style={{ color: 'var(--fg)' }}>{title}</p>
+                  <p className="text-sm" style={{ color: 'var(--fg-faint)' }}>{note}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <p><strong style={{ color: 'var(--fg)' }}>Union vs. non-union:</strong> Union apprenticeships (through IBEW for electrical, UA for pipefitting/HVAC) have structured pay scales, excellent benefits, and strong placement on large commercial and DC builds. Non-union shops can get you started faster and often pay well on the right projects. Either path works — union tends to put you on bigger DC jobs sooner.</p>
+          <p><strong style={{ color: 'var(--fg)' }}>Timeline reality check:</strong> You&apos;re looking at 6–7 years from starting an apprenticeship to being competitive for top-tier DC roles. That&apos;s real. But trades workers in this niche regularly earn more than most college graduates by year 8 — and AI infrastructure isn&apos;t going anywhere.</p>
+          <p>
+            To find your local apprenticeship program: search <strong style={{ color: 'var(--fg)' }}>IBEW JATC</strong> (electrical) or <strong style={{ color: 'var(--fg)' }}>UA local</strong> (HVAC/pipefitting) + your city. Applications typically open once or twice a year.
+          </p>
+        </Section>
+
         {/* Electrical */}
         <Section title="What Electrical Employers Actually Look For">
           <p>
