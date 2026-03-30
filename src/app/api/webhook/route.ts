@@ -241,17 +241,18 @@ export async function POST(req: NextRequest) {
             // First ever paid listing — notify via OpenClaw gateway
             const gatewayToken = process.env.OPENCLAW_GATEWAY_TOKEN
             const gatewayUrl = process.env.OPENCLAW_GATEWAY_URL || 'http://127.0.0.1:18789'
-            const telegramId = process.env.OPENCLAW_TELEGRAM_ID
-            if (!gatewayToken || !telegramId) {
-              console.log('[webhook] Gateway env vars not configured — skipping first-paid alert')
+            if (!gatewayToken) {
+              console.log('[webhook] OPENCLAW_GATEWAY_TOKEN not configured — skipping first-paid alert')
             } else {
             const gatewayPayload = {
-              channel: 'telegram',
-              to: telegramId,
-              text: `🎉 First paid VoltGrid listing! Employer: ${meta.company_email}, Plan: ${meta.plan}`,
+              tool: 'sessions_send',
+              args: {
+                label: 'Filip DM',
+                message: `🎉 First paid VoltGrid listing! Employer: ${meta.company_email}, Plan: ${meta.plan}`,
+              },
             }
             try {
-              const gwRes = await fetch(`${gatewayUrl}/api/v1/outbound`, {
+              const gwRes = await fetch(`${gatewayUrl}/tools/invoke`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
