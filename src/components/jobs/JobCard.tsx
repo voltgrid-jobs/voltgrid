@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { type Job, CATEGORY_LABELS, JOB_TYPE_LABELS, TRAVEL_LABELS, SHIFT_LABELS } from '@/types'
 import { getLogoUrl } from '@/lib/company-logos'
 import { extractSalaryFromDescription } from '@/lib/salary-extract'
+import { MARKET_RATES } from '@/lib/market-rate-estimates'
 
 function formatSalary(min?: number, max?: number, currency = 'USD', period = 'year'): { primary: string; secondary?: string } | null {
   if (!min && !max) return null
@@ -106,6 +107,7 @@ export function JobCard({ job, featured = false }: { job: Job; featured?: boolea
   const rawSalary = formatSalary(job.salary_min, job.salary_max, job.salary_currency, job.salary_period ?? 'year')
   const extracted = (!job.salary_min && !job.salary_max && job.description)
     ? extractSalaryFromDescription(job.description) : null
+  const marketRate = (!rawSalary && !extracted && job.category) ? MARKET_RATES[job.category] ?? null : null
   const salary: { primary: string; secondary?: string } | null =
     rawSalary ?? (extracted ? { primary: extracted } : null)
   const logoUrl = getLogoUrl(job.company_name)
@@ -224,14 +226,16 @@ export function JobCard({ job, featured = false }: { job: Job; featured?: boolea
                 </div>
               )}
             </div>
-          ) : (
-            <div className="mb-1 text-xs" style={{ color: 'var(--fg-faint)' }}>
-              Salary not disclosed ·{' '}
-              <Link href="/salary-guide" className="underline" style={{ color: 'var(--yellow)' }} onClick={e => e.stopPropagation()}>
-                See market rates →
-              </Link>
+          ) : marketRate ? (
+            <div className="mb-1" title="Estimated market rate — employer has not disclosed salary for this role">
+              <div className="text-sm font-semibold" style={{ color: 'var(--fg-muted)' }}>
+                {marketRate.primary}
+              </div>
+              <div className="text-xs" style={{ color: 'var(--fg-faint)' }}>
+                {marketRate.note}
+              </div>
             </div>
-          )}
+          ) : null}
           <div className="text-xs" style={{ color: 'var(--fg-faint)' }}>
             Posted {formatDate(job.created_at)}
           </div>
@@ -249,14 +253,16 @@ export function JobCard({ job, featured = false }: { job: Job; featured?: boolea
             </div>
           )}
         </div>
-      ) : (
-        <div className="sm:hidden mt-2 text-xs" style={{ color: 'var(--fg-faint)' }}>
-          Salary not disclosed ·{' '}
-          <Link href="/salary-guide" className="underline" style={{ color: 'var(--yellow)' }} onClick={e => e.stopPropagation()}>
-            See market rates →
-          </Link>
+      ) : marketRate ? (
+        <div className="sm:hidden mt-2" title="Estimated market rate — employer has not disclosed salary for this role">
+          <div className="text-sm font-semibold" style={{ color: 'var(--fg-muted)' }}>
+            {marketRate.primary}
+          </div>
+          <div className="text-xs" style={{ color: 'var(--fg-faint)' }}>
+            {marketRate.note}
+          </div>
         </div>
-      )}
+      ) : null}
 
       {/* Mobile freshness signal */}
       <div className="sm:hidden mt-1 text-xs" style={{ color: 'var(--fg-faint)' }}>

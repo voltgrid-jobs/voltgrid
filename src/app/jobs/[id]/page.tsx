@@ -79,6 +79,7 @@ import { AlertSignupWidget } from '@/components/jobs/AlertSignupWidget'
 import { ApplyButton } from '@/components/jobs/ApplyButton'
 import { JobCard } from '@/components/jobs/JobCard'
 import { extractSalaryFromDescription } from '@/lib/salary-extract'
+import { MARKET_RATES } from '@/lib/market-rate-estimates'
 import type { Job } from '@/types'
 
 export async function generateMetadata({
@@ -160,6 +161,7 @@ export default async function JobDetailPage({
     ? extractSalaryFromDescription(job.description) : null
   const salary: { primary: string; secondary?: string } | null =
     rawSalary ?? (extracted ? { primary: extracted } : null)
+  const marketRate = (!salary && job.category) ? MARKET_RATES[job.category] ?? null : null
   const applyUrl = job.apply_url || (job.apply_email ? `mailto:${job.apply_email}` : null)
   const isCanada = isCanadaJob(job.location ?? '')
   const isFrench = isFrenchDescription(job.description ?? '')
@@ -246,12 +248,23 @@ export default async function JobDetailPage({
               </h1>
               <p className="text-base" style={{ color: 'var(--fg-muted)' }}>{job.company_name}</p>
               <p className="text-sm mt-1" style={{ color: 'var(--fg-faint)' }}>{job.location}</p>
-              {salary && (
+              {salary ? (
                 <div className="mt-2">
                   <p className="font-semibold" style={{ color: 'var(--green)' }}>{salary.primary}</p>
                   {salary.secondary && <p className="text-sm" style={{ color: 'var(--fg-muted)' }}>{salary.secondary}</p>}
                 </div>
-              )}
+              ) : marketRate ? (
+                <div className="mt-2">
+                  <p className="font-semibold" style={{ color: 'var(--fg-muted)' }}
+                    title="Estimated market rate — employer has not disclosed salary for this role">
+                    {marketRate.primary}
+                  </p>
+                  <p className="text-xs mt-0.5" style={{ color: 'var(--fg-faint)' }}>
+                    Salary not listed by employer. Estimate based on market data for this trade.{' '}
+                    <Link href="/salary-guide" style={{ color: 'var(--yellow)' }}>See salary data →</Link>
+                  </p>
+                </div>
+              ) : null}
             </div>
 
             <div className="sm:flex-shrink-0 flex flex-col gap-2">
