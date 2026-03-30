@@ -4,6 +4,8 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { DashboardTabs } from './DashboardTabs'
+import { SavedJobsList } from './SavedJobsList'
+import { AlertsList } from './AlertsList'
 
 export const metadata: Metadata = { title: 'Dashboard — VoltGrid Jobs' }
 
@@ -290,59 +292,19 @@ export default async function DashboardPage({
                   Saved Jobs ({savedJobs?.length ?? 0})
                 </h2>
               </div>
-              {savedJobs && savedJobs.length > 0 ? (
-                <div className="flex flex-col gap-3">
-                  {savedJobs.map((s) => {
-                    const job = (Array.isArray(s.jobs) ? s.jobs[0] : s.jobs) as Record<string, unknown> | null
-                    if (!job) return null
-                    const isActive = Boolean(job.is_active)
-                    const expiresAt = job.expires_at ? new Date(job.expires_at as string) : null
-                    const isExpired = expiresAt ? expiresAt < new Date() : !isActive
-                    return (
-                      <div key={s.job_id} style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}
-                        className="rounded-xl p-4 flex flex-col sm:flex-row sm:items-center gap-3">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                            <h3 className="font-semibold text-sm" style={{ color: 'var(--fg)' }}>{job.title as string}</h3>
-                            {isExpired ? (
-                              <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(239,68,68,0.12)', color: '#F87171', border: '1px solid rgba(239,68,68,0.2)' }}>
-                                Expired
-                              </span>
-                            ) : (
-                              <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'var(--green-dim)', color: 'var(--green)', border: '1px solid rgba(74,222,128,0.2)' }}>
-                                Active
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-xs" style={{ color: 'var(--fg-faint)' }}>
-                            {job.company_name as string} · {job.location as string}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-3 flex-shrink-0">
-                          {!isExpired && (
-                            <Link href={`/jobs/${s.job_id}`} className="text-xs hover:opacity-80 transition-opacity" style={{ color: 'var(--yellow)' }}>
-                              View →
-                            </Link>
-                          )}
-                          <form action="/api/saved-jobs/remove" method="POST" className="inline">
-                            <input type="hidden" name="job_id" value={s.job_id} />
-                            <button className="text-xs px-3 py-1.5 rounded-lg hover:text-red-400 transition-colors" style={{ color: 'var(--fg-muted)', border: '1px solid var(--border)' }}>
-                              Remove
-                            </button>
-                          </form>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              ) : (
-                <div style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }} className="rounded-xl p-8 text-center">
-                  <p className="text-sm mb-3" style={{ color: 'var(--fg-faint)' }}>No saved jobs yet.</p>
-                  <Link href="/jobs" style={{ color: 'var(--yellow)' }} className="text-sm hover:opacity-80 transition-opacity">
-                    Browse jobs →
-                  </Link>
-                </div>
-              )}
+              <SavedJobsList initialJobs={(savedJobs ?? []).map((s) => {
+                const job = (Array.isArray(s.jobs) ? s.jobs[0] : s.jobs) as Record<string, unknown> | null
+                return {
+                  job_id: s.job_id,
+                  job: job ? {
+                    id: job.id as string,
+                    title: job.title as string,
+                    company_name: job.company_name as string,
+                    location: job.location as string,
+                    expires_at: job.expires_at as string | null,
+                  } : null,
+                }
+              })} />
             </section>
 
             {/* My Alerts */}
@@ -352,36 +314,13 @@ export default async function DashboardPage({
                   My Alerts ({alerts?.length ?? 0})
                 </h2>
               </div>
-              {alerts && alerts.length > 0 ? (
-                <div className="flex flex-col gap-3">
-                  {alerts.map((alert) => (
-                    <div key={alert.id} style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}
-                      className="rounded-xl p-4 flex flex-col sm:flex-row sm:items-center gap-3">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium" style={{ color: 'var(--fg)' }}>
-                          {alert.keywords || 'All jobs'}
-                          {alert.location && ` · ${alert.location}`}
-                          {alert.category && ` · ${alert.category}`}
-                        </p>
-                        <p className="text-xs mt-0.5" style={{ color: 'var(--fg-faint)' }}>{alert.frequency} digest</p>
-                      </div>
-                      <div className="flex items-center gap-3 flex-shrink-0">
-                        <form action="/api/alerts/delete" method="POST" className="inline">
-                          <input type="hidden" name="alert_id" value={alert.id} />
-                          <button className="text-xs px-3 py-1.5 rounded-lg hover:text-red-400 transition-colors" style={{ color: 'var(--fg-muted)', border: '1px solid var(--border)' }}>
-                            Delete
-                          </button>
-                        </form>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }} className="rounded-xl p-8 text-center">
-                  <p className="text-sm mb-2" style={{ color: 'var(--fg-faint)' }}>No job alerts set up.</p>
-                  <p className="text-xs" style={{ color: 'var(--fg-faint)' }}>Set up alerts from any job listing page.</p>
-                </div>
-              )}
+              <AlertsList initialAlerts={(alerts ?? []).map(a => ({
+                id: a.id,
+                keywords: a.keywords ?? null,
+                location: a.location ?? null,
+                category: a.category ?? null,
+                frequency: a.frequency,
+              }))} />
             </section>
 
             {/* Browse CTA */}
