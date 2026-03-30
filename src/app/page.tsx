@@ -77,8 +77,8 @@ export default async function HomePage() {
                 color: 'var(--fg)',
               }}
             >
-              High-Paying Data Center Jobs<br />
-              <span style={{ color: 'var(--yellow)' }}>for Electricians<br />&amp; HVAC Techs</span>
+              You Build AI.<br />
+              <span style={{ color: 'var(--yellow)' }}>We&apos;ll Find You<br />the Job.</span>
             </h1>
 
             <p className="text-lg sm:text-xl mb-6 max-w-xl animate-fade-up delay-200" style={{ color: 'var(--fg-muted)', lineHeight: 1.6 }}>

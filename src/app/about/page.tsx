@@ -4,7 +4,7 @@ import Link from 'next/link'
 export const metadata: Metadata = {
   title: 'About — VoltGrid Jobs',
   description:
-    "VoltGrid Jobs exists because finding a data center electrician or HVAC tech shouldn't require posting on a general board and filtering through hundreds of irrelevant applications.",
+    'VoltGrid Jobs is the job board for trades workers at data centers and AI infrastructure sites — electricians, HVAC techs, and low voltage specialists.',
   alternates: { canonical: 'https://voltgridjobs.com/about' },
 }
 
@@ -27,8 +27,8 @@ export default function AboutPage() {
           color: 'var(--fg)',
         }}
       >
-        Built for the trades,{' '}
-        <span style={{ color: 'var(--yellow)' }}>by people who give a damn</span>
+        The job board for{' '}
+        <span style={{ color: 'var(--yellow)' }}>data center trades workers</span>
       </h1>
 
       <div
@@ -36,25 +36,23 @@ export default function AboutPage() {
         style={{ color: 'var(--fg-muted)', lineHeight: 1.75 }}
       >
         <p>
-          VoltGrid Jobs exists because finding a data center electrician or HVAC tech
-          shouldn&apos;t require posting on a general board and filtering through hundreds of
-          irrelevant applications.
+          VoltGrid Jobs is a focused job board for the trades workers building AI infrastructure —
+          electricians, HVAC techs, low voltage specialists, and the project managers who run these sites.
         </p>
 
         <p>
           Data center construction is the fastest-growing sector in the built environment.
-          Hyperscalers are spending $1T+ through 2030. But the people who actually build this
-          infrastructure — the journeymen, the HVAC crews, the low-voltage specialists — are
-          scattered across job boards designed for office workers.
+          Hyperscalers are spending $1T+ through 2030. Every job on VoltGrid is at a data center
+          or AI infrastructure site — no office roles, no irrelevant listings.
         </p>
 
         <p>
-          VoltGrid is a focused job board. Every job is at a data center or AI infrastructure
-          site. Every job seeker is a trades worker who knows what a PDU is.
+          For trades workers: find high-paying roles at CoreWeave, xAI, T5, and the contractors
+          building their sites. For employers: reach candidates who already know what a PDU is.
         </p>
 
         <p>
-          If you have questions, email{' '}
+          Questions?{' '}
           <a
             href="mailto:hello@voltgridjobs.com"
             className="transition-colors hover:text-white"

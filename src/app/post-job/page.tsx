@@ -74,6 +74,12 @@ function TrustRail() {
   )
 }
 
+const PLANS = [
+  { name: 'Single Post', price: '$149', period: 'one-time', highlight: false },
+  { name: '5-Pack', price: '$499', period: 'one-time', note: '$99/listing', highlight: true },
+  { name: 'Pro Monthly', price: '$799', period: '/ month', note: 'Unlimited listings', highlight: false },
+]
+
 export default function PostJobPage() {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
@@ -84,6 +90,46 @@ export default function PostJobPage() {
         <p style={{ color: 'var(--fg-muted)' }}>
           Reach electricians, HVAC techs, and low voltage specialists actively looking for data center work.
         </p>
+      </div>
+
+      {/* Pricing preview + social proof */}
+      <div className="mb-10 rounded-2xl p-6" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+          <div className="flex flex-col sm:flex-row gap-3">
+            {PLANS.map(plan => (
+              <div
+                key={plan.name}
+                className="flex flex-col px-5 py-3 rounded-xl"
+                style={{
+                  background: plan.highlight ? 'var(--yellow-dim)' : 'var(--bg)',
+                  border: plan.highlight ? '1px solid var(--yellow-border)' : '1px solid var(--border)',
+                  minWidth: '130px',
+                }}
+              >
+                <span className="text-xs font-semibold mb-1" style={{ color: plan.highlight ? 'var(--yellow)' : 'var(--fg-faint)' }}>
+                  {plan.name}
+                </span>
+                <span className="text-2xl font-extrabold leading-none" style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif' }}>
+                  {plan.price}
+                </span>
+                <span className="text-xs mt-0.5" style={{ color: 'var(--fg-faint)' }}>
+                  {plan.note ?? plan.period}
+                </span>
+              </div>
+            ))}
+          </div>
+          <div className="flex flex-col gap-2 text-sm sm:text-right">
+            <div style={{ color: 'var(--fg-muted)' }}>
+              <span style={{ color: 'var(--green)', fontWeight: 700 }}>✓</span> Live in under 5 minutes
+            </div>
+            <div style={{ color: 'var(--fg-muted)' }}>
+              <span style={{ color: 'var(--green)', fontWeight: 700 }}>✓</span> 30-day active listing
+            </div>
+            <div style={{ color: 'var(--fg-muted)' }}>
+              <span style={{ color: 'var(--green)', fontWeight: 700 }}>✓</span> Applications direct to you
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Mobile: trust rail above form */}

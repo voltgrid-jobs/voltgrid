@@ -8,6 +8,8 @@ const BACKGROUNDS = [
   { value: 'low_voltage', label: 'Low voltage / structured cabling' },
   { value: 'mep_engineer', label: 'MEP engineer' },
   { value: 'nuclear_industrial', label: 'Nuclear / industrial' },
+  { value: 'construction', label: 'Construction / site management' },
+  { value: 'operations', label: 'Operations / facilities' },
   { value: 'other', label: 'Other trades' },
 ]
 
@@ -18,6 +20,8 @@ const BACKGROUND_NOTES: Record<string, string> = {
   low_voltage: 'Low voltage and structured cabling is one of the fastest-growing DC specialties. Strong match.',
   mep_engineer: 'DC engineering roles are well-paid and plentiful. Good fit.',
   nuclear_industrial: 'Nuclear experience transfers exceptionally well to DC environments.',
+  construction: 'DC construction and site management roles are plentiful — super and PM demand is high right now.',
+  operations: 'Facilities and critical operations roles are growing fast with the AI buildout.',
 }
 
 export function AlertSignupWidget({

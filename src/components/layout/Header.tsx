@@ -36,7 +36,7 @@ export function Header() {
         <nav className="hidden md:flex items-center gap-1 text-sm">
           {[
             { href: '/jobs', label: 'Browse Jobs' },
-            { href: '/trades', label: 'Trades' },
+            { href: '/trades', label: 'Browse by Trade' },
             { href: '/locations', label: 'Locations' },
             { href: '/employers', label: 'For Employers' },
           ].map(({ href, label }) => (
@@ -97,7 +97,7 @@ export function Header() {
         <div id="mobile-menu" style={{ borderTop: '1px solid var(--border)', background: 'var(--bg)' }} className="md:hidden px-4 py-4 flex flex-col gap-3 text-sm">
           {[
             { href: '/jobs', label: 'Browse Jobs' },
-            { href: '/trades', label: 'Trades' },
+            { href: '/trades', label: 'Browse by Trade' },
             { href: '/locations', label: 'Locations' },
             { href: '/employers', label: 'For Employers' },
           ].map(({ href, label }) => (

@@ -383,7 +383,7 @@ export default function SalaryGuidePage() {
                   )}
                 </form>
                 <p style={{ fontSize: '0.7rem', color: 'var(--fg-faint)', marginTop: '1rem' }}>
-                  You'll also get new job alerts you can unsubscribe from anytime.
+                  We&apos;ll also send you new data center job alerts matching your trade. No spam — unsubscribe anytime.
                 </p>
               </div>
             </>
