@@ -329,6 +329,45 @@ export function PostJobForm() {
         )}
       </div>
 
+      {/* Live listing preview */}
+      <div className="pt-4" style={{ borderTop: '1px solid var(--border)' }}>
+        <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--fg-faint)' }}>
+          Preview — your listing will look like this
+        </p>
+        <div className="rounded-xl p-4" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
+          <div className="flex flex-wrap gap-1.5 mb-2">
+            <span className="text-xs px-2 py-0.5 rounded" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--fg-faint)' }}>
+              {CATEGORY_LABELS[vals.category as keyof typeof CATEGORY_LABELS] || 'Trade'}
+            </span>
+            <span className="text-xs px-2 py-0.5 rounded" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--fg-faint)' }}>
+              {JOB_TYPE_LABELS[vals.job_type as keyof typeof JOB_TYPE_LABELS] || 'Type'}
+            </span>
+          </div>
+          <p className="font-semibold text-base mb-0.5" style={{ color: vals.title ? 'var(--fg)' : 'var(--fg-faint)' }}>
+            {vals.title || 'Your job title'}
+          </p>
+          <p className="text-sm" style={{ color: 'var(--fg-muted)' }}>
+            <span style={{ color: vals.company_name ? 'var(--fg-muted)' : 'var(--fg-faint)' }}>
+              {vals.company_name || 'Your company'}
+            </span>
+            <span style={{ color: 'var(--fg-faint)' }}> · </span>
+            <span style={{ color: vals.location ? 'var(--fg-muted)' : 'var(--fg-faint)' }}>
+              {vals.location || 'Location'}
+            </span>
+            {vals.remote && <span style={{ color: 'var(--fg-faint)' }}> · Remote OK</span>}
+          </p>
+          {(vals.salary_min || vals.salary_max) && (
+            <p className="text-sm mt-1 font-semibold" style={{ color: 'var(--green)' }}>
+              {vals.salary_min && vals.salary_max
+                ? `$${Math.round(Number(vals.salary_min) / 2080)}/hr (~$${Math.round(Number(vals.salary_min) / 1000)}k–$${Math.round(Number(vals.salary_max) / 1000)}k/yr)`
+                : vals.salary_min
+                ? `~$${Math.round(Number(vals.salary_min) / 2080)}/hr`
+                : `up to ~$${Math.round(Number(vals.salary_max) / 2080)}/hr`}
+            </p>
+          )}
+        </div>
+      </div>
+
       {/* Trades details */}
       <div className="pt-4" style={{ borderTop: '1px solid var(--border)' }}>
         <h3 className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--fg-faint)' }}>Trades Details (optional)</h3>
@@ -390,7 +429,7 @@ export function PostJobForm() {
       </button>
 
       <p className="text-xs text-center" style={{ color: 'var(--fg-faint)' }}>
-        No payment yet — you'll review your listing and choose a plan on the next step.
+        Next: review your listing details and complete payment via Stripe.
       </p>
     </form>
   )

@@ -34,42 +34,6 @@ function TrustRail() {
         ))}
       </div>
 
-      {/* Mock listing preview */}
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--fg-faint)' }}>
-          Preview — your listing will look like this
-        </p>
-        <div
-          className="rounded-xl p-4"
-          style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}
-        >
-          <div className="flex flex-wrap gap-1.5 mb-2">
-            <span
-              className="text-xs px-2 py-0.5 rounded"
-              style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--fg-faint)' }}
-            >
-              [Trade]
-            </span>
-            <span
-              className="text-xs px-2 py-0.5 rounded"
-              style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--fg-faint)' }}
-            >
-              Full-time
-            </span>
-          </div>
-          <p className="font-semibold text-base mb-0.5" style={{ color: 'var(--fg)' }}>
-            [Your job title]
-          </p>
-          <p className="text-sm" style={{ color: 'var(--fg-muted)' }}>
-            [Your company]
-            <span style={{ color: 'var(--fg-faint)' }}> · </span>
-            [Location]
-          </p>
-          <p className="text-xs mt-2" style={{ color: 'var(--fg-faint)' }}>
-            Posted just now
-          </p>
-        </div>
-      </div>
     </aside>
   )
 }
