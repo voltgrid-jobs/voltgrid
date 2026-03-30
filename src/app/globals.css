@@ -67,6 +67,13 @@ input:-webkit-autofill {
   background-color: #1F2937 !important;
 }
 
+/* Firefox autofill highlight: suppresses the browser's built-in navy/yellow overlay.
+   color-scheme: dark tells Firefox to use its dark-mode autofill style (dark bg, light text)
+   instead of the default navy-blue highlight. */
+input {
+  color-scheme: dark;
+}
+
 /* Prevent iOS Safari from zooming on input focus (requires >= 16px font) */
 @media (max-width: 768px) {
   input, select, textarea {
