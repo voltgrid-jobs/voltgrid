@@ -213,7 +213,7 @@ export function JobCard({ job, featured = false }: { job: Job; featured?: boolea
         </div>
 
         <div className="text-right flex-shrink-0 hidden sm:block">
-          {salary && (
+          {salary ? (
             <div className="mb-1">
               <div className="text-sm font-semibold" style={{ color: 'var(--green)' }}>
                 {salary.primary}
@@ -224,6 +224,10 @@ export function JobCard({ job, featured = false }: { job: Job; featured?: boolea
                 </div>
               )}
             </div>
+          ) : (
+            <div className="mb-1 text-xs" style={{ color: 'var(--fg-faint)' }}>
+              Salary not disclosed
+            </div>
           )}
           <div className="text-xs" style={{ color: 'var(--fg-faint)' }}>
             Posted {formatDate(job.created_at)}
@@ -231,7 +235,7 @@ export function JobCard({ job, featured = false }: { job: Job; featured?: boolea
         </div>
       </div>
 
-      {salary && (
+      {salary ? (
         <div className="sm:hidden mt-2">
           <div className="text-sm font-semibold" style={{ color: 'var(--green)' }}>
             {salary.primary}
@@ -241,6 +245,10 @@ export function JobCard({ job, featured = false }: { job: Job; featured?: boolea
               {salary.secondary}
             </div>
           )}
+        </div>
+      ) : (
+        <div className="sm:hidden mt-2 text-xs" style={{ color: 'var(--fg-faint)' }}>
+          Salary not disclosed
         </div>
       )}
 

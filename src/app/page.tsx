@@ -149,7 +149,7 @@ export default async function HomePage() {
         <section style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', background: 'var(--bg-subtle)' }}>
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-7">
             <p className="text-xs uppercase tracking-widest mb-5 font-medium text-center" style={{ color: 'var(--fg-faint)' }}>
-              Companies hiring on VoltGrid
+              Open Roles From
             </p>
             <div className="flex flex-wrap justify-center items-center gap-8">
               {logoBarCompanies.map(({ name, logoUrl, domain }) => (
