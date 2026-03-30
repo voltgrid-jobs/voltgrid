@@ -75,9 +75,9 @@ function TrustRail() {
 }
 
 const PLANS = [
-  { name: 'Single Post', price: '$149', period: 'one-time', highlight: false },
-  { name: '5-Pack', price: '$499', period: 'one-time', note: '$99/listing', highlight: true },
-  { name: 'Pro Monthly', price: '$799', period: '/ month', note: 'Unlimited listings', highlight: false },
+  { name: 'Single Post', price: '$149', period: 'one-time', note: null },
+  { name: '5-Pack', price: '$499', period: 'one-time', note: '$99/listing — best value' },
+  { name: 'Pro Monthly', price: '$799', period: '/ month', note: 'Unlimited listings' },
 ]
 
 export default function PostJobPage() {
@@ -101,12 +101,12 @@ export default function PostJobPage() {
                 key={plan.name}
                 className="flex flex-col px-5 py-3 rounded-xl"
                 style={{
-                  background: plan.highlight ? 'var(--yellow-dim)' : 'var(--bg)',
-                  border: plan.highlight ? '1px solid var(--yellow-border)' : '1px solid var(--border)',
+                  background: 'var(--bg)',
+                  border: '1px solid var(--border)',
                   minWidth: '130px',
                 }}
               >
-                <span className="text-xs font-semibold mb-1" style={{ color: plan.highlight ? 'var(--yellow)' : 'var(--fg-faint)' }}>
+                <span className="text-xs font-semibold mb-1" style={{ color: 'var(--fg-faint)' }}>
                   {plan.name}
                 </span>
                 <span className="text-2xl font-extrabold leading-none" style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif' }}>
