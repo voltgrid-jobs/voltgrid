@@ -119,6 +119,18 @@ const FAQS = [
     q: 'How quickly does my listing go live?',
     a: "Within minutes. There's no manual review queue. Fill out the form, pay, and your listing is live immediately — visible to every trades worker who visits VoltGrid.",
   },
+  {
+    q: 'Is $149 worth it?',
+    a: "If your open electrician role pays $75/hour, a 40-hour week unfilled costs roughly $3,000 in lost project output. If VoltGrid gets you one qualified applicant faster than anywhere else, the listing paid for itself 20 times over. If it does not work, you spent $149.",
+  },
+  {
+    q: 'Do you just pull jobs from other sites?',
+    a: "Yes, for now — that is how we built the initial catalog. But every job is filtered to data center and AI infrastructure trades work only. On Indeed, your posting competes with millions of others. On VoltGrid, it is one of 351. The curation is the product.",
+  },
+  {
+    q: 'What experience should candidates have?',
+    a: "For electrical: low/medium voltage, power and lighting experience is what DC employers need — not high voltage, not residential. For HVAC: precision cooling, energy modeling, load calcs. If a candidate knows these, they can make the transition. VoltGrid attracts people already looking specifically for DC work.",
+  },
 ]
 
 const faqSchema = {
@@ -171,21 +183,21 @@ export default async function EmployersPage() {
           </div>
           <h1 className="leading-none mb-6"
             style={{ fontFamily: 'var(--font-display), system-ui, sans-serif', fontSize: 'clamp(2.8rem, 7vw, 5rem)', fontWeight: 800, color: 'var(--fg)', maxWidth: '800px' }}>
-            The trades workers who keep data centers running are hard to find.<br />
-            <span style={{ color: 'var(--yellow)' }}>Until now.</span>
+            Find licensed electricians and HVAC techs<br />
+            <span style={{ color: 'var(--yellow)' }}>who already know data center work.</span>
           </h1>
           <p className="text-lg mb-4" style={{ color: 'var(--fg-muted)', maxWidth: '580px', lineHeight: 1.7 }}>
-            VoltGrid is a niche job board for electricians, HVAC techs, and low voltage specialists
-            who specifically seek data center and AI infrastructure work.
-            Every applicant already knows what a PDU is.
+            The pool of data center-experienced trades workers is small. Every DC employer is competing
+            for the same people. VoltGrid is where that pool actively looks for work.
           </p>
-          <p className="text-base mb-10 font-semibold" style={{ color: 'var(--fg)' }}>
-            $149 flat. No CPC. No account manager. Live in 5 minutes.
+          <p className="text-base mb-10" style={{ color: 'var(--fg-faint)', maxWidth: '560px', lineHeight: 1.6 }}>
+            On Indeed, your $85/hr DC electrician posting sits next to residential apprentice roles.
+            On VoltGrid, every candidate already knows what a PDU is.
           </p>
           <div className="flex flex-col sm:flex-row gap-3">
             <Link href="/post-job" className="px-8 py-4 rounded-xl font-bold text-lg transition-opacity inline-block"
               style={{ background: 'var(--yellow)', color: '#0A0A0A' }}>
-              Post a Job — $149
+              Post Your First Job
             </Link>
             <a href="#pricing" className="px-8 py-4 rounded-xl font-semibold text-lg transition-colors inline-block"
               style={{ border: '1px solid var(--border-strong)', color: 'var(--fg-muted)' }}>

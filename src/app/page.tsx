@@ -64,7 +64,7 @@ export default async function HomePage() {
               style={{ background: 'var(--yellow-dim)', color: 'var(--yellow)', border: '1px solid var(--yellow-border)' }}
             >
               <span>⚡</span>
-              <span>The AI infrastructure boom needs trades workers</span>
+              <span>The AI infrastructure build-out is hiring trades workers now</span>
             </div>
 
             <h1
@@ -77,13 +77,13 @@ export default async function HomePage() {
                 color: 'var(--fg)',
               }}
             >
-              Trades Jobs at<br />
-              <span style={{ color: 'var(--yellow)' }}>Data Centers<br />&amp; AI Sites</span>
+              High-Paying Data Center Jobs<br />
+              <span style={{ color: 'var(--yellow)' }}>for Electricians<br />&amp; HVAC Techs</span>
             </h1>
 
             <p className="text-lg sm:text-xl mb-6 max-w-xl animate-fade-up delay-200" style={{ color: 'var(--fg-muted)', lineHeight: 1.6 }}>
-              Electricians, HVAC techs, and low voltage specialists — find the high-paying roles
-              building the infrastructure behind AI.
+              Join trades workers earning $45–$85/hr at CoreWeave, xAI, T5, and the other companies
+              building the data centers powering AI.
             </p>
 
             {/* Trust stats row */}
@@ -131,7 +131,7 @@ export default async function HomePage() {
                 style={{ border: '1px solid var(--border-strong)', color: 'var(--fg-muted)' }}
                 onMouseEnter={undefined}
               >
-                Post a Job — $149
+                Hire Trades Workers →
               </Link>
             </div>
           </div>

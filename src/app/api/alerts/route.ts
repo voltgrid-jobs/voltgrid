@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
 
   const supabase = await createClient()
   const body = await req.json()
-  const { email, keywords, location, category, frequency } = body
+  const { email, keywords, location, category, frequency, background } = body
 
   if (!email) return NextResponse.json({ error: 'Email required' }, { status: 400 })
 
@@ -75,6 +75,7 @@ export async function POST(req: NextRequest) {
 
   const { error } = await supabase.from('job_alerts').insert({
     email: email.toLowerCase().trim(),
+    ...(background && { background }),
     user_id: user?.id || null,
     keywords: keywords || null,
     location: location || null,
@@ -85,31 +86,69 @@ export async function POST(req: NextRequest) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-  // Confirmation email to the subscriber
+  // Welcome email — Email 1 of 3 in the onboarding sequence
   try {
     if (process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY)
-      const tradeLabel = category
-        ? category.replace(/_/g, ' ')
-        : 'trades'
+      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://voltgridjobs.com'
+      const tradeLabel = category ? category.replace(/_/g, ' ') : 'trades'
       await resend.emails.send({
-        from: `VoltGrid Jobs <alerts@voltgridjobs.com>`,
+        from: `VoltGrid Jobs <${process.env.RESEND_FROM_EMAIL || 'alerts@voltgridjobs.com'}>`,
         to: email.toLowerCase().trim(),
-        subject: "Job alerts set up — you're on the list",
+        subject: "You're in — here's what to expect",
         html: `<div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:32px 24px;background:#030712;color:#f9fafb">
-          <p style="font-size:16px;line-height:1.6;color:#d1d5db">
-            You'll get notified when new <strong style="color:#facc15">${tradeLabel}</strong> jobs land at data centers and AI sites.
-            Manage your alerts at <a href="https://voltgridjobs.com" style="color:#facc15">voltgridjobs.com</a>.
+          <p style="font-size:18px;font-weight:700;color:#facc15;margin-bottom:16px">⚡ You're on the list</p>
+
+          <p style="font-size:15px;line-height:1.7;color:#d1d5db;margin-bottom:16px">
+            Your alert is set up. Here's what happens next:
           </p>
-          <p style="font-size:13px;color:#6b7280;margin-top:24px">
-            VoltGrid Jobs &mdash; Built for trades workers in the data center industry.
+
+          <ul style="margin:0 0 20px 0;padding:0;list-style:none">
+            <li style="display:flex;gap:12px;margin-bottom:12px">
+              <span style="color:#facc15;font-weight:700;flex-shrink:0">→</span>
+              <span style="color:#d1d5db;font-size:14px;line-height:1.6">
+                <strong style="color:#fff">Daily alerts</strong> when new <strong style="color:#facc15">${tradeLabel}</strong> jobs post at data centers and AI infrastructure sites.
+              </span>
+            </li>
+            <li style="display:flex;gap:12px;margin-bottom:12px">
+              <span style="color:#facc15;font-weight:700;flex-shrink:0">→</span>
+              <span style="color:#d1d5db;font-size:14px;line-height:1.6">
+                <strong style="color:#fff">Weekly digest</strong> every Monday — top 10 highest-paying open roles.
+              </span>
+            </li>
+            <li style="display:flex;gap:12px">
+              <span style="color:#facc15;font-weight:700;flex-shrink:0">→</span>
+              <span style="color:#d1d5db;font-size:14px;line-height:1.6">
+                <strong style="color:#fff">No spam.</strong> Only real job alerts — we don't sell your email.
+              </span>
+            </li>
+          </ul>
+
+          <p style="font-size:15px;font-weight:600;color:#fff;margin-bottom:8px">Bonus resource:</p>
+          <p style="font-size:14px;line-height:1.6;color:#d1d5db;margin-bottom:20px">
+            Download the <a href="${baseUrl}/salary-guide" style="color:#facc15;text-decoration:underline">2026 Data Center Trades Salary Guide</a>
+            — see what electricians, HVAC techs, and low voltage specialists are actually earning on these projects.
+          </p>
+
+          <div style="margin-bottom:24px">
+            <a href="${baseUrl}/jobs${category ? `?category=${category}` : ''}"
+              style="display:inline-block;background:#facc15;color:#0a0a0a;padding:12px 24px;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none">
+              Browse open ${tradeLabel} jobs →
+            </a>
+          </div>
+
+          <p style="font-size:13px;color:#6b7280;border-top:1px solid #1f2937;padding-top:16px;margin-top:8px">
+            VoltGrid Jobs — Built for trades workers in the data center industry.<br>
+            <a href="${baseUrl}" style="color:#facc15">voltgridjobs.com</a>
+            &nbsp;·&nbsp;
+            <a href="${baseUrl}/unsubscribe" style="color:#6b7280">Unsubscribe</a>
           </p>
         </div>`,
       })
     }
   } catch (confirmErr) {
     // Non-critical — don't break the signup flow
-    console.error('[alerts] Confirmation email error:', confirmErr)
+    console.error('[alerts] Welcome email error:', confirmErr)
   }
 
   // AUTOMATION 1: Notify employers of matching active listings

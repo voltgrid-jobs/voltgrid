@@ -126,9 +126,11 @@ export function JobAlertInlineForm({
       }}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-        <p className="text-sm font-medium mb-4" style={{ color: 'var(--fg-muted)' }}>
-          Get notified when new{' '}
-          <span style={{ color: 'var(--fg)' }}>{tradeLabel}</span> jobs land in your area.
+        <p className="text-sm font-medium mb-1" style={{ color: 'var(--fg)' }}>
+          Get notified when $45–$85/hr data center jobs post
+        </p>
+        <p className="text-xs mb-4" style={{ color: 'var(--fg-muted)' }}>
+          New {tradeLabel !== 'All trades' ? tradeLabel.toLowerCase() : 'trades'} roles posted daily — be first to apply.
         </p>
         <form
           onSubmit={handleSubmit}
