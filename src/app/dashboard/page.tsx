@@ -6,6 +6,7 @@ import type { Metadata } from 'next'
 import { DashboardTabs } from './DashboardTabs'
 import { SavedJobsList } from './SavedJobsList'
 import { AlertsList } from './AlertsList'
+import { JobActions } from './JobActions'
 
 export const metadata: Metadata = { title: 'Dashboard — VoltGrid Jobs' }
 
@@ -170,7 +171,11 @@ export default async function DashboardPage({
               style={{ background: 'var(--yellow)', color: '#0D0D0D' }}
               className="px-4 py-2 rounded-lg font-semibold text-sm hover:opacity-90 transition-opacity"
             >
-              + Post a Job
+              {isPro
+                ? '⚡ Post a Job'
+                : postCredits > 0
+                  ? `Post a Job — ${postCredits} credit${postCredits !== 1 ? 's' : ''} remaining`
+                  : '+ Post a Job'}
             </Link>
           )}
           <form action="/api/auth/signout" method="POST">
@@ -418,41 +423,33 @@ function JobStatsCard({
           )}
         </div>
       </div>
-      <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap flex-shrink-0">
-        <span
-          style={clicks > 0
-            ? { background: 'var(--yellow-dim)', color: 'var(--yellow)', border: '1px solid var(--yellow-border)' }
-            : { background: 'var(--bg-subtle)', color: 'var(--fg-faint)', border: '1px solid var(--border)' }
-          }
-          className="text-xs px-3 py-1 rounded-full font-medium whitespace-nowrap"
-          title="Apply button clicks"
-        >
-          ⚡ {clicks} {clicks === 1 ? 'click' : 'clicks'}
-        </span>
-        {daysText && (
-          <span style={daysStyle} className="text-xs px-3 py-1 rounded-full font-medium whitespace-nowrap">
-            {daysText}
+      <div className="flex flex-col items-end gap-2 flex-shrink-0">
+        <div className="flex items-center gap-2 flex-wrap justify-end">
+          <span
+            style={clicks > 0
+              ? { background: 'var(--yellow-dim)', color: 'var(--yellow)', border: '1px solid var(--yellow-border)' }
+              : { background: 'var(--bg-subtle)', color: 'var(--fg-faint)', border: '1px solid var(--border)' }
+            }
+            className="text-xs px-3 py-1 rounded-full font-medium whitespace-nowrap"
+            title="Apply button clicks"
+          >
+            ⚡ {clicks} {clicks === 1 ? 'click' : 'clicks'}
           </span>
-        )}
-        <Link href={`/jobs/${job.id as string}`} target="_blank" style={{ color: 'var(--fg-faint)' }}
-          className="text-xs hover:opacity-80 transition-opacity whitespace-nowrap">
-          View listing →
-        </Link>
-        {!expired && (
-          <Link href="/post-job" style={{ color: 'var(--yellow)' }}
-            className="text-xs hover:opacity-80 transition-opacity whitespace-nowrap"
-            title="Boost this listing for more visibility">
-            Boost ↑
+          {daysText && (
+            <span style={daysStyle} className="text-xs px-3 py-1 rounded-full font-medium whitespace-nowrap">
+              {daysText}
+            </span>
+          )}
+          <Link href={`/jobs/${job.id as string}`} target="_blank" style={{ color: 'var(--fg-faint)' }}
+            className="text-xs hover:opacity-80 transition-opacity whitespace-nowrap">
+            View →
           </Link>
-        )}
-        {!expired && (
-          <form action="/api/dashboard/deactivate" method="POST" className="inline">
-            <input type="hidden" name="job_id" value={job.id as string} />
-            <button style={{ color: 'var(--fg-faint)' }} className="text-xs hover:text-red-400 transition-colors">
-              Deactivate
-            </button>
-          </form>
-        )}
+        </div>
+        <JobActions
+          jobId={job.id as string}
+          isActive={Boolean(job.is_active)}
+          expired={expired}
+        />
       </div>
     </div>
   )
