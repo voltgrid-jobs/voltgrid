@@ -172,7 +172,10 @@ export default async function DashboardPage({
             </Link>
           )}
           <form action="/api/auth/signout" method="POST">
-            <button className="text-xs hover:opacity-70 transition-opacity" style={{ color: 'var(--fg-faint)' }}>
+            <button
+              className="text-xs px-3 py-2 rounded-lg hover:opacity-70 transition-opacity"
+              style={{ color: 'var(--fg-muted)', border: '1px solid var(--border)' }}
+            >
               Sign out
             </button>
           </form>
@@ -323,7 +326,7 @@ export default async function DashboardPage({
                           )}
                           <form action="/api/saved-jobs/remove" method="POST" className="inline">
                             <input type="hidden" name="job_id" value={s.job_id} />
-                            <button className="text-xs hover:text-red-400 transition-colors" style={{ color: 'var(--fg-faint)' }}>
+                            <button className="text-xs px-3 py-1.5 rounded-lg hover:text-red-400 transition-colors" style={{ color: 'var(--fg-muted)', border: '1px solid var(--border)' }}>
                               Remove
                             </button>
                           </form>
@@ -365,7 +368,7 @@ export default async function DashboardPage({
                       <div className="flex items-center gap-3 flex-shrink-0">
                         <form action="/api/alerts/delete" method="POST" className="inline">
                           <input type="hidden" name="alert_id" value={alert.id} />
-                          <button className="text-xs hover:text-red-400 transition-colors" style={{ color: 'var(--fg-faint)' }}>
+                          <button className="text-xs px-3 py-1.5 rounded-lg hover:text-red-400 transition-colors" style={{ color: 'var(--fg-muted)', border: '1px solid var(--border)' }}>
                             Delete
                           </button>
                         </form>

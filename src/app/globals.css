@@ -44,6 +44,17 @@ body {
   overflow-x: hidden;
 }
 
+/* ── Browser autofill — prevent dark overlay making text invisible ── */
+/* Chrome/Safari override the background via internal styles; box-shadow trick restores it */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px var(--bg) inset !important;
+  -webkit-text-fill-color: var(--fg) !important;
+  caret-color: var(--fg);
+}
+
 /* Prevent iOS Safari from zooming on input focus (requires >= 16px font) */
 @media (max-width: 768px) {
   input, select, textarea {
