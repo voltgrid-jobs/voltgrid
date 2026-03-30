@@ -24,7 +24,7 @@ export const SELECTOR_PLANS = [
     price: '$799',
     period: '/ month',
     note: null,
-    benefits: ['Unlimited listings', 'Featured on every listing', 'Priority support'],
+    benefits: ['Unlimited listings', 'Featured badge on every listing', 'Priority support'],
   },
 ]
 

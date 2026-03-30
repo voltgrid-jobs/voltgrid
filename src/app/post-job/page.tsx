@@ -41,7 +41,11 @@ function TrustRail({ jobCount }: { jobCount: number }) {
   )
 }
 
-export default async function PostJobPage() {
+export default async function PostJobPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ edit?: string }>
+}) {
   const supabase = await createClient()
   const { count } = await supabase
     .from('jobs')
@@ -49,11 +53,14 @@ export default async function PostJobPage() {
     .eq('is_active', true)
 
   const jobCount = count ?? 350
+  const params = await searchParams
+  const editId = params?.edit || null
 
   return (
     <PostJobPageClient
       trustRail={<TrustRail jobCount={jobCount} />}
       jobCount={jobCount}
+      editId={editId}
     />
   )
 }

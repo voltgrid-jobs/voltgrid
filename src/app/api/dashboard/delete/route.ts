@@ -9,15 +9,16 @@ export async function POST(req: NextRequest) {
   const { job_id } = await req.json()
   if (!job_id) return NextResponse.json({ error: 'Missing job_id' }, { status: 400 })
 
-  const { data: employer } = await supabase
-    .from('employers').select('id').eq('user_id', user.id).single()
-  if (!employer) return NextResponse.json({ error: 'No employer profile' }, { status: 403 })
+  const { data: employers } = await supabase
+    .from('employers').select('id').eq('user_id', user.id).order('created_at', { ascending: false })
+  const employerIds = (employers ?? []).map((e: { id: string }) => e.id)
+  if (employerIds.length === 0) return NextResponse.json({ error: 'No employer profile' }, { status: 403 })
 
   const { error } = await supabase
     .from('jobs')
     .delete()
     .eq('id', job_id)
-    .eq('employer_id', (employer as { id: string }).id)
+    .in('employer_id', employerIds)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ ok: true })

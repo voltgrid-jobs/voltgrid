@@ -19,7 +19,7 @@ export const PLANS = {
   },
   pro_monthly: {
     name: 'Pro Monthly',
-    description: 'Unlimited listings + featured employer profile',
+    description: 'Unlimited listings + featured badge on every listing',
     price_cents: 79900,
     credits: 999,
     recurring: true,

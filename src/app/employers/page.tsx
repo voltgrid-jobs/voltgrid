@@ -52,7 +52,6 @@ const PLANS = [
     description: 'Unlimited postings for power hirers',
     features: [
       'Unlimited listings',
-      'Featured employer profile',
       'Featured badge on all listings',
       'Priority support',
     ],

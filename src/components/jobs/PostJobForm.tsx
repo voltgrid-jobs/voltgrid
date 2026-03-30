@@ -60,23 +60,39 @@ function StepIndicator({ step }: { step: 1 | 2 }) {
 interface PostJobFormProps {
   selectedPlan: string
   setSelectedPlan: (plan: string) => void
+  initialData?: Record<string, unknown>
+  editJobId?: string
 }
 
-export function PostJobForm({ selectedPlan, setSelectedPlan: _setSelectedPlan }: PostJobFormProps) {
+export function PostJobForm({ selectedPlan, setSelectedPlan: _setSelectedPlan, initialData, editJobId }: PostJobFormProps) {
+  const isEditMode = !!editJobId
   const [step, setStep] = useState<1 | 2>(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [showPerDiemRate, setShowPerDiemRate] = useState(false)
+  const [showPerDiemRate, setShowPerDiemRate] = useState(Boolean(initialData?.per_diem))
   const [touched, setTouched] = useState<Record<string, boolean>>({})
   const [creditBalance, setCreditBalance] = useState<{ post_credits: number; is_pro: boolean } | null>(null)
   const [creditLoading, setCreditLoading] = useState(false)
 
-  // Step 1 form values (controlled for review step)
+  // Step 1 form values — pre-filled from initialData when editing
   const [vals, setVals] = useState({
-    company_name: '', company_email: '', title: '', category: 'electrical',
-    job_type: 'full_time', location: '', remote: false, salary_min: '',
-    salary_max: '', description: '', apply_url: '', per_diem: false,
-    per_diem_rate: '', travel_required: '', shift_type: '', contract_length: '', is_union: false,
+    company_name: (initialData?.company_name as string) || '',
+    company_email: (initialData?.employer_email as string) || '',
+    title: (initialData?.title as string) || '',
+    category: (initialData?.category as string) || 'electrical',
+    job_type: (initialData?.job_type as string) || 'full_time',
+    location: (initialData?.location as string) || '',
+    remote: Boolean(initialData?.remote),
+    salary_min: initialData?.salary_min != null ? String(initialData.salary_min) : '',
+    salary_max: initialData?.salary_max != null ? String(initialData.salary_max) : '',
+    description: (initialData?.description as string) || '',
+    apply_url: (initialData?.apply_url as string) || (initialData?.apply_email as string) || '',
+    per_diem: Boolean(initialData?.per_diem),
+    per_diem_rate: initialData?.per_diem_rate != null ? String(initialData.per_diem_rate) : '',
+    travel_required: (initialData?.travel_required as string) || '',
+    shift_type: (initialData?.shift_type as string) || '',
+    contract_length: (initialData?.contract_length as string) || '',
+    is_union: Boolean(initialData?.is_union),
   })
 
   function field(name: keyof typeof vals) {
@@ -129,6 +145,28 @@ export function PostJobForm({ selectedPlan, setSelectedPlan: _setSelectedPlan }:
     setLoading(true)
     setError('')
 
+    // ── Edit mode: update existing job, no payment ──
+    if (isEditMode) {
+      try {
+        const res = await fetch('/api/dashboard/update-job', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ job_id: editJobId, ...vals }),
+        })
+        const json = await res.json()
+        if (json.ok) {
+          window.location.href = '/dashboard'
+        } else {
+          setError(json.error || 'Failed to save changes.')
+        }
+      } catch {
+        setError('Network error. Please try again.')
+      } finally {
+        setLoading(false)
+      }
+      return
+    }
+
     const hasCredits = creditBalance && (creditBalance.is_pro || creditBalance.post_credits > 0)
 
     if (hasCredits) {
@@ -178,7 +216,7 @@ export function PostJobForm({ selectedPlan, setSelectedPlan: _setSelectedPlan }:
   const currentPlan = PLAN_DISPLAY[selectedPlan] ?? PLAN_DISPLAY.single_post
   const hasCredits = creditBalance && (creditBalance.is_pro || creditBalance.post_credits > 0)
 
-  // ── STEP 2: Review & Pay ──
+  // ── STEP 2: Review & Pay (or Save Changes in edit mode) ──
   if (step === 2) {
     return (
       <div>
@@ -186,7 +224,7 @@ export function PostJobForm({ selectedPlan, setSelectedPlan: _setSelectedPlan }:
 
         {/* Summary */}
         <div className="rounded-xl p-5 mb-6 space-y-2 text-sm" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
-          <p className="font-semibold mb-3" style={{ color: 'var(--fg)' }}>Review your listing</p>
+          <p className="font-semibold mb-3" style={{ color: 'var(--fg)' }}>{isEditMode ? 'Review your changes' : 'Review your listing'}</p>
           {[
             ['Company', vals.company_name],
             ['Email', vals.company_email],
@@ -220,8 +258,8 @@ export function PostJobForm({ selectedPlan, setSelectedPlan: _setSelectedPlan }:
           </div>
         )}
 
-        {/* Selected plan — read-only when no credits; plan is managed by sticky selector above */}
-        {!hasCredits && (
+        {/* Plan selector — hidden in edit mode (no payment needed) */}
+        {!isEditMode && !hasCredits && (
           <div className="mb-6">
             <p className="text-sm font-medium mb-2" style={{ color: 'var(--fg)' }}>Selected plan</p>
             <div
@@ -242,10 +280,12 @@ export function PostJobForm({ selectedPlan, setSelectedPlan: _setSelectedPlan }:
           </div>
         )}
 
-        {/* Launch urgency */}
-        <p className="text-xs text-center mb-2" style={{ color: 'var(--yellow)' }}>
-          🚀 Launch pricing — rates increase after April 30
-        </p>
+        {/* Launch urgency — hidden in edit mode */}
+        {!isEditMode && (
+          <p className="text-xs text-center mb-2" style={{ color: 'var(--yellow)' }}>
+            🚀 Launch pricing — rates increase after April 30
+          </p>
+        )}
 
         {error && (
           <div className="rounded-lg px-4 py-3 text-sm mb-4" style={{ background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.3)', color: '#F87171' }}>
@@ -261,17 +301,21 @@ export function PostJobForm({ selectedPlan, setSelectedPlan: _setSelectedPlan }:
           style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
         >
           {loading
-            ? (hasCredits ? 'Posting your job...' : 'Redirecting to checkout...')
-            : hasCredits
-              ? 'Post Job — Use 1 Credit →'
-              : `Pay ${currentPlan.price} — Continue to Stripe →`
+            ? (isEditMode ? 'Saving changes...' : hasCredits ? 'Posting your job...' : 'Redirecting to checkout...')
+            : isEditMode
+              ? 'Save changes →'
+              : hasCredits
+                ? 'Post Job — Use 1 Credit →'
+                : `Pay ${currentPlan.price} — Continue to Stripe →`
           }
         </button>
 
         <p className="text-xs text-center mt-3" style={{ color: 'var(--fg-faint)' }}>
-          {hasCredits
-            ? 'Your job goes live immediately. No payment required.'
-            : 'Secure payment via Stripe. Your job goes live immediately after payment.'
+          {isEditMode
+            ? 'Changes go live immediately on the public job board.'
+            : hasCredits
+              ? 'Your job goes live immediately. No payment required.'
+              : 'Secure payment via Stripe. Your job goes live immediately after payment.'
           }
         </p>
 
@@ -494,11 +538,13 @@ export function PostJobForm({ selectedPlan, setSelectedPlan: _setSelectedPlan }:
       <button type="submit"
         className="w-full py-4 rounded-xl font-semibold text-lg transition-opacity"
         style={{ background: 'var(--yellow)', color: '#0A0A0A' }}>
-        Review &amp; Continue →
+        {isEditMode ? 'Review changes →' : 'Review & Continue →'}
       </button>
 
       <p className="text-xs text-center" style={{ color: 'var(--fg-faint)' }}>
-        Next: review your listing details and complete payment via Stripe.
+        {isEditMode
+          ? 'Next: review your changes before saving.'
+          : 'Next: review your listing details and complete payment via Stripe.'}
       </p>
     </form>
   )
