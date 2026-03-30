@@ -1,21 +1,24 @@
 import type { Metadata } from 'next'
 import { PostJobForm } from '@/components/jobs/PostJobForm'
+import { createClient } from '@/lib/supabase/server'
+
+export const revalidate = 3600
 
 export const metadata: Metadata = {
   title: 'Post a Job — VoltGrid Jobs',
   alternates: { canonical: 'https://voltgridjobs.com/post-job' },
 }
 
-function TrustRail() {
+function TrustRail({ jobCount }: { jobCount: number }) {
   return (
     <aside className="flex flex-col gap-4">
-      {/* Mini stat */}
+      {/* Dynamic stat */}
       <div
         className="rounded-xl p-4"
         style={{ background: 'var(--yellow-dim)', border: '1px solid var(--yellow-border)' }}
       >
         <p className="font-bold text-base" style={{ color: 'var(--yellow)' }}>
-          ⚡ 97+ trades workers browse VoltGrid daily
+          ⚡ {jobCount}+ specialist trades jobs listed
         </p>
       </div>
 
@@ -38,13 +41,15 @@ function TrustRail() {
   )
 }
 
-const PLANS = [
-  { name: 'Single Post', price: '$149', period: 'one-time', note: null },
-  { name: '5-Pack', price: '$499', period: 'one-time', note: '$99/listing — best value' },
-  { name: 'Pro Monthly', price: '$799', period: '/ month', note: 'Unlimited listings' },
-]
+export default async function PostJobPage() {
+  const supabase = await createClient()
+  const { count } = await supabase
+    .from('jobs')
+    .select('id', { count: 'exact', head: true })
+    .eq('is_active', true)
 
-export default function PostJobPage() {
+  const jobCount = count ?? 350
+
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
       <div className="mb-8">
@@ -56,49 +61,9 @@ export default function PostJobPage() {
         </p>
       </div>
 
-      {/* Pricing preview + social proof */}
-      <div className="mb-10 rounded-2xl p-6" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-          <div className="flex flex-col sm:flex-row gap-3">
-            {PLANS.map(plan => (
-              <div
-                key={plan.name}
-                className="flex flex-col px-5 py-3 rounded-xl"
-                style={{
-                  background: 'var(--bg)',
-                  border: '1px solid var(--border)',
-                  minWidth: '130px',
-                }}
-              >
-                <span className="text-xs font-semibold mb-1" style={{ color: 'var(--fg-faint)' }}>
-                  {plan.name}
-                </span>
-                <span className="text-2xl font-extrabold leading-none" style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif' }}>
-                  {plan.price}
-                </span>
-                <span className="text-xs mt-0.5" style={{ color: 'var(--fg-faint)' }}>
-                  {plan.note ?? plan.period}
-                </span>
-              </div>
-            ))}
-          </div>
-          <div className="flex flex-col gap-2 text-sm sm:text-right">
-            <div style={{ color: 'var(--fg-muted)' }}>
-              <span style={{ color: 'var(--green)', fontWeight: 700 }}>✓</span> Live in under 5 minutes
-            </div>
-            <div style={{ color: 'var(--fg-muted)' }}>
-              <span style={{ color: 'var(--green)', fontWeight: 700 }}>✓</span> 30-day active listing
-            </div>
-            <div style={{ color: 'var(--fg-muted)' }}>
-              <span style={{ color: 'var(--green)', fontWeight: 700 }}>✓</span> Applications direct to you
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Mobile: trust rail above form */}
       <div className="lg:hidden mb-6">
-        <TrustRail />
+        <TrustRail jobCount={jobCount} />
       </div>
 
       {/* Desktop: 2-col layout */}
@@ -110,7 +75,7 @@ export default function PostJobPage() {
 
         {/* Right: trust rail (1/3) — hidden on mobile, shown on desktop */}
         <div className="hidden lg:block w-80 flex-shrink-0 sticky top-8">
-          <TrustRail />
+          <TrustRail jobCount={jobCount} />
         </div>
       </div>
     </div>

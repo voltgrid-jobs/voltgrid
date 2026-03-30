@@ -13,7 +13,7 @@ export const PLANS = {
   },
   five_pack: {
     name: '5-Pack',
-    description: '5 listings at $99 each, use within 60 days',
+    description: '5 listings at $99 each — use any time',
     price_cents: 49900,
     credits: 5,
   },

@@ -4,7 +4,7 @@ import { CATEGORY_LABELS, JOB_TYPE_LABELS, TRAVEL_LABELS, SHIFT_LABELS } from '@
 
 const PLANS = [
   { id: 'single_post', name: 'Single Post', price: '$149', description: '1 listing · 30 days' },
-  { id: 'five_pack', name: '5-Pack', price: '$499', description: '5 listings · $99 each · best value' },
+  { id: 'five_pack', name: '5-Pack', price: '$499', description: '5 listings · $99 each · use any time' },
   { id: 'pro_monthly', name: 'Pro Monthly', price: '$799/mo', description: 'Unlimited listings' },
 ]
 
@@ -64,6 +64,8 @@ export function PostJobForm() {
   const [error, setError] = useState('')
   const [showPerDiemRate, setShowPerDiemRate] = useState(false)
   const [touched, setTouched] = useState<Record<string, boolean>>({})
+  const [creditBalance, setCreditBalance] = useState<{ post_credits: number; is_pro: boolean } | null>(null)
+  const [creditLoading, setCreditLoading] = useState(false)
 
   // Step 1 form values (controlled for review step)
   const [vals, setVals] = useState({
@@ -109,11 +111,46 @@ export function PostJobForm() {
     if (hasErrors) return
     setStep(2)
     window.scrollTo({ top: 0, behavior: 'smooth' })
+
+    // Fetch credit balance for current user
+    setCreditLoading(true)
+    fetch('/api/employer-credits')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data) setCreditBalance(data) })
+      .catch(() => {})
+      .finally(() => setCreditLoading(false))
   }
 
   async function handleSubmit() {
     setLoading(true)
     setError('')
+
+    const hasCredits = creditBalance && (creditBalance.is_pro || creditBalance.post_credits > 0)
+
+    if (hasCredits) {
+      // Credit redemption path — bypass Stripe
+      try {
+        const res = await fetch('/api/post-with-credit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(vals),
+        })
+        const json = await res.json()
+        if (json.success) {
+          window.location.href = `/success?job_id=${json.job_id}`
+        } else {
+          setError(json.error === 'no_credits' ? 'No credits remaining. Please select a plan below.' : (json.error || 'Something went wrong.'))
+          setCreditBalance(null) // fallback to Stripe flow
+        }
+      } catch {
+        setError('Network error. Please try again.')
+      } finally {
+        setLoading(false)
+      }
+      return
+    }
+
+    // Stripe checkout path
     const data = { plan, ...vals }
     try {
       const res = await fetch('/api/checkout', {
@@ -135,6 +172,7 @@ export function PostJobForm() {
   }
 
   const selectedPlan = PLANS.find(p => p.id === plan)!
+  const hasCredits = creditBalance && (creditBalance.is_pro || creditBalance.post_credits > 0)
 
   // ── STEP 2: Review & Pay ──
   if (step === 2) {
@@ -162,24 +200,42 @@ export function PostJobForm() {
           ))}
         </div>
 
-        {/* Plan */}
-        <div className="mb-6">
-          <p className="text-sm font-medium mb-3" style={{ color: 'var(--fg)' }}>Plan</p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {PLANS.map((p) => (
-              <button key={p.id} type="button" onClick={() => setPlan(p.id)}
-                className="rounded-xl p-4 text-left transition-colors"
-                style={{
-                  border: `1px solid ${plan === p.id ? 'var(--yellow)' : 'var(--border)'}`,
-                  background: plan === p.id ? 'var(--yellow-dim)' : 'var(--bg-raised)',
-                }}>
-                <div className="font-semibold text-sm" style={{ color: 'var(--fg)' }}>{p.name}</div>
-                <div className="font-bold mt-1" style={{ color: 'var(--yellow)' }}>{p.price}</div>
-                <div className="text-xs mt-1" style={{ color: 'var(--fg-faint)' }}>{p.description}</div>
-              </button>
-            ))}
+        {/* Credit banner — shown when employer has credits */}
+        {creditLoading && (
+          <div className="mb-4 text-sm" style={{ color: 'var(--fg-faint)' }}>Checking your account...</div>
+        )}
+        {!creditLoading && hasCredits && (
+          <div className="mb-6 rounded-xl px-4 py-3 flex items-center gap-3" style={{ background: 'var(--yellow-dim)', border: '1px solid var(--yellow-border)' }}>
+            <span style={{ color: 'var(--yellow)' }}>⚡</span>
+            <div className="text-sm">
+              <span className="font-semibold" style={{ color: 'var(--fg)' }}>
+                {creditBalance!.is_pro ? 'Pro account — unlimited posts' : `${creditBalance!.post_credits} job credit${creditBalance!.post_credits !== 1 ? 's' : ''} remaining`}
+              </span>
+              <span style={{ color: 'var(--fg-muted)' }}> — this post will use 1 credit. No payment needed.</span>
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Plan selector — only shown when no credits */}
+        {!hasCredits && (
+          <div className="mb-6">
+            <p className="text-sm font-medium mb-3" style={{ color: 'var(--fg)' }}>Plan</p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {PLANS.map((p) => (
+                <button key={p.id} type="button" onClick={() => setPlan(p.id)}
+                  className="rounded-xl p-4 text-left transition-colors"
+                  style={{
+                    border: `1px solid ${plan === p.id ? 'var(--yellow)' : 'var(--border)'}`,
+                    background: plan === p.id ? 'var(--yellow-dim)' : 'var(--bg-raised)',
+                  }}>
+                  <div className="font-semibold text-sm" style={{ color: 'var(--fg)' }}>{p.name}</div>
+                  <div className="font-bold mt-1" style={{ color: 'var(--yellow)' }}>{p.price}</div>
+                  <div className="text-xs mt-1" style={{ color: 'var(--fg-faint)' }}>{p.description}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Launch urgency */}
         <p className="text-xs text-center mb-2" style={{ color: 'var(--yellow)' }}>
@@ -199,11 +255,19 @@ export function PostJobForm() {
           className="w-full py-4 rounded-xl font-semibold text-lg transition-opacity disabled:opacity-60"
           style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
         >
-          {loading ? 'Redirecting to checkout...' : `Pay ${selectedPlan.price} — Continue to Stripe →`}
+          {loading
+            ? (hasCredits ? 'Posting your job...' : 'Redirecting to checkout...')
+            : hasCredits
+              ? 'Post Job — Use 1 Credit →'
+              : `Pay ${selectedPlan.price} — Continue to Stripe →`
+          }
         </button>
 
         <p className="text-xs text-center mt-3" style={{ color: 'var(--fg-faint)' }}>
-          Secure payment via Stripe. Your job goes live immediately after payment.
+          {hasCredits
+            ? 'Your job goes live immediately. No payment required.'
+            : 'Secure payment via Stripe. Your job goes live immediately after payment.'
+          }
         </p>
 
         <button type="button" onClick={() => { setStep(1); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
@@ -246,7 +310,7 @@ export function PostJobForm() {
         <label className={labelCls} style={{ color: 'var(--fg)' }}>Job Title *</label>
         <input name="title" required type="text" placeholder="Journeyman Electrician — Data Center"
           className={`${inputCls} ${inputFocusStyle}`} style={inputStyle} {...field('title')} />
-        <FieldHelp>Be specific — titles like "Data Center HVAC Technician" get 3× more clicks</FieldHelp>
+        <FieldHelp>Be specific — titles like &quot;Data Center HVAC Technician&quot; get 3× more clicks</FieldHelp>
         {fieldError('title', 'Job title') && (
           <p className={helpCls} style={{ color: '#F87171' }}>{fieldError('title', 'Job title')}</p>
         )}
@@ -278,7 +342,7 @@ export function PostJobForm() {
           <label className={labelCls} style={{ color: 'var(--fg)' }}>Location *</label>
           <input name="location" required type="text" placeholder="Phoenix, AZ"
             className={`${inputCls} ${inputFocusStyle}`} style={inputStyle} {...field('location')} />
-          <FieldHelp>City, State — or "Multiple Locations" for multi-site</FieldHelp>
+          <FieldHelp>City, State — or &quot;Multiple Locations&quot; for multi-site</FieldHelp>
           {fieldError('location', 'Location') && (
             <p className={helpCls} style={{ color: '#F87171' }}>{fieldError('location', 'Location')}</p>
           )}
@@ -323,49 +387,10 @@ export function PostJobForm() {
         <input name="apply_url" required type="text"
           placeholder="https://your-ats.com/apply/123 or hiring@company.com"
           className={`${inputCls} ${inputFocusStyle}`} style={inputStyle} {...field('apply_url')} />
-        <FieldHelp>Candidates click "Apply" and go directly here. You can use an ATS link or email address.</FieldHelp>
+        <FieldHelp>Candidates click &quot;Apply&quot; and go directly here. You can use an ATS link or email address.</FieldHelp>
         {fieldError('apply_url', 'Apply URL') && (
           <p className={helpCls} style={{ color: '#F87171' }}>{fieldError('apply_url', 'Apply URL')}</p>
         )}
-      </div>
-
-      {/* Live listing preview */}
-      <div className="pt-4" style={{ borderTop: '1px solid var(--border)' }}>
-        <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--fg-faint)' }}>
-          Preview — your listing will look like this
-        </p>
-        <div className="rounded-xl p-4" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
-          <div className="flex flex-wrap gap-1.5 mb-2">
-            <span className="text-xs px-2 py-0.5 rounded" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--fg-faint)' }}>
-              {CATEGORY_LABELS[vals.category as keyof typeof CATEGORY_LABELS] || 'Trade'}
-            </span>
-            <span className="text-xs px-2 py-0.5 rounded" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--fg-faint)' }}>
-              {JOB_TYPE_LABELS[vals.job_type as keyof typeof JOB_TYPE_LABELS] || 'Type'}
-            </span>
-          </div>
-          <p className="font-semibold text-base mb-0.5" style={{ color: vals.title ? 'var(--fg)' : 'var(--fg-faint)' }}>
-            {vals.title || 'Your job title'}
-          </p>
-          <p className="text-sm" style={{ color: 'var(--fg-muted)' }}>
-            <span style={{ color: vals.company_name ? 'var(--fg-muted)' : 'var(--fg-faint)' }}>
-              {vals.company_name || 'Your company'}
-            </span>
-            <span style={{ color: 'var(--fg-faint)' }}> · </span>
-            <span style={{ color: vals.location ? 'var(--fg-muted)' : 'var(--fg-faint)' }}>
-              {vals.location || 'Location'}
-            </span>
-            {vals.remote && <span style={{ color: 'var(--fg-faint)' }}> · Remote OK</span>}
-          </p>
-          {(vals.salary_min || vals.salary_max) && (
-            <p className="text-sm mt-1 font-semibold" style={{ color: 'var(--green)' }}>
-              {vals.salary_min && vals.salary_max
-                ? `$${Math.round(Number(vals.salary_min) / 2080)}/hr (~$${Math.round(Number(vals.salary_min) / 1000)}k–$${Math.round(Number(vals.salary_max) / 1000)}k/yr)`
-                : vals.salary_min
-                ? `~$${Math.round(Number(vals.salary_min) / 2080)}/hr`
-                : `up to ~$${Math.round(Number(vals.salary_max) / 2080)}/hr`}
-            </p>
-          )}
-        </div>
       </div>
 
       {/* Trades details */}
@@ -420,6 +445,45 @@ export function PostJobForm() {
             This position is covered by a collective bargaining agreement (IBEW, UA, or other union)
           </span>
         </label>
+      </div>
+
+      {/* Live listing preview — shown last, directly above CTA */}
+      <div className="pt-4" style={{ borderTop: '1px solid var(--border)' }}>
+        <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--fg-faint)' }}>
+          Preview — your listing will look like this
+        </p>
+        <div className="rounded-xl p-4" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
+          <div className="flex flex-wrap gap-1.5 mb-2">
+            <span className="text-xs px-2 py-0.5 rounded" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--fg-faint)' }}>
+              {CATEGORY_LABELS[vals.category as keyof typeof CATEGORY_LABELS] || 'Trade'}
+            </span>
+            <span className="text-xs px-2 py-0.5 rounded" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--fg-faint)' }}>
+              {JOB_TYPE_LABELS[vals.job_type as keyof typeof JOB_TYPE_LABELS] || 'Type'}
+            </span>
+          </div>
+          <p className="font-semibold text-base mb-0.5" style={{ color: vals.title ? 'var(--fg)' : 'var(--fg-faint)' }}>
+            {vals.title || 'Your job title'}
+          </p>
+          <p className="text-sm" style={{ color: 'var(--fg-muted)' }}>
+            <span style={{ color: vals.company_name ? 'var(--fg-muted)' : 'var(--fg-faint)' }}>
+              {vals.company_name || 'Your company'}
+            </span>
+            <span style={{ color: 'var(--fg-faint)' }}> · </span>
+            <span style={{ color: vals.location ? 'var(--fg-muted)' : 'var(--fg-faint)' }}>
+              {vals.location || 'Location'}
+            </span>
+            {vals.remote && <span style={{ color: 'var(--fg-faint)' }}> · Remote OK</span>}
+          </p>
+          {(vals.salary_min || vals.salary_max) && (
+            <p className="text-sm mt-1 font-semibold" style={{ color: 'var(--green)' }}>
+              {vals.salary_min && vals.salary_max
+                ? `$${Math.round(Number(vals.salary_min) / 2080)}/hr (~$${Math.round(Number(vals.salary_min) / 1000)}k–$${Math.round(Number(vals.salary_max) / 1000)}k/yr)`
+                : vals.salary_min
+                ? `~$${Math.round(Number(vals.salary_min) / 2080)}/hr`
+                : `up to ~$${Math.round(Number(vals.salary_max) / 2080)}/hr`}
+            </p>
+          )}
+        </div>
       </div>
 
       <button type="submit"
