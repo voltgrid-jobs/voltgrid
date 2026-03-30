@@ -76,6 +76,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
 
           {/* Title */}
           <div style={{
+            display: 'flex',
             fontSize: title.length > 40 ? '42px' : '52px',
             fontWeight: 800,
             color: '#f9fafb',
@@ -87,7 +88,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
           </div>
 
           {/* Company */}
-          <div style={{ fontSize: '28px', color: '#9ca3af', fontWeight: 500 }}>
+          <div style={{ display: 'flex', fontSize: '28px', color: '#9ca3af', fontWeight: 500 }}>
             {company}
           </div>
 
@@ -97,6 +98,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
               display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px',
             }}>
               <div style={{
+                display: 'flex',
                 background: 'rgba(74,222,128,0.1)', border: '1px solid rgba(74,222,128,0.25)',
                 borderRadius: '8px', padding: '6px 16px',
               }}>
