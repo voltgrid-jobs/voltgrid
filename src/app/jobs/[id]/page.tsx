@@ -77,7 +77,9 @@ function isFrenchDescription(description: string): boolean {
 import { SaveJobButton } from '@/components/jobs/SaveJobButton'
 import { AlertSignupWidget } from '@/components/jobs/AlertSignupWidget'
 import { ApplyButton } from '@/components/jobs/ApplyButton'
+import { JobCard } from '@/components/jobs/JobCard'
 import { extractSalaryFromDescription } from '@/lib/salary-extract'
+import type { Job } from '@/types'
 
 export async function generateMetadata({
   params,
@@ -132,7 +134,19 @@ export default async function JobDetailPage({
   const { data: job } = await supabase.from('jobs').select('*').eq('id', id).eq('is_active', true).single()
   if (!job) notFound()
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const [{ data: { user } }, { data: similarJobs }] = await Promise.all([
+    supabase.auth.getUser(),
+    supabase
+      .from('jobs')
+      .select('*')
+      .eq('is_active', true)
+      .eq('category', job.category)
+      .neq('id', id)
+      .order('is_featured', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(3),
+  ])
+
   let isSaved = false
   if (user) {
     const { data: saved } = await supabase
@@ -352,6 +366,24 @@ export default async function JobDetailPage({
             </div>
           )}
         </div>
+
+        {similarJobs && similarJobs.length > 0 && (
+          <div className="mt-8">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--fg-faint)' }}>
+                More {CATEGORY_LABELS[job.category as keyof typeof CATEGORY_LABELS]} Jobs
+              </p>
+              <Link href={`/jobs?category=${job.category}`} className="text-xs transition-colors" style={{ color: 'var(--yellow)' }}>
+                View all →
+              </Link>
+            </div>
+            <div className="flex flex-col gap-3">
+              {similarJobs.map((sj) => (
+                <JobCard key={sj.id} job={sj as Job} />
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="mt-4">
           <AlertSignupWidget keywords={job.title} category={job.category} />
