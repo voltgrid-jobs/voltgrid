@@ -121,6 +121,7 @@ export async function POST(req: NextRequest) {
       success_url: `${siteUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}/post-job`,
       metadata,
+      allow_promotion_codes: true,
     })
 
     return NextResponse.json({ url: session.url })
