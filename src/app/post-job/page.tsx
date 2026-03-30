@@ -3,6 +3,7 @@ import { PostJobForm } from '@/components/jobs/PostJobForm'
 
 export const metadata: Metadata = {
   title: 'Post a Job — VoltGrid Jobs',
+  alternates: { canonical: 'https://voltgridjobs.com/post-job' },
 }
 
 function TrustRail() {

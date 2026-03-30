@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   title: 'Post Trades Jobs for Data Centers',
   description:
     'Reach electricians, HVAC techs, and low voltage specialists who already know what a data center is. Flat pricing from $149. Go live in 5 minutes.',
+  alternates: { canonical: 'https://voltgridjobs.com/employers' },
 }
 
 const PLANS = [

@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: 'About — VoltGrid Jobs',
   description:
     "VoltGrid Jobs exists because finding a data center electrician or HVAC tech shouldn't require posting on a general board and filtering through hundreds of irrelevant applications.",
+  alternates: { canonical: 'https://voltgridjobs.com/about' },
 }
 
 export default function AboutPage() {

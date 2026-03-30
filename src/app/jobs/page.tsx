@@ -9,6 +9,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Browse Data Center & AI Infrastructure Jobs',
   description: 'Browse electrician, HVAC, low voltage, and construction jobs at data centers and AI infrastructure projects.',
+  alternates: { canonical: 'https://voltgridjobs.com/jobs' },
 }
 
 const PAGE_SIZE = 20
