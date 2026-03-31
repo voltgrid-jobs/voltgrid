@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
@@ -189,11 +190,18 @@ function TeaserBlurCard() {
   )
 }
 
-export default function SalaryGuidePage() {
+function SalaryGuideContent() {
+  const searchParams = useSearchParams()
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (searchParams.get('unlocked') === 'true') {
+      setSubmitted(true)
+    }
+  }, [searchParams])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -664,5 +672,13 @@ export default function SalaryGuidePage() {
         </div>
       </section>
     </div>
+  )
+}
+
+export default function SalaryGuidePage() {
+  return (
+    <Suspense fallback={null}>
+      <SalaryGuideContent />
+    </Suspense>
   )
 }

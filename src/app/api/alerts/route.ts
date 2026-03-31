@@ -128,7 +128,7 @@ export async function POST(req: NextRequest) {
 
           <p style="font-size:15px;font-weight:600;color:#fff;margin-bottom:8px">Bonus resource:</p>
           <p style="font-size:14px;line-height:1.6;color:#d1d5db;margin-bottom:20px">
-            Download the <a href="${baseUrl}/salary-guide" style="color:#facc15;text-decoration:underline">2026 Data Center Trades Salary Guide</a>
+            Download the <a href="${baseUrl}/salary-guide?unlocked=true" style="color:#facc15;text-decoration:underline">2026 Data Center Trades Salary Guide</a>
             — see what electricians, HVAC techs, and low voltage specialists are actually earning on these projects.
           </p>
 
