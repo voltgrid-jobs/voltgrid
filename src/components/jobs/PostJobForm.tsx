@@ -297,7 +297,7 @@ export function PostJobForm({ selectedPlan, setSelectedPlan: _setSelectedPlan, i
           type="button"
           onClick={handleSubmit}
           disabled={loading}
-          className="w-full py-4 rounded-xl font-semibold text-lg transition-opacity disabled:opacity-60"
+          className="w-full py-4 rounded-xl font-semibold text-lg transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed hover:-translate-y-px hover:shadow-[0_4px_16px_rgba(250,204,21,0.25)] disabled:translate-y-0 disabled:shadow-none"
           style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
         >
           {loading

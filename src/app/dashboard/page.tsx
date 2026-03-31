@@ -272,8 +272,12 @@ export default async function DashboardPage({
                 </div>
               ) : (
                 <div style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }} className="rounded-xl p-8 text-center">
-                  <p className="text-sm mb-3" style={{ color: 'var(--fg-faint)' }}>No active listings yet.</p>
-                  <Link href="/post-job" style={{ color: 'var(--yellow)' }} className="text-sm hover:opacity-80 transition-opacity">
+                  <p className="text-sm mb-4" style={{ color: 'var(--fg-faint)' }}>No active listings yet.</p>
+                  <Link
+                    href="/post-job"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm transition-all duration-150 hover:-translate-y-px hover:shadow-[0_4px_16px_rgba(250,204,21,0.25)]"
+                    style={{ background: 'var(--yellow)', color: '#0D0D0D' }}
+                  >
                     Post your first job →
                   </Link>
                 </div>

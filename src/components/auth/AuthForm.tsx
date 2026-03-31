@@ -97,7 +97,7 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
               type="button"
               onClick={handleMagicLink}
               disabled={loading}
-              className="w-full bg-yellow-400 text-gray-950 py-2 rounded-lg font-semibold text-sm hover:bg-yellow-300 transition-colors disabled:opacity-60"
+              className="w-full bg-yellow-400 text-gray-950 py-2 rounded-lg font-semibold text-sm hover:bg-yellow-300 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {loading ? '...' : 'Send magic link →'}
             </button>
@@ -120,7 +120,7 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
             type="button"
             onClick={handleMagicLink}
             disabled={loading}
-            className="w-full bg-yellow-400 text-gray-950 py-3 rounded-xl font-semibold hover:bg-yellow-300 transition-colors disabled:opacity-60"
+            className="w-full bg-yellow-400 text-gray-950 py-3 rounded-xl font-semibold hover:bg-yellow-300 hover:-translate-y-px hover:shadow-[0_4px_16px_rgba(250,204,21,0.25)] transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed disabled:translate-y-0 disabled:shadow-none"
           >
             {loading ? '...' : isLogin ? 'Send magic link' : 'Get sign-in link'}
           </button>
@@ -184,7 +184,7 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full border border-gray-700 text-gray-300 py-2.5 rounded-xl font-medium hover:border-gray-500 hover:text-white transition-colors text-sm disabled:opacity-60"
+                className="w-full border border-gray-700 text-gray-300 py-2.5 rounded-xl font-medium hover:border-gray-500 hover:text-white transition-colors text-sm disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {loading ? '...' : isLogin ? 'Sign in with password' : 'Create account with password'}
               </button>
