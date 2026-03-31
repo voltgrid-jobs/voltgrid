@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { createClient } from '@/lib/supabase/client'
 
 // NOTE: This is a client component. Metadata is defined inline as static constants
 // and referenced in the HTML head via the parent layout.
@@ -235,17 +236,31 @@ function SalaryGuideContent() {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
+  const [authChecking, setAuthChecking] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [filterTrade, setFilterTrade] = useState('')
   const [filterLocation, setFilterLocation] = useState('')
 
   useEffect(() => {
+    // Check URL param
     if (searchParams.get('unlocked') === 'true') setSubmitted(true)
     const t = searchParams.get('trade') ?? ''
     const l = searchParams.get('location') ?? ''
     if (TRADE_OPTIONS.some(o => o.value === t)) setFilterTrade(t)
     if (LOCATION_OPTIONS.some(o => o.value === l)) setFilterLocation(l)
+
+    // Check localStorage — skip gate for returning visitors who already submitted
+    if (localStorage.getItem('salaryGuideUnlocked') === 'true') {
+      setSubmitted(true)
+    }
+
+    // Check Supabase auth — skip gate for logged-in users
+    const supabase = createClient()
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) setSubmitted(true)
+      setAuthChecking(false)
+    })
   }, [searchParams])
 
   function updateFilters(trade: string, location: string) {
@@ -294,6 +309,7 @@ function SalaryGuideContent() {
 
       // Explicit success: 2xx OR API returned success:true
       if (res.ok || data?.success === true) {
+        localStorage.setItem('salaryGuideUnlocked', 'true')
         setSubmitted(true)
         return
       }
@@ -301,6 +317,7 @@ function SalaryGuideContent() {
       // Soft failures — email already exists (409, 500 duplicate key) or rate limited (429)
       // In all these cases the person is in our system — show the guide
       if (res.status === 409 || res.status === 429 || res.status >= 500) {
+        localStorage.setItem('salaryGuideUnlocked', 'true')
         setSubmitted(true)
         return
       }
@@ -408,7 +425,7 @@ function SalaryGuideContent() {
       {/* Email gate / full report */}
       <section>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
-          {!submitted ? (
+          {authChecking ? null : !submitted ? (
             <>
               {/* Blurred preview */}
               <TeaserBlurCard />
@@ -480,7 +497,7 @@ function SalaryGuideContent() {
                         transition: 'opacity 0.15s',
                       }}
                     >
-                      {loading ? 'Sending…' : 'Send me the guide →'}
+                      {loading ? 'Sending…' : 'Unlock the guide →'}
                     </button>
                   </div>
                   {error && (
