@@ -6,7 +6,7 @@ import { Resend } from 'resend'
 // In-memory rate limit store (per cold-start instance)
 // For production scale, replace with Redis/KV — adequate for current traffic
 const rateLimitStore = new Map<string, { count: number; resetAt: number }>()
-const RATE_LIMIT_MAX = 3      // max 3 alert signups
+const RATE_LIMIT_MAX = 10     // max 10 alert signups per IP per hour
 const RATE_LIMIT_WINDOW = 60 * 60 * 1000  // per hour per IP
 
 function getClientIp(req: NextRequest): string {

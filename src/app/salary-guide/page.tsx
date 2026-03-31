@@ -213,6 +213,11 @@ export default function SalaryGuidePage() {
           setSubmitted(true)
           return
         }
+        // Rate limited — let them in anyway, they clearly want the guide
+        if (res.status === 429) {
+          setSubmitted(true)
+          return
+        }
         setError('Something went wrong. Please try again.')
         return
       }
