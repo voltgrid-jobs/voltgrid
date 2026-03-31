@@ -224,9 +224,22 @@ export default async function DashboardPage({
         postingsContent={
           <div>
             {/* Summary stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
+            <div className={`grid gap-3 mb-10 ${credits ? 'grid-cols-2 lg:grid-cols-5' : 'grid-cols-2 sm:grid-cols-4'}`}>
               <StatCard label="Active Listings" value={activeJobs.length} />
               <StatCard label="Total Posted"    value={jobs?.length ?? 0} />
+              {credits && (
+                isPro ? (
+                  <StatCard label="Plan" value="⚡ Pro" highlight />
+                ) : (
+                  <StatCard
+                    label="Posts remaining"
+                    value={postCredits}
+                    highlight={postCredits > 0}
+                    ctaHref={postCredits === 0 ? '/post-job' : undefined}
+                    ctaLabel={postCredits === 0 ? 'Buy more →' : undefined}
+                  />
+                )
+              )}
               <StatCard
                 label="Apply Clicks"
                 value={totalClicks}
@@ -380,11 +393,15 @@ function StatCard({
   value,
   highlight = false,
   sub,
+  ctaHref,
+  ctaLabel,
 }: {
   label: string
   value: number | string
   highlight?: boolean
   sub?: string
+  ctaHref?: string
+  ctaLabel?: string
 }) {
   return (
     <div style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }} className="rounded-xl p-4">
@@ -393,6 +410,11 @@ function StatCard({
       </div>
       <div className="text-xs mt-1" style={{ color: 'var(--fg-faint)' }}>{label}</div>
       {sub && <div className="text-xs mt-0.5 truncate" style={{ color: 'var(--fg-muted)' }}>{sub}</div>}
+      {ctaHref && ctaLabel && (
+        <Link href={ctaHref} className="text-xs mt-1 block hover:opacity-80 transition-opacity" style={{ color: 'var(--yellow)' }}>
+          {ctaLabel}
+        </Link>
+      )}
     </div>
   )
 }
