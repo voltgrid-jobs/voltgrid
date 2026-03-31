@@ -445,10 +445,13 @@ function SalaryGuideContent() {
                   <div style={{ display: 'flex', gap: '0.5rem', flexDirection: 'column' }}>
                     <input
                       type="email"
+                      name="email"
+                      autoComplete="email"
                       required
                       placeholder="your@email.com"
                       value={email}
                       onChange={e => setEmail(e.target.value)}
+                      className="autofill-bg-dark"
                       style={{
                         width: '100%',
                         padding: '0.875rem 1rem',

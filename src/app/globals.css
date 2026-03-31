@@ -56,6 +56,17 @@ input:-webkit-autofill:active {
   transition: background-color 9999s ease-in-out 0s !important;
 }
 
+/* Inputs on the near-black --bg (#0D0D0D) background — e.g. salary guide gate */
+.autofill-bg-dark:-webkit-autofill,
+.autofill-bg-dark:-webkit-autofill:hover,
+.autofill-bg-dark:-webkit-autofill:focus,
+.autofill-bg-dark:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #0D0D0D inset !important;
+  -webkit-text-fill-color: #F0F0ED !important;
+  caret-color: #F0F0ED;
+  transition: background-color 9999s ease-in-out 0s !important;
+}
+
 /* Password manager autofill text fix (Dashlane, 1Password, etc.)
    Extensions inject background with extension-level !important — we can't override that.
    Instead: guarantee text is always light so it's readable on any dark bg (navy, black, grey).

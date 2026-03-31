@@ -383,6 +383,20 @@ export default async function JobDetailPage({
               })
             }
           </div>
+          {/* Truncation notice — Adzuna and some sources cap description length */}
+          {job.apply_url && sanitizeJobDescription(job.description).trimEnd().endsWith('...') && (
+            <p className="text-sm mt-4" style={{ color: 'var(--fg-faint)' }}>
+              Description truncated by source.{' '}
+              <a
+                href={job.apply_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: 'var(--yellow)' }}
+              >
+                View full description on employer site →
+              </a>
+            </p>
+          )}
 
           {applyUrl && (
             <div className="mt-10 pt-8 text-center" style={{ borderTop: '1px solid var(--border)' }}>
