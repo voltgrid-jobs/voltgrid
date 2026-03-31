@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
@@ -64,6 +64,46 @@ const CONSTRUCTION_MARKETS: MarketRow[] = [
   { market: 'Phoenix', role: 'Site Superintendent', low: 115000, high: 165000, unit: 'yr' },
   { market: 'National (travel)', role: 'Construction PM — Hyperscale', low: 150000, high: 230000, unit: 'yr', note: 'From VoltGrid listings' },
 ]
+
+// ── Filter configuration ─────────────────────────────────────────────────────
+
+const TRADE_OPTIONS = [
+  { value: '', label: 'All Trades' },
+  { value: 'electrical', label: 'Electrical' },
+  { value: 'hvac', label: 'HVAC' },
+  { value: 'low_voltage', label: 'Low Voltage' },
+  { value: 'construction', label: 'Construction' },
+]
+
+const LOCATION_OPTIONS = [
+  { value: '', label: 'All Markets' },
+  { value: 'northern-virginia', label: 'Northern Virginia' },
+  { value: 'phoenix', label: 'Phoenix' },
+  { value: 'dallas-fort-worth', label: 'Dallas / Fort Worth' },
+  { value: 'chicago', label: 'Chicago' },
+  { value: 'atlanta', label: 'Atlanta' },
+  { value: 'houston', label: 'Houston' },
+  { value: 'columbus', label: 'Columbus / OH' },
+  { value: 'national', label: 'National' },
+]
+
+const LOCATION_SLUG_TO_KEYWORD: Record<string, string> = {
+  'northern-virginia': 'northern virginia',
+  'phoenix': 'phoenix',
+  'dallas-fort-worth': 'dallas',
+  'chicago': 'chicago',
+  'atlanta': 'atlanta',
+  'houston': 'houston',
+  'columbus': 'columbus',
+  'national': 'national',
+}
+
+function filterRows(rows: MarketRow[], locationSlug: string): MarketRow[] {
+  if (!locationSlug) return rows
+  const keyword = LOCATION_SLUG_TO_KEYWORD[locationSlug]
+  if (!keyword) return rows
+  return rows.filter(r => r.market.toLowerCase().includes(keyword))
+}
 
 function formatSalary(row: MarketRow): string {
   if (row.unit === 'hr') {
@@ -192,16 +232,51 @@ function TeaserBlurCard() {
 
 function SalaryGuideContent() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [filterTrade, setFilterTrade] = useState('')
+  const [filterLocation, setFilterLocation] = useState('')
 
   useEffect(() => {
-    if (searchParams.get('unlocked') === 'true') {
-      setSubmitted(true)
-    }
+    if (searchParams.get('unlocked') === 'true') setSubmitted(true)
+    const t = searchParams.get('trade') ?? ''
+    const l = searchParams.get('location') ?? ''
+    if (TRADE_OPTIONS.some(o => o.value === t)) setFilterTrade(t)
+    if (LOCATION_OPTIONS.some(o => o.value === l)) setFilterLocation(l)
   }, [searchParams])
+
+  function updateFilters(trade: string, location: string) {
+    setFilterTrade(trade)
+    setFilterLocation(location)
+    const params = new URLSearchParams()
+    params.set('unlocked', 'true')
+    if (trade) params.set('trade', trade)
+    if (location) params.set('location', location)
+    router.replace(`/salary-guide?${params.toString()}`, { scroll: false })
+  }
+
+  // ── Derived filter state ────────────────────────────────────────────────────
+  const showElectrical = !filterTrade || filterTrade === 'electrical'
+  const showHVAC = !filterTrade || filterTrade === 'hvac'
+  const showLV = !filterTrade || filterTrade === 'low_voltage'
+  const showConstruction = !filterTrade || filterTrade === 'construction'
+
+  const electricalFiltered = filterRows(ELECTRICAL_MARKETS, filterLocation)
+  const hvacFiltered = filterRows(HVAC_MARKETS, filterLocation)
+  const lvFiltered = filterRows(LV_MARKETS, filterLocation)
+  const constructionFiltered = filterRows(CONSTRUCTION_MARKETS, filterLocation)
+
+  const tradeLabel = TRADE_OPTIONS.find(o => o.value === filterTrade)?.label ?? 'All Trades'
+  const locationLabel = LOCATION_OPTIONS.find(o => o.value === filterLocation)?.label ?? 'All Markets'
+
+  const hasFilteredData =
+    (showElectrical && electricalFiltered.length > 0) ||
+    (showHVAC && hvacFiltered.length > 0) ||
+    (showLV && lvFiltered.length > 0) ||
+    (showConstruction && constructionFiltered.length > 0)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -441,6 +516,69 @@ function SalaryGuideContent() {
                 </div>
               </div>
 
+              {/* Filters */}
+              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '2rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', minWidth: '160px', flex: 1 }}>
+                  <label style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--fg-faint)' }}>Trade</label>
+                  <select
+                    value={filterTrade}
+                    onChange={e => updateFilters(e.target.value, filterLocation)}
+                    style={{
+                      padding: '0.625rem 0.875rem',
+                      borderRadius: '8px',
+                      border: '1px solid var(--border-strong)',
+                      background: 'var(--bg-raised)',
+                      color: 'var(--fg)',
+                      fontSize: '0.875rem',
+                      cursor: 'pointer',
+                      outline: 'none',
+                    }}
+                  >
+                    {TRADE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                  </select>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', minWidth: '160px', flex: 1 }}>
+                  <label style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--fg-faint)' }}>Market</label>
+                  <select
+                    value={filterLocation}
+                    onChange={e => updateFilters(filterTrade, e.target.value)}
+                    style={{
+                      padding: '0.625rem 0.875rem',
+                      borderRadius: '8px',
+                      border: '1px solid var(--border-strong)',
+                      background: 'var(--bg-raised)',
+                      color: 'var(--fg)',
+                      fontSize: '0.875rem',
+                      cursor: 'pointer',
+                      outline: 'none',
+                    }}
+                  >
+                    {LOCATION_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                  </select>
+                </div>
+                {(filterTrade || filterLocation) && (
+                  <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                    <button
+                      onClick={() => updateFilters('', '')}
+                      style={{ padding: '0.625rem 0.875rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', color: 'var(--fg-faint)', fontSize: '0.8rem', cursor: 'pointer' }}
+                    >
+                      Clear
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Active filter summary */}
+              {(filterTrade || filterLocation) && (
+                <div style={{ marginBottom: '1.5rem', padding: '0.75rem 1rem', borderRadius: '8px', background: 'var(--yellow-dim)', border: '1px solid var(--yellow-border)' }}>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--fg-muted)', margin: 0 }}>
+                    Showing <strong style={{ color: 'var(--fg)' }}>{tradeLabel}</strong> salaries
+                    {filterLocation ? <> in <strong style={{ color: 'var(--fg)' }}>{locationLabel}</strong></> : ' across all markets'}.
+                    {!hasFilteredData && ' No data for this combination — try broadening your filters.'}
+                  </p>
+                </div>
+              )}
+
               {/* Report header */}
               <div style={{ borderBottom: '1px solid var(--border)', paddingBottom: '1.5rem', marginBottom: '2rem' }}>
                 <div
@@ -489,79 +627,57 @@ function SalaryGuideContent() {
                 </p>
               </div>
 
-              <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem' }} />
+              {showElectrical && electricalFiltered.length > 0 && <>
+                <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem' }} />
+                <SectionTitle>⚡ Electrical — Journeyman &amp; Master Electricians</SectionTitle>
+                <p style={{ color: 'var(--fg-muted)', fontSize: '0.9rem', lineHeight: 1.7, marginBottom: '1.5rem' }}>
+                  Data center electrical work commands a significant premium over standard commercial projects.
+                  Scope includes 480V distribution, UPS systems, generator tie-ins, bus duct, and increasingly
+                  medium-voltage switchgear for AI compute clusters. Union markets (Chicago, DC metro) add another
+                  15–25% above open shop rates. Travel roles often include per diem on top.
+                </p>
+                <SalaryTable rows={electricalFiltered} title="Electrical — market compensation ranges" />
+                <div style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)', borderRadius: '10px', padding: '1rem 1.25rem', fontSize: '0.8rem', color: 'var(--fg-muted)', lineHeight: 1.6, marginBottom: '2rem' }}>
+                  <strong style={{ color: 'var(--fg)' }}>Key credentials that move the needle:</strong> 480V experience, medium voltage, arc flash training (NFPA 70E), commissioning background. Master license adds $5–10/hr in most markets.
+                </div>
+              </>}
 
-              {/* Electrical */}
-              <SectionTitle>⚡ Electrical — Journeyman &amp; Master Electricians</SectionTitle>
-              <p style={{ color: 'var(--fg-muted)', fontSize: '0.9rem', lineHeight: 1.7, marginBottom: '1.5rem' }}>
-                Data center electrical work commands a significant premium over standard commercial projects.
-                Scope includes 480V distribution, UPS systems, generator tie-ins, bus duct, and increasingly
-                medium-voltage switchgear for AI compute clusters. Union markets (Chicago, DC metro) add another
-                15–25% above open shop rates. Travel roles often include per diem on top.
-              </p>
-              <SalaryTable rows={ELECTRICAL_MARKETS} title="Electrical — market compensation ranges" />
-              <div
-                style={{
-                  background: 'var(--bg-raised)',
-                  border: '1px solid var(--border)',
-                  borderRadius: '10px',
-                  padding: '1rem 1.25rem',
-                  fontSize: '0.8rem',
-                  color: 'var(--fg-muted)',
-                  lineHeight: 1.6,
-                  marginBottom: '2rem',
-                }}
-              >
-                <strong style={{ color: 'var(--fg)' }}>Key credentials that move the needle:</strong> 480V experience, medium voltage, arc flash training (NFPA 70E), commissioning background. Master license adds $5–10/hr in most markets.
-              </div>
+              {showHVAC && hvacFiltered.length > 0 && <>
+                <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem' }} />
+                <SectionTitle>❄️ HVAC — Commercial &amp; Industrial Technicians</SectionTitle>
+                <p style={{ color: 'var(--fg-muted)', fontSize: '0.9rem', lineHeight: 1.7, marginBottom: '1.5rem' }}>
+                  Data center HVAC is specialized — precision cooling, CRAC units, hot/cold aisle containment,
+                  and increasingly liquid cooling for AI GPU racks. This specialization commands a <strong style={{ color: 'var(--fg)' }}>15–25% premium</strong> over
+                  standard commercial HVAC rates. Technicians who understand critical facility environments and
+                  uptime requirements are in very short supply.
+                </p>
+                <SalaryTable rows={hvacFiltered} title="HVAC — market compensation ranges" />
+                <div style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)', borderRadius: '10px', padding: '1rem 1.25rem', fontSize: '0.8rem', color: 'var(--fg-muted)', lineHeight: 1.6, marginBottom: '2rem' }}>
+                  <strong style={{ color: 'var(--fg)' }}>Most valued experience:</strong> CRAC/CRAH units, Liebert/Stulz systems, hot aisle containment, chiller plant operations, EPA 608 (required). Liquid cooling (CDU, immersion) is a growing niche with 20%+ premium.
+                </div>
+              </>}
 
-              <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem' }} />
+              {showLV && lvFiltered.length > 0 && <>
+                <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem' }} />
+                <SectionTitle>🔌 Low Voltage / Data Center Infrastructure</SectionTitle>
+                <p style={{ color: 'var(--fg-muted)', fontSize: '0.9rem', lineHeight: 1.7, marginBottom: '1.5rem' }}>
+                  Fiber, structured cabling, BMS, DCIM — the connective tissue of every data center. Low voltage
+                  is the fastest-growing segment due to the AI buildout. New hyperscale campuses need thousands
+                  of fiber runs, and BMS/DCIM integration specialists are particularly scarce.
+                </p>
+                <SalaryTable rows={lvFiltered} title="Low voltage — market compensation ranges" />
+              </>}
 
-              {/* HVAC */}
-              <SectionTitle>❄️ HVAC — Commercial &amp; Industrial Technicians</SectionTitle>
-              <p style={{ color: 'var(--fg-muted)', fontSize: '0.9rem', lineHeight: 1.7, marginBottom: '1.5rem' }}>
-                Data center HVAC is specialized — precision cooling, CRAC units, hot/cold aisle containment,
-                and increasingly liquid cooling for AI GPU racks. This specialization commands a <strong style={{ color: 'var(--fg)' }}>15–25% premium</strong> over
-                standard commercial HVAC rates. Technicians who understand critical facility environments and
-                uptime requirements are in very short supply.
-              </p>
-              <SalaryTable rows={HVAC_MARKETS} title="HVAC — market compensation ranges" />
-              <div
-                style={{
-                  background: 'var(--bg-raised)',
-                  border: '1px solid var(--border)',
-                  borderRadius: '10px',
-                  padding: '1rem 1.25rem',
-                  fontSize: '0.8rem',
-                  color: 'var(--fg-muted)',
-                  lineHeight: 1.6,
-                  marginBottom: '2rem',
-                }}
-              >
-                <strong style={{ color: 'var(--fg)' }}>Most valued experience:</strong> CRAC/CRAH units, Liebert/Stulz systems, hot aisle containment, chiller plant operations, EPA 608 (required). Liquid cooling (CDU, immersion) is a growing niche with 20%+ premium.
-              </div>
-
-              <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem' }} />
-
-              {/* Low Voltage */}
-              <SectionTitle>🔌 Low Voltage / Data Center Infrastructure</SectionTitle>
-              <p style={{ color: 'var(--fg-muted)', fontSize: '0.9rem', lineHeight: 1.7, marginBottom: '1.5rem' }}>
-                Fiber, structured cabling, BMS, DCIM — the connective tissue of every data center. Low voltage
-                is the fastest-growing segment due to the AI buildout. New hyperscale campuses need thousands
-                of fiber runs, and BMS/DCIM integration specialists are particularly scarce.
-              </p>
-              <SalaryTable rows={LV_MARKETS} title="Low voltage — market compensation ranges" />
-
-              <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem' }} />
-
-              {/* Construction */}
-              <SectionTitle>🏗️ Construction Management</SectionTitle>
-              <p style={{ color: 'var(--fg-muted)', fontSize: '0.9rem', lineHeight: 1.7, marginBottom: '1.5rem' }}>
-                Superintendents and PMs who understand mission-critical construction are among the most
-                compensated professionals in trades. Managing the schedule on a $500M+ hyperscale campus
-                commands commensurate pay. These roles are almost always salaried with performance bonuses.
-              </p>
-              <SalaryTable rows={CONSTRUCTION_MARKETS} title="Construction management — compensation ranges" />
+              {showConstruction && constructionFiltered.length > 0 && <>
+                <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem' }} />
+                <SectionTitle>🏗️ Construction Management</SectionTitle>
+                <p style={{ color: 'var(--fg-muted)', fontSize: '0.9rem', lineHeight: 1.7, marginBottom: '1.5rem' }}>
+                  Superintendents and PMs who understand mission-critical construction are among the most
+                  compensated professionals in trades. Managing the schedule on a $500M+ hyperscale campus
+                  commands commensurate pay. These roles are almost always salaried with performance bonuses.
+                </p>
+                <SalaryTable rows={constructionFiltered} title="Construction management — compensation ranges" />
+              </>}
 
               <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem' }} />
 
