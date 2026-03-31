@@ -209,6 +209,66 @@ export default function BreakIntoDataCenterWork() {
           </div>
         </Section>
 
+        {/* Free Certifications */}
+        <Section title="Free Certifications to Get Hired Faster">
+          <p>
+            A few targeted certifications can move your resume from the bottom of the stack to the top. The one below is free, self-paced, and directly recognized by data center hiring managers.
+          </p>
+
+          <div className="rounded-xl overflow-hidden my-4" style={{ border: '1px solid var(--border)' }}>
+            {/* Header */}
+            <div className="flex items-start justify-between gap-4 px-5 py-4" style={{ background: 'var(--bg-raised)', borderBottom: '1px solid var(--border)' }}>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-sm font-bold" style={{ color: 'var(--fg)' }}>
+                    Data Center Certified Associate (DCCA)
+                  </span>
+                  <span className="text-xs font-bold px-2 py-0.5 rounded" style={{ background: 'var(--green-dim)', color: 'var(--green)', border: '1px solid rgba(74,222,128,0.25)' }}>
+                    FREE
+                  </span>
+                </div>
+                <p className="text-sm" style={{ color: 'var(--fg-faint)' }}>Schneider Electric Energy University</p>
+              </div>
+              <a
+                href="https://www.se.com/us/en/about-us/university/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="shrink-0 inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg transition-opacity hover:opacity-80"
+                style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
+              >
+                Enroll free
+              </a>
+            </div>
+
+            {/* Details */}
+            <div className="px-5 py-4 grid sm:grid-cols-3 gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--fg-faint)' }}>Format</p>
+                <p className="text-sm" style={{ color: 'var(--fg-muted)' }}>Self-paced online</p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--fg-faint)' }}>Cost</p>
+                <p className="text-sm font-semibold" style={{ color: 'var(--green)' }}>Free</p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--fg-faint)' }}>Provider</p>
+                <p className="text-sm" style={{ color: 'var(--fg-muted)' }}>Schneider Electric</p>
+              </div>
+            </div>
+
+            {/* Why it matters */}
+            <div className="px-5 pb-5">
+              <p className="text-sm" style={{ color: 'var(--fg-muted)', lineHeight: 1.7 }}>
+                Industry-recognized credential covering data center power, cooling, and infrastructure fundamentals. Built for trades workers transitioning into data center environments. Schneider Electric is one of the largest suppliers of DC power and cooling infrastructure in the world, and hiring managers recognize this certification as a signal that a candidate understands how a data center actually works.
+              </p>
+            </div>
+          </div>
+
+          <p>
+            This certification covers the concepts that show up in every DC job interview: power redundancy (N+1, 2N), cooling architecture, UPS topology, and data center tiers. Even experienced electricians and HVAC techs find it useful as a structured way to learn DC-specific terminology before their first interview.
+          </p>
+        </Section>
+
         {/* How to find roles */}
         <Section title="How to Find Data Center Roles">
           <p>
