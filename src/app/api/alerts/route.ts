@@ -70,10 +70,12 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  // Get user if logged in
+  // Get user if logged in (best-effort — doesn't block unauthenticated signups)
   const { data: { user } } = await supabase.auth.getUser()
 
-  const { error } = await supabase.from('job_alerts').insert({
+  // Use adminClient to bypass RLS — this is a server-side API route with its own
+  // validation (rate limit + email format check + per-email cap above).
+  const { error } = await adminClient.from('job_alerts').insert({
     email: email.toLowerCase().trim(),
     ...(background && { background }),
     user_id: user?.id || null,
