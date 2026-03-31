@@ -105,6 +105,102 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Table may not exist yet — skip
   }
 
+  // ── Trade x Remote programmatic pages ────────────────────────────────────
+  const TRADE_REMOTE_SLUGS: Partial<Record<string, string>> = {
+    electrical: 'electrical',
+    hvac: 'hvac',
+    low_voltage: 'low-voltage',
+    construction: 'construction',
+    project_management: 'project-management',
+    operations: 'operations',
+  }
+
+  let tradeRemoteUrls: MetadataRoute.Sitemap = []
+  try {
+    const { data: remoteJobs } = await supabase
+      .from('jobs')
+      .select('category')
+      .eq('is_active', true)
+      .eq('remote', true)
+
+    if (remoteJobs) {
+      const remoteCounts = new Map<string, number>()
+      for (const job of remoteJobs) {
+        if (!job.category) continue
+        remoteCounts.set(job.category, (remoteCounts.get(job.category) ?? 0) + 1)
+      }
+      for (const [category, count] of remoteCounts.entries()) {
+        if (count < 5) continue
+        const tradeSlug = TRADE_REMOTE_SLUGS[category]
+        if (!tradeSlug) continue
+        tradeRemoteUrls.push({
+          url: `${baseUrl}/${tradeSlug}-remote-jobs`,
+          lastModified: new Date(),
+          changeFrequency: 'daily',
+          priority: 0.7,
+        })
+      }
+    }
+  } catch {
+    // Table may not exist yet — skip
+  }
+
+  // ── Company pages ─────────────────────────────────────────────────────────
+  let companyUrls: MetadataRoute.Sitemap = []
+  try {
+    // Try companies table first
+    const { data: companies, error: companiesError } = await supabase
+      .from('companies')
+      .select('slug, id')
+
+    if (!companiesError && companies && companies.length > 0) {
+      for (const company of companies) {
+        const { count } = await supabase
+          .from('jobs')
+          .select('id', { count: 'exact', head: true })
+          .eq('is_active', true)
+          .eq('company_id', (company as { id: string; slug: string }).id)
+        if ((count ?? 0) >= 3) {
+          companyUrls.push({
+            url: `${baseUrl}/companies/${(company as { id: string; slug: string }).slug}`,
+            lastModified: new Date(),
+            changeFrequency: 'weekly',
+            priority: 0.7,
+          })
+        }
+      }
+    } else {
+      // Fallback: derive from jobs table
+      const { data: companyJobs } = await supabase
+        .from('jobs')
+        .select('company_name')
+        .eq('is_active', true)
+        .not('company_name', 'is', null)
+        .limit(5000)
+
+      if (companyJobs) {
+        const counts = new Map<string, number>()
+        for (const job of companyJobs) {
+          if (!job.company_name) continue
+          counts.set(job.company_name, (counts.get(job.company_name) ?? 0) + 1)
+        }
+        for (const [name, count] of counts.entries()) {
+          if (count >= 3) {
+            const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+            companyUrls.push({
+              url: `${baseUrl}/companies/${slug}`,
+              lastModified: new Date(),
+              changeFrequency: 'weekly',
+              priority: 0.7,
+            })
+          }
+        }
+      }
+    }
+  } catch {
+    // companies table may not exist yet — skip
+  }
+
   return [
     { url: baseUrl, lastModified: new Date(), changeFrequency: 'daily', priority: 1.0 },
     { url: `${baseUrl}/jobs`, lastModified: new Date(), changeFrequency: 'hourly', priority: 0.9 },
@@ -124,6 +220,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...tradeUrls,
     ...locationUrls,
     ...tradeLocationUrls,
+    ...tradeRemoteUrls,
+    ...companyUrls,
     ...jobUrls,
   ]
 }
