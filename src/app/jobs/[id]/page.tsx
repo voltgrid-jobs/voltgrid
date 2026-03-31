@@ -281,8 +281,6 @@ export default async function JobDetailPage({
           href="/salary-guide"
           className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl px-5 py-4 mb-4 transition-colors"
           style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}
-          onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--yellow-border)')}
-          onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
         >
           <div>
             <p className="text-xs font-semibold tracking-widest uppercase mb-0.5" style={{ color: 'var(--yellow)' }}>
