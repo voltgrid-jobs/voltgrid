@@ -53,6 +53,58 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }))
 
+  // ── Trade x Location programmatic pages ──────────────────────────────────
+  const CATEGORY_TO_TRADE_SLUG: Partial<Record<string, string>> = {
+    electrical: 'electrical',
+    hvac: 'hvac',
+    low_voltage: 'low-voltage',
+    construction: 'construction',
+    project_management: 'project-management',
+    operations: 'operations',
+  }
+
+  let tradeLocationUrls: MetadataRoute.Sitemap = []
+  try {
+    const { data: comboJobs } = await supabase
+      .from('jobs')
+      .select('category, location')
+      .eq('is_active', true)
+      .not('location', 'is', null)
+      .limit(5000)
+
+    if (comboJobs) {
+      const counts = new Map<string, number>()
+      for (const job of comboJobs) {
+        if (!job.category || !job.location) continue
+        const key = `${job.category}|||${job.location}`
+        counts.set(key, (counts.get(key) ?? 0) + 1)
+      }
+      const seen = new Set<string>()
+      const topCombos = [...counts.entries()]
+        .filter(([, n]) => n >= 2)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 60)
+
+      for (const [key] of topCombos) {
+        const [category, location] = key.split('|||')
+        const tradeSlug = CATEGORY_TO_TRADE_SLUG[category]
+        if (!tradeSlug) continue
+        const locSlug = location.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+        const combined = `${tradeSlug}-jobs-in-${locSlug}`
+        if (seen.has(combined)) continue
+        seen.add(combined)
+        tradeLocationUrls.push({
+          url: `${baseUrl}/${combined}`,
+          lastModified: new Date(),
+          changeFrequency: 'daily',
+          priority: 0.8,
+        })
+      }
+    }
+  } catch {
+    // Table may not exist yet — skip
+  }
+
   return [
     { url: baseUrl, lastModified: new Date(), changeFrequency: 'daily', priority: 1.0 },
     { url: `${baseUrl}/jobs`, lastModified: new Date(), changeFrequency: 'hourly', priority: 0.9 },
@@ -71,6 +123,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
     ...tradeUrls,
     ...locationUrls,
+    ...tradeLocationUrls,
     ...jobUrls,
   ]
 }
