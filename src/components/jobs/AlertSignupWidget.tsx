@@ -1,5 +1,6 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
 
 const BACKGROUNDS = [
   { value: 'electrician_commercial', label: 'Licensed electrician (commercial/industrial)' },
@@ -38,7 +39,24 @@ export function AlertSignupWidget({
   const [step, setStep] = useState<'email' | 'qualifier'>('email')
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
+  const [isAuth, setIsAuth] = useState(false)
+  const [authChecking, setAuthChecking] = useState(true)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    // Check localStorage first — suppress form for returning visitors who already signed up
+    if (localStorage.getItem('jobAlertSignedUp') === 'true') {
+      setDone(true)
+      setAuthChecking(false)
+      return
+    }
+    // Check auth — logged-in users don't need to sign up via this widget
+    const supabase = createClient()
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) setIsAuth(true)
+      setAuthChecking(false)
+    })
+  }, [])
 
   async function submitAlert(bg: string) {
     setLoading(true)
@@ -55,8 +73,12 @@ export function AlertSignupWidget({
           ...(bg && { background: bg }),
         }),
       })
-      if (res.ok) setDone(true)
-      else setError('Something went wrong. Try again.')
+      if (res.ok || res.status === 409 || res.status === 429 || res.status >= 500) {
+        localStorage.setItem('jobAlertSignedUp', 'true')
+        setDone(true)
+      } else {
+        setError('Something went wrong. Try again.')
+      }
     } finally {
       setLoading(false)
     }
@@ -76,10 +98,16 @@ export function AlertSignupWidget({
     submitAlert('')
   }
 
+  // While checking auth/localStorage, render nothing to avoid form flash
+  if (authChecking) return null
+
+  // Logged-in users manage alerts in their dashboard — no widget needed
+  if (isAuth) return null
+
   if (done) {
     return (
       <div className="rounded-xl p-5 text-center" style={{ background: 'var(--green-dim)', border: '1px solid rgba(74,222,128,0.2)' }}>
-        <p className="font-semibold text-sm" style={{ color: 'var(--green)' }}>✓ Alert set up</p>
+        <p className="font-semibold text-sm" style={{ color: 'var(--green)' }}>✓ Job alerts active</p>
         <p className="text-xs mt-1" style={{ color: 'var(--fg-muted)' }}>
           You&apos;ll get daily alerts + a weekly digest of top opportunities.
         </p>
@@ -107,11 +135,13 @@ export function AlertSignupWidget({
             <input
               id="alert-signup-email"
               type="email"
+              name="email"
+              autoComplete="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
               placeholder="your@email.com"
-              className="flex-1 px-3 py-2 rounded-lg text-sm focus:outline-none"
+              className="flex-1 px-3 py-2 rounded-lg text-sm focus:outline-none autofill-bg-dark"
               style={{ background: 'var(--bg)', border: '1px solid var(--border-strong)', color: 'var(--fg)' }}
             />
             <button

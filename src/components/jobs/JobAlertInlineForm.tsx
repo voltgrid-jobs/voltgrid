@@ -1,5 +1,6 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
 
 const TRADE_OPTIONS = [
   { value: '', label: 'All trades' },
@@ -24,7 +25,24 @@ export function JobAlertInlineForm({
   const [trade, setTrade] = useState(defaultTrade)
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
+  const [isAuth, setIsAuth] = useState(false)
+  const [authChecking, setAuthChecking] = useState(true)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    // Check localStorage — suppress form for returning visitors who already signed up
+    if (localStorage.getItem('jobAlertSignedUp') === 'true') {
+      setDone(true)
+      setAuthChecking(false)
+      return
+    }
+    // Check auth — logged-in users don't need to sign up via this widget
+    const supabase = createClient()
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) setIsAuth(true)
+      setAuthChecking(false)
+    })
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -36,10 +54,11 @@ export function JobAlertInlineForm({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, category: trade || null, location: '', frequency: 'daily' }),
       })
-      if (res.ok) {
+      if (res.ok || res.status === 409 || res.status === 429 || res.status >= 500) {
+        localStorage.setItem('jobAlertSignedUp', 'true')
         setDone(true)
       } else {
-        const data = await res.json()
+        const data = await res.json().catch(() => ({}))
         setError(data.error || 'Something went wrong. Try again.')
       }
     } catch {
@@ -49,6 +68,12 @@ export function JobAlertInlineForm({
     }
   }
 
+  // While checking auth/localStorage, render nothing to avoid form flash
+  if (authChecking) return null
+
+  // Logged-in users manage alerts in their dashboard — no widget needed
+  if (isAuth) return null
+
   if (done) {
     return (
       <div
@@ -56,7 +81,7 @@ export function JobAlertInlineForm({
         style={{ background: 'var(--green-dim)', border: '1px solid rgba(74,222,128,0.2)' }}
       >
         <p className="font-semibold text-sm" style={{ color: 'var(--green)' }}>
-          ✓ You&apos;re on the list
+          ✓ Job alerts active
         </p>
         <p className="text-xs mt-1" style={{ color: 'var(--fg-muted)' }}>
           We&apos;ll notify you when matching jobs are posted.
@@ -82,11 +107,13 @@ export function JobAlertInlineForm({
           <input
             id="job-alert-sidebar-email"
             type="email"
+            name="email"
+            autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
             placeholder="your@email.com"
-            className="flex-1 min-w-0 px-3 py-2 rounded-lg text-sm focus:outline-none"
+            className="flex-1 min-w-0 px-3 py-2 rounded-lg text-sm focus:outline-none autofill-bg-dark"
             style={{
               background: 'var(--bg)',
               border: '1px solid var(--border-strong)',
@@ -142,11 +169,13 @@ export function JobAlertInlineForm({
           <input
             id="job-alert-email"
             type="email"
+            name="email"
+            autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
             placeholder="your@email.com"
-            className="flex-1 px-3 py-2.5 rounded-lg text-sm focus:outline-none"
+            className="flex-1 px-3 py-2.5 rounded-lg text-sm focus:outline-none autofill-bg-dark"
             style={{
               background: 'var(--bg)',
               border: '1px solid var(--border-strong)',
