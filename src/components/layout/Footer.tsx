@@ -52,16 +52,31 @@ export function Footer() {
           </div>
         </div>
 
-        <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1.5rem' }} className="flex flex-col sm:flex-row items-center justify-between gap-2">
+        <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1.5rem' }} className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <span className="text-xs" style={{ color: 'var(--fg-faint)' }}>
             © {new Date().getFullYear()} VoltGrid Jobs. All rights reserved.
           </span>
-          <span className="text-xs" style={{ color: 'var(--fg-faint)' }}>
-            Questions?{' '}
-            <a href="mailto:hello@voltgridjobs.com" style={{ color: 'var(--fg-muted)' }} className="hover:text-white transition-colors">
-              hello@voltgridjobs.com
+          <div className="flex items-center gap-4">
+            <a
+              href="https://www.producthunt.com/products/voltgrid-jobs?utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-voltgrid-jobs"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                alt="VoltGrid Jobs - Job board for trades workers building AI infrastructure | Product Hunt"
+                src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1109224&theme=dark"
+                width="200"
+                height="43"
+                style={{ width: '200px', height: '43px' }}
+              />
             </a>
-          </span>
+            <span className="text-xs" style={{ color: 'var(--fg-faint)' }}>
+              Questions?{' '}
+              <a href="mailto:hello@voltgridjobs.com" style={{ color: 'var(--fg-muted)' }} className="hover:text-white transition-colors">
+                hello@voltgridjobs.com
+              </a>
+            </span>
+          </div>
         </div>
       </div>
     </footer>
