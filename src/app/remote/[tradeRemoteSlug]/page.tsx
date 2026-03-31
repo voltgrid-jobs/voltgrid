@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { JobCard } from '@/components/jobs/JobCard'
 import { AlertSignupWidget } from '@/components/jobs/AlertSignupWidget'
@@ -148,7 +147,7 @@ export default async function TradeRemotePage({ params }: Props) {
   const tradeDef = TRADE_DEFS[tradeSlug]
   if (!tradeDef) notFound()
 
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   const { data: jobsData } = await supabase
     .from('jobs')
