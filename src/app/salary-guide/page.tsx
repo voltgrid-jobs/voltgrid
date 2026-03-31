@@ -204,24 +204,26 @@ export default function SalaryGuidePage() {
       const res = await fetch('/api/alerts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim(), trade: 'all', location: '' }),
+        body: JSON.stringify({ email: email.trim(), location: '' }),
       })
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        // If already subscribed, that's fine — show the guide anyway
-        if (res.status === 409 || (data?.error && data.error.toLowerCase().includes('already'))) {
-          setSubmitted(true)
-          return
-        }
-        // Rate limited — let them in anyway, they clearly want the guide
-        if (res.status === 429) {
-          setSubmitted(true)
-          return
-        }
-        setError('Something went wrong. Please try again.')
+      // Always parse body so we can inspect it regardless of status
+      const data = await res.json().catch(() => ({}))
+
+      // Explicit success: 2xx OR API returned success:true
+      if (res.ok || data?.success === true) {
+        setSubmitted(true)
         return
       }
-      setSubmitted(true)
+
+      // Soft failures — email already exists (409, 500 duplicate key) or rate limited (429)
+      // In all these cases the person is in our system — show the guide
+      if (res.status === 409 || res.status === 429 || res.status >= 500) {
+        setSubmitted(true)
+        return
+      }
+
+      // Hard failure (400 bad request — invalid email, etc.)
+      setError(data?.error || 'Something went wrong. Please try again.')
     } catch {
       setError('Something went wrong. Please try again.')
     } finally {
