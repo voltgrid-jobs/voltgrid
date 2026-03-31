@@ -217,6 +217,32 @@ export default async function HomePage() {
         )}
       </section>
 
+      {/* SALARY GUIDE CTA STRIP */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
+        <Link
+          href="/salary-guide"
+          className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl px-6 py-5 transition-colors group"
+          style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}
+          onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--yellow-border)')}
+          onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
+        >
+          <div>
+            <p className="text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: 'var(--yellow)' }}>
+              2026 Salary Guide
+            </p>
+            <p className="font-semibold" style={{ color: 'var(--fg)' }}>
+              What are electricians and HVAC techs earning at data centers in 2026?
+            </p>
+            <p className="text-sm mt-0.5" style={{ color: 'var(--fg-muted)' }}>
+              Hourly rates, annual salaries, and per diem benchmarks by trade.
+            </p>
+          </div>
+          <span className="shrink-0 text-sm font-semibold whitespace-nowrap" style={{ color: 'var(--yellow)' }}>
+            Download free →
+          </span>
+        </Link>
+      </section>
+
       {/* EMPLOYER CTA */}
       <section style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', background: 'var(--bg-subtle)' }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-20 text-center">

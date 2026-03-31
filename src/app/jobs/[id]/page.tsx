@@ -276,6 +276,27 @@ export default async function JobDetailPage({
           </div>
         </div>
 
+        {/* Salary Guide CTA */}
+        <Link
+          href="/salary-guide"
+          className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl px-5 py-4 mb-4 transition-colors"
+          style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}
+          onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--yellow-border)')}
+          onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
+        >
+          <div>
+            <p className="text-xs font-semibold tracking-widest uppercase mb-0.5" style={{ color: 'var(--yellow)' }}>
+              2026 Salary Guide
+            </p>
+            <p className="text-sm" style={{ color: 'var(--fg-muted)' }}>
+              See 2026 salary benchmarks for {CATEGORY_LABELS[job.category as keyof typeof CATEGORY_LABELS]} roles in data centers →
+            </p>
+          </div>
+          <span className="shrink-0 text-xs font-semibold whitespace-nowrap" style={{ color: 'var(--yellow)' }}>
+            Free download
+          </span>
+        </Link>
+
         {/* Trades details */}
         {(job.per_diem || job.travel_required || job.shift_type || job.contract_length || job.is_union) && (
           <div className="rounded-2xl p-6 sm:p-8 mb-4" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>

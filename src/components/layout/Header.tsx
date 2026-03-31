@@ -37,7 +37,7 @@ export function Header() {
           {[
             { href: '/jobs', label: 'Browse Jobs' },
             { href: '/trades', label: 'Browse by Trade' },
-            { href: '/locations', label: 'Locations' },
+            { href: '/salary-guide', label: 'Salary Guide' },
             { href: '/employers', label: 'For Employers' },
           ].map(({ href, label }) => (
             <Link
@@ -98,7 +98,7 @@ export function Header() {
           {[
             { href: '/jobs', label: 'Browse Jobs' },
             { href: '/trades', label: 'Browse by Trade' },
-            { href: '/locations', label: 'Locations' },
+            { href: '/salary-guide', label: 'Salary Guide' },
             { href: '/employers', label: 'For Employers' },
           ].map(({ href, label }) => (
             <Link key={href} href={href} style={{ color: 'var(--fg-muted)' }} onClick={() => setMenuOpen(false)}>{label}</Link>
