@@ -105,6 +105,58 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Table may not exist yet — skip
   }
 
+  // ── Hire by Trade x Location employer pages ──────────────────────────────
+  const HIRE_TRADE_SLUG: Partial<Record<string, string>> = {
+    electrical: 'electricians',
+    hvac: 'hvac-techs',
+    low_voltage: 'low-voltage-techs',
+    construction: 'construction-trades',
+    project_management: 'project-managers',
+    operations: 'operations-techs',
+  }
+
+  let hireTradLocationUrls: MetadataRoute.Sitemap = []
+  try {
+    const { data: hireJobs } = await supabase
+      .from('jobs')
+      .select('category, location')
+      .eq('is_active', true)
+      .not('location', 'is', null)
+      .limit(5000)
+
+    if (hireJobs) {
+      const hireCounts = new Map<string, number>()
+      for (const job of hireJobs) {
+        if (!job.category || !job.location) continue
+        const key = `${job.category}|||${job.location}`
+        hireCounts.set(key, (hireCounts.get(key) ?? 0) + 1)
+      }
+      const hireSeeen = new Set<string>()
+      const hireTopCombos = [...hireCounts.entries()]
+        .filter(([, n]) => n >= 2)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 50)
+
+      for (const [key] of hireTopCombos) {
+        const [category, location] = key.split('|||')
+        const tradeSlug = HIRE_TRADE_SLUG[category]
+        if (!tradeSlug) continue
+        const locSlug = location.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+        const combined = `${tradeSlug}-in-${locSlug}`
+        if (hireSeeen.has(combined)) continue
+        hireSeeen.add(combined)
+        hireTradLocationUrls.push({
+          url: `${baseUrl}/hire/${combined}`,
+          lastModified: new Date(),
+          changeFrequency: 'weekly',
+          priority: 0.6,
+        })
+      }
+    }
+  } catch {
+    // non-fatal — skip
+  }
+
   // ── Trade x Remote programmatic pages ────────────────────────────────────
   const TRADE_REMOTE_SLUGS: Partial<Record<string, string>> = {
     electrical: 'electrical',
@@ -220,6 +272,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...tradeUrls,
     ...locationUrls,
     ...tradeLocationUrls,
+    ...hireTradLocationUrls,
     ...tradeRemoteUrls,
     ...companyUrls,
     ...jobUrls,
