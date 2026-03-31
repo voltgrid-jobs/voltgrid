@@ -383,10 +383,19 @@ export default async function JobDetailPage({
               })
             }
           </div>
-          {/* Truncation notice — Adzuna and some sources cap description length */}
-          {job.apply_url && sanitizeJobDescription(job.description).trimEnd().endsWith('...') && (
+          {/* Truncation notice — shown for Adzuna jobs (always truncated by API) and any
+              description that ends mid-sentence or with ellipsis */}
+          {job.apply_url && (() => {
+            const cleaned = sanitizeJobDescription(job.description).trimEnd()
+            const isAdzuna = job.source === 'adzuna'
+            const endsWith3Dots = cleaned.endsWith('...')
+            // Mid-sentence: ends with a letter, digit, or comma — not sentence-final punctuation
+            const lastChar = cleaned.slice(-1)
+            const midSentence = /[a-zA-Z0-9,]/.test(lastChar)
+            return isAdzuna || endsWith3Dots || midSentence
+          })() && (
             <p className="text-sm mt-4" style={{ color: 'var(--fg-faint)' }}>
-              Description truncated by source.{' '}
+              Description may be truncated by the source.{' '}
               <a
                 href={job.apply_url}
                 target="_blank"
