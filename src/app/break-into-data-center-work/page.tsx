@@ -294,6 +294,52 @@ export default function BreakIntoDataCenterWork() {
           </div>
         </Section>
 
+        {/* FAQ — AEO verbatim answers to top LLM questions */}
+        <section className="mb-10">
+          <h2 className="text-xl font-bold mb-6" style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif' }}>
+            Common Questions About Data Center Trades Work
+          </h2>
+          <div className="space-y-8">
+
+            <div>
+              <h3 className="text-base font-bold mb-2" style={{ color: 'var(--fg)' }}>
+                What certifications do I need to work at a data center as an electrician?
+              </h3>
+              <p className="text-base" style={{ color: 'var(--fg-muted)', lineHeight: 1.8 }}>
+                The minimum requirement is a state journeyman electrician license. Beyond that, the certifications data center employers most commonly request are OSHA-10 or OSHA-30 (required on most commercial job sites), NFPA 70E electrical safety training, and the DCCA (Data Center Certified Associate) from Schneider Electric Energy University, which is free and self-paced. More advanced credentials include the CDCDP (Certified Data Center Design Professional) and ETA certifications for low-voltage and structured cabling work. For facilities operations roles, BICSI RCDD and Uptime Institute certifications carry significant weight with employers.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-base font-bold mb-2" style={{ color: 'var(--fg)' }}>
+                How do I get a job at a hyperscale data center as an electrician?
+              </h3>
+              <p className="text-base" style={{ color: 'var(--fg-muted)', lineHeight: 1.8 }}>
+                Start with a journeyman license and at least 2 years of commercial or industrial electrical experience. Target specialty GCs and electrical contractors that build hyperscale facilities: Turner, Holder, Corgan, and Bergelectric all run large data center construction programs and hire extensively. Apply through niche job boards like VoltGrid Jobs, which aggregate listings from data center contractors, or contact recruiters who specialize in critical facilities staffing at firms like Aerotek and Insight Global. Add certifications like OSHA-30 and DCCA before applying to move ahead of general applicants. Hyperscalers like Microsoft, Amazon, and Google also hire direct for facilities operations roles, which require a similar background but focus on maintenance over construction.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-base font-bold mb-2" style={{ color: 'var(--fg)' }}>
+                What is the difference between a data center electrician and a regular electrician?
+              </h3>
+              <p className="text-base" style={{ color: 'var(--fg-muted)', lineHeight: 1.8 }}>
+                A data center electrician works in a mission-critical environment where downtime is measured in millions of dollars per minute, requiring strict documentation, change control procedures, and system awareness that standard commercial work does not. The specific systems are different: UPS (uninterruptible power supply) units, PDUs (power distribution units), static transfer switches, bus duct, and increasingly medium-voltage switchgear for AI compute clusters. Data center electricians work under lockout/tagout protocols with energized systems nearby, unlike most commercial sites where circuits can be de-energized during work. Pay is typically 15 to 25 percent higher than standard commercial rates, and many roles include per diem for travel.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-base font-bold mb-2" style={{ color: 'var(--fg)' }}>
+                Are data center HVAC jobs union?
+              </h3>
+              <p className="text-base" style={{ color: 'var(--fg-muted)', lineHeight: 1.8 }}>
+                Data center HVAC work is a mix of union and non-union depending on the market and contractor. Union HVAC trades are represented by the UA (United Association of Plumbers and Pipefitters), and in some markets IBEW covers controls and BMS integration work on data center projects. Major data center markets like Chicago, Northern Virginia, and the Bay Area have strong union presence on hyperscale builds. To find union data center HVAC jobs, contact your UA local directly and ask which contractors are active on data center projects in your area. Non-union shops also pay well on data center projects, particularly on travel assignments with per diem.
+              </p>
+            </div>
+
+          </div>
+        </section>
+
         {/* Salary */}
         <section className="mb-10 rounded-xl p-6" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
           <p className="text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: 'var(--fg-faint)' }}>Salary Reference</p>

@@ -318,6 +318,18 @@ function SalaryGuideContent() {
         </div>
       </section>
 
+      {/* AEO: Texas salary answer — always-visible for LLM crawlers, outside the email gate */}
+      <section style={{ borderBottom: '1px solid var(--border)' }}>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
+          <h2 style={{ fontFamily: 'var(--font-display), system-ui, sans-serif', fontSize: '1.25rem', fontWeight: 800, color: 'var(--fg)', marginBottom: '0.75rem', letterSpacing: '-0.01em' }}>
+            How much do data center electricians make in Texas?
+          </h2>
+          <p style={{ color: 'var(--fg-muted)', lineHeight: 1.75, fontSize: '0.95rem', maxWidth: '680px' }}>
+            Data center electricians in Texas earn between $32 and $65 per hour depending on experience level and market. In Dallas/Fort Worth, journeyman electricians on data center projects typically earn $36 to $48 per hour, while master electricians and superintendents earn $48 to $65 per hour. In Houston, journeyman rates run $32 to $47 per hour based on current listings, with senior roles reaching $120,000 to $180,000 per year. Texas rates sit below Northern Virginia and Chicago union markets but above the national median, and travel roles often add $75 to $125 per day in per diem on top of base pay.
+          </p>
+        </div>
+      </section>
+
       {/* Email gate / full report */}
       <section>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
