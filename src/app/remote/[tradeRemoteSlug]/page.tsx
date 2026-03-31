@@ -133,7 +133,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     description,
-    alternates: { canonical: `https://voltgridjobs.com/${tradeRemoteSlug}` },
+    alternates: { canonical: `https://voltgridjobs.com/remote/${tradeRemoteSlug}` },
     openGraph: { title, description, type: 'website' },
   }
 }

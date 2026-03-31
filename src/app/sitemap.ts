@@ -134,7 +134,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         const tradeSlug = TRADE_REMOTE_SLUGS[category]
         if (!tradeSlug) continue
         tradeRemoteUrls.push({
-          url: `${baseUrl}/${tradeSlug}-remote-jobs`,
+          url: `${baseUrl}/remote/${tradeSlug}-remote-jobs`,
           lastModified: new Date(),
           changeFrequency: 'daily',
           priority: 0.7,
