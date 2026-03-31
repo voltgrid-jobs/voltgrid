@@ -75,6 +75,10 @@ interface RawJob {
   contract_length?: string
 }
 
+function slugify(str: string): string {
+  return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+}
+
 function classifyCategory(title: string, description: string): JobCategory {
   const text = (title + ' ' + description).toLowerCase()
   if (/\b(electrician|electrical|journeyman|master electrician|lineman|power)\b/.test(text)) return 'electrical'
@@ -439,7 +443,63 @@ export async function POST(req: NextRequest) {
   let inserted = 0
   let skipped = 0
 
-  // Batch dedup check — fetch all existing source_ids in one query to avoid N+1
+  // ── Batch upsert canonical locations ─────────────────────────────────────────
+  const locationMap = new Map<string, string>() // name → id
+  const uniqueLocationNames = [...new Set(allJobs.map(j => j.location).filter(Boolean))]
+  if (uniqueLocationNames.length > 0) {
+    const locationRows = uniqueLocationNames.map(name => ({
+      name,
+      slug: slugify(name),
+      display_name: name,
+    }))
+    const { data: locs } = await supabase
+      .from('locations')
+      .upsert(locationRows, { onConflict: 'name', ignoreDuplicates: true })
+      .select('id, name')
+    for (const loc of locs ?? []) {
+      locationMap.set((loc as { id: string; name: string }).name, (loc as { id: string; name: string }).id)
+    }
+    // Any locations already in the table won't be returned by upsert above — fetch them too
+    const missing = uniqueLocationNames.filter(n => !locationMap.has(n))
+    if (missing.length > 0) {
+      const { data: existing } = await supabase
+        .from('locations')
+        .select('id, name')
+        .in('name', missing)
+      for (const loc of existing ?? []) {
+        locationMap.set((loc as { id: string; name: string }).name, (loc as { id: string; name: string }).id)
+      }
+    }
+  }
+
+  // ── Batch upsert canonical companies ─────────────────────────────────────────
+  const companyMap = new Map<string, string>() // name → id
+  const uniqueCompanyNames = [...new Set(allJobs.map(j => j.company_name).filter(Boolean))]
+  if (uniqueCompanyNames.length > 0) {
+    const companyRows = uniqueCompanyNames.map(name => ({
+      name,
+      slug: slugify(name),
+    }))
+    const { data: comps } = await supabase
+      .from('companies')
+      .upsert(companyRows, { onConflict: 'name', ignoreDuplicates: true })
+      .select('id, name')
+    for (const comp of comps ?? []) {
+      companyMap.set((comp as { id: string; name: string }).name, (comp as { id: string; name: string }).id)
+    }
+    const missingComps = uniqueCompanyNames.filter(n => !companyMap.has(n))
+    if (missingComps.length > 0) {
+      const { data: existing } = await supabase
+        .from('companies')
+        .select('id, name')
+        .in('name', missingComps)
+      for (const comp of existing ?? []) {
+        companyMap.set((comp as { id: string; name: string }).name, (comp as { id: string; name: string }).id)
+      }
+    }
+  }
+
+  // ── Batch dedup check — fetch all existing source_ids in one query to avoid N+1
   const validJobs = allJobs.filter(j => j.title && j.description && j.company_name)
   skipped += allJobs.length - validJobs.length
 
@@ -469,6 +529,8 @@ export async function POST(req: NextRequest) {
     }
 
     const category = job.category || classifyCategory(job.title, job.description)
+    const locationId = locationMap.get(job.location) ?? null
+    const companyId = companyMap.get(job.company_name) ?? null
 
     const { error } = await supabase.from('jobs').insert({
       title: job.title,
@@ -488,6 +550,8 @@ export async function POST(req: NextRequest) {
       is_featured: false,
       is_active: true,
       expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      ...(locationId && { location_id: locationId }),
+      ...(companyId && { company_id: companyId }),
       // Trades fields (will be ignored if columns don't exist yet — handled gracefully)
       ...(job.per_diem !== undefined && { per_diem: job.per_diem }),
       ...(job.per_diem_rate !== undefined && { per_diem_rate: job.per_diem_rate }),
