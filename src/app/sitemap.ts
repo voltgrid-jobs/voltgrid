@@ -19,8 +19,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
-  const categories = ['electrical', 'hvac', 'low_voltage', 'construction', 'project_management', 'operations']
-
   const tradeSlugs = [
     'electrician-jobs',
     'hvac-jobs',
@@ -294,16 +292,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/break-into-data-center-work`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/interview-prep`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/resources`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${baseUrl}/companies`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
     { url: `${baseUrl}/salary/electrician-ashburn-va`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
     { url: `${baseUrl}/salary/hvac-tech-phoenix-az`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
     { url: `${baseUrl}/salary/low-voltage-tech-dallas-tx`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
     { url: `${baseUrl}/salary/electrician-portland-or`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
-    ...categories.map(cat => ({
-      url: `${baseUrl}/jobs?category=${cat}`,
-      lastModified: new Date(),
-      changeFrequency: 'daily' as const,
-      priority: 0.8,
-    })),
     ...tradeUrls,
     ...locationUrls,
     ...hardcodedTradeLocationUrls,

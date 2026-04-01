@@ -12,6 +12,7 @@ interface ApplyButtonProps {
   source?: string
   category?: string
   companyName?: string
+  disableModal?: boolean
 }
 
 export function ApplyButton({
@@ -24,6 +25,7 @@ export function ApplyButton({
   source = 'top_button',
   category,
   companyName,
+  disableModal = false,
 }: ApplyButtonProps) {
   const defaultClass = 'inline-block px-8 py-3 rounded-xl font-semibold transition-opacity text-center'
   const defaultStyle = { background: 'var(--yellow)', color: '#0A0A0A' }
@@ -60,7 +62,7 @@ export function ApplyButton({
       typeof localStorage !== 'undefined' &&
       localStorage.getItem('jobAlertSignedUp') === 'true'
 
-    if (isExternalUrl && category && !alreadySignedUp) {
+    if (isExternalUrl && category && !alreadySignedUp && !disableModal) {
       e.preventDefault()
       setShowModal(true)
     }

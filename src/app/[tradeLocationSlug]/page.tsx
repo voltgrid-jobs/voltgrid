@@ -77,6 +77,64 @@ const CATEGORY_TO_TRADE_SLUG: Partial<Record<string, string>> = {
   operations: 'operations',
 }
 
+// ── Location market context (unique copy per major market) ───────────────────
+
+type LocationCtx = {
+  context: string
+  employers: string
+}
+
+const LOCATION_CONTEXT: Record<string, LocationCtx> = {
+  'northern-virginia': {
+    context:
+      'Northern Virginia is the largest data center market in the world, carrying the majority of US internet traffic. The Ashburn corridor has over 100 facilities and billions in capacity under active construction, with every major hyperscale operator maintaining a presence.',
+    employers: 'Equinix, Digital Realty, QTS, Cologix, and Iron Mountain',
+  },
+  'phoenix': {
+    context:
+      'The Phoenix metro is one of the fastest-growing data center markets in the US, driven by low-cost power, water-efficient cooling options, and hyperscale commitments from Microsoft, Google, and Meta. Chandler, Mesa, and Goodyear are the most active build corridors.',
+    employers: 'CyrusOne, Aligned Data Centers, QTS, Microsoft, and Meta',
+  },
+  'dallas': {
+    context:
+      'The Dallas–Fort Worth metro is a top-five data center market nationally, anchored by Allen, Garland, and Richardson. Major colocation operators and hyperscalers have built significant capacity here, and the construction pipeline remains one of the heaviest in the country.',
+    employers: 'CyrusOne, Equinix, T5 Data Centers, and Aligned',
+  },
+  'atlanta': {
+    context:
+      'Atlanta is the Southeast\'s dominant data center hub, with major growth in Lithia Springs and the metro periphery. The combination of lower land costs, available power, and the region\'s financial and media industry demand has fueled consistent capacity expansion.',
+    employers: 'QTS, Equinix, Digital Realty, and Compass Datacenters',
+  },
+  'chicago': {
+    context:
+      'Chicago is one of the top Midwest data center markets, anchored by the suburb of Elk Grove Village — one of the highest-density data center clusters in North America. The city\'s network infrastructure and financial industry make it a perennial build target for operators.',
+    employers: 'Equinix, Digital Realty, CyrusOne, and vXchnge',
+  },
+  'portland': {
+    context:
+      'The Portland metro, particularly Hillsboro, has become a major hyperscale destination thanks to inexpensive hydroelectric power and a mild climate that reduces cooling costs. Intel, Google, and Amazon have made significant infrastructure investments in the region.',
+    employers: 'Google, Amazon Web Services, EdgeConneX, and Pittock Data',
+  },
+  'sacramento': {
+    context:
+      'Sacramento has emerged as a spillover market from the Bay Area, offering power access and lower costs for operators priced out of Silicon Valley. It serves as a disaster-recovery and secondary site for Bay Area enterprises.',
+    employers: 'Sutter Health, SMUD, and several hyperscale campuses under development',
+  },
+  'reno': {
+    context:
+      'Reno is a growing data center market anchored by the Switch campus — one of the largest data center facilities in the world. The city offers low-cost power from Nevada Energy and favorable state tax policies.',
+    employers: 'Switch, Nautilus Data Technologies, and Apple',
+  },
+}
+
+function buildLocationIntro(tradeDef: TradeDef, locationSlug: string, locationDisplay: string): string {
+  const ctx = LOCATION_CONTEXT[locationSlug]
+  if (ctx) {
+    return `${ctx.context} Browse open ${tradeDef.label.toLowerCase()} positions at ${ctx.employers} and other employers active in the region.`
+  }
+  return `${locationDisplay} has active data center construction and operations work supporting the AI infrastructure buildout. Browse open ${tradeDef.label.toLowerCase()} positions at hyperscale operators, colocation facilities, and AI infrastructure sites in the area.`
+}
+
 // ── Parse slug ────────────────────────────────────────────────────────────────
 
 function parseSlug(tradeLocationSlug: string): { tradeSlug: string; locationSlug: string } | null {
@@ -233,10 +291,42 @@ export default async function TradeLocationPage({ params }: Props) {
   if (jobs.length === 0 && !locationName) notFound()
 
   const h1 = `Data Center ${tradeDef.labelPlural} in ${locationDisplay}`
-  const intro = `${locationDisplay} is one of the most active data center markets in the US. Browse open ${tradeDef.label.toLowerCase()} positions at hyperscale operators, colocation facilities, and AI infrastructure sites in the area.`
+  const intro = buildLocationIntro(tradeDef, parsed.locationSlug, locationDisplay)
+
+  // ── Structured data ───────────────────────────────────────────────────────
+  const pageUrl = `https://voltgridjobs.com/${tradeLocationSlug}`
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://voltgridjobs.com' },
+      { '@type': 'ListItem', position: 2, name: 'Jobs', item: 'https://voltgridjobs.com/jobs' },
+      { '@type': 'ListItem', position: 3, name: h1, item: pageUrl },
+    ],
+  }
+
+  const itemListJsonLd = jobs.length > 0 ? {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: h1,
+    url: pageUrl,
+    numberOfItems: jobs.length,
+    itemListElement: jobs.slice(0, 10).map((job, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: `https://voltgridjobs.com/jobs/${job.id}`,
+      name: `${job.title} at ${job.company_name}`,
+    })),
+  } : null
 
   return (
-    <main className="min-h-screen">
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+      {itemListJsonLd && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }} />
+      )}
+      <main className="min-h-screen">
       {/* Breadcrumb */}
       <nav className="max-w-5xl mx-auto px-4 pt-6 pb-2">
         <ol className="flex items-center gap-2 text-sm" style={{ color: 'var(--fg-faint)' }}>
@@ -326,6 +416,7 @@ export default async function TradeLocationPage({ params }: Props) {
           Post a job from $149 →
         </Link>
       </section>
-    </main>
+      </main>
+    </>
   )
 }

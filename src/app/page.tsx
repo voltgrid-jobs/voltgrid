@@ -164,9 +164,9 @@ export default async function HomePage() {
 
       {/* CATEGORIES */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
-        <p className="text-xs font-semibold tracking-widest uppercase mb-6" style={{ color: 'var(--fg-faint)' }}>
+        <h2 className="text-xs font-semibold tracking-widest uppercase mb-6" style={{ color: 'var(--fg-faint)' }}>
           Browse by Trade
-        </p>
+        </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {CATEGORIES.map(({ key, label }) => (
             <Link
@@ -187,7 +187,7 @@ export default async function HomePage() {
       {featuredJobs && featuredJobs.length > 0 && (
         <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
           <div className="flex items-center justify-between mb-5">
-            <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--fg-faint)' }}>Featured Jobs</p>
+            <h2 className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--fg-faint)' }}>Featured Jobs</h2>
             <Link href="/jobs?featured=true" className="text-sm transition-colors" style={{ color: 'var(--yellow)' }}>
               View all →
             </Link>
@@ -201,7 +201,7 @@ export default async function HomePage() {
       {/* RECENT JOBS */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
         <div className="flex items-center justify-between mb-5">
-          <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--fg-faint)' }}>Latest Jobs</p>
+          <h2 className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--fg-faint)' }}>Latest Jobs</h2>
           <Link href="/jobs" className="text-sm transition-colors" style={{ color: 'var(--yellow)' }}>
             View all {totalJobs ?? 0} →
           </Link>
