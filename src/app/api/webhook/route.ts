@@ -222,6 +222,74 @@ export async function POST(req: NextRequest) {
         }
       }
 
+      // ONBOARDING EMAIL 1: Schedule 1h post-live email via Resend scheduledAt
+      if (employerEmail && process.env.RESEND_API_KEY) {
+        try {
+          const resend = new Resend(process.env.RESEND_API_KEY)
+          const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://voltgridjobs.com'
+
+          // Count matching job_alerts for this category + location
+          const category = meta.category || 'other'
+          const location = meta.location || ''
+          let alertQuery = supabase
+            .from('job_alerts')
+            .select('*', { count: 'exact', head: true })
+            .eq('category', category)
+            .eq('is_active', true)
+          if (location) {
+            const firstWord = location.split(/[\s,]+/)[0]
+            if (firstWord.length > 2) {
+              alertQuery = alertQuery.ilike('location', `%${firstWord}%`)
+            }
+          }
+          const { count: alertCount } = await alertQuery
+          const matchCount = alertCount ?? 0
+
+          const CATEGORY_LABELS: Record<string, string> = {
+            electrical: 'electricians',
+            hvac: 'HVAC techs',
+            low_voltage: 'low voltage techs',
+            construction: 'construction trades workers',
+            project_management: 'project managers',
+            operations: 'operations techs',
+            other: 'trades workers',
+          }
+          const tradeLabel = CATEGORY_LABELS[category] ?? 'trades workers'
+          const locationDisplay = location ? location.split(',')[0].trim() : null
+
+          const alertLine = matchCount > 0
+            ? `<strong style="color:#facc15">${matchCount} ${tradeLabel}</strong>${locationDisplay ? ` in <strong style="color:#facc15">${locationDisplay}</strong>` : ''} with active job alerts have been notified.`
+            : `Your listing is live and visible to data center trades workers across VoltGrid Jobs.`
+
+          await resend.emails.send({
+            from: `VoltGrid Jobs <${process.env.RESEND_FROM_EMAIL || 'alerts@voltgridjobs.com'}>`,
+            to: employerEmail,
+            subject: `1 hour in — here's who's been alerted`,
+            scheduledAt: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+            html: `<div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:32px 24px;background:#030712;color:#f9fafb">
+              <p style="font-size:18px;font-weight:700;color:#facc15;margin-bottom:16px">⚡ Your listing is out there</p>
+              <p style="font-size:15px;line-height:1.6;color:#d1d5db;margin-bottom:16px">
+                <strong style="color:#fff">${meta.title}</strong> has been live for 1 hour.
+              </p>
+              <p style="font-size:15px;line-height:1.6;color:#d1d5db;margin-bottom:20px">
+                ${alertLine}
+              </p>
+              <p style="margin-bottom:24px">
+                <a href="${baseUrl}/jobs/${jobId}"
+                  style="display:inline-block;background:#facc15;color:#0a0a0a;padding:12px 24px;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none">
+                  View your listing →
+                </a>
+              </p>
+              <p style="font-size:13px;color:#6b7280;border-top:1px solid #1f2937;padding-top:16px">
+                VoltGrid Jobs &mdash; <a href="${baseUrl}" style="color:#facc15">voltgridjobs.com</a>
+              </p>
+            </div>`,
+          })
+        } catch (onboarding1hErr) {
+          console.error('[webhook] 1h onboarding email error:', onboarding1hErr)
+        }
+      }
+
       // AUTOMATION 4: Auto-feature all active Pro employer listings
       if (meta.plan === 'pro_monthly' && meta.company_email) {
         try {
