@@ -53,6 +53,35 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }))
 
+  // ── Hardcoded trade x location pages (canonical, always in sitemap) ─────
+  const HARDCODED_TRADE_LOCATION_SLUGS = [
+    'electrical-jobs-in-northern-virginia',
+    'electrical-jobs-in-dallas',
+    'electrical-jobs-in-phoenix',
+    'electrical-jobs-in-atlanta',
+    'electrical-jobs-in-chicago',
+    'electrical-jobs-in-portland',
+    'hvac-jobs-in-northern-virginia',
+    'hvac-jobs-in-dallas',
+    'hvac-jobs-in-phoenix',
+    'hvac-jobs-in-atlanta',
+    'hvac-jobs-in-chicago',
+    'hvac-jobs-in-portland',
+    'low-voltage-jobs-in-northern-virginia',
+    'low-voltage-jobs-in-dallas',
+    'low-voltage-jobs-in-phoenix',
+    'low-voltage-jobs-in-atlanta',
+    'low-voltage-jobs-in-chicago',
+    'low-voltage-jobs-in-portland',
+  ]
+
+  const hardcodedTradeLocationUrls: MetadataRoute.Sitemap = HARDCODED_TRADE_LOCATION_SLUGS.map(slug => ({
+    url: `${baseUrl}/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'daily',
+    priority: 0.8,
+  }))
+
   // ── Trade x Location programmatic pages ──────────────────────────────────
   const CATEGORY_TO_TRADE_SLUG: Partial<Record<string, string>> = {
     electrical: 'electrical',
@@ -271,6 +300,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
     ...tradeUrls,
     ...locationUrls,
+    ...hardcodedTradeLocationUrls,
     ...tradeLocationUrls,
     ...hireTradLocationUrls,
     ...tradeRemoteUrls,
