@@ -223,7 +223,24 @@ import { createAdminClient } from '@/lib/supabase/admin'
 
 ## OpsGrid Task API
 
-OpsGrid is the mission control dashboard. When you complete a task, report back via API.
+OpsGrid is the **mission control dashboard** at `ops-dashboard-volt-grid.vercel.app`. It is the **single source of truth for all Claude Code tasks.** Fetch your tasks from OpsGrid at the start of every session — do NOT wait for Filip to relay tasks manually.
+
+**API Key:** `00ccf4caff0343a65c4aac9b74ed1ec2`
+**Base URL:** https://ops-dashboard-volt-grid.vercel.app
+
+### Session Start Workflow (mandatory)
+
+1. Fetch all tasks with status `tagged_for_claude`:
+```bash
+curl -H "X-API-Key: 00ccf4caff0343a65c4aac9b74ed1ec2" \
+  "https://ops-dashboard-volt-grid.vercel.app/api/tasks?assignee=claude-code&status=tagged_for_claude"
+```
+2. For each task: claim it, execute it, update status on completion or failure.
+
+On success → update status to `done` with commit hash in summary.
+On failure → update status to `blocked` with error reason.
+
+Never ask Filip to relay tasks — always pull from OpsGrid directly.
 
 **Base URL:** https://ops-dashboard-volt-grid.vercel.app
 **API Key header:** `X-API-Key: 00ccf4caff0343a65c4aac9b74ed1ec2`
@@ -253,8 +270,70 @@ curl -X POST -H "X-API-Key: 00ccf4caff0343a65c4aac9b74ed1ec2" \
 **Rules:**
 1. Always claim before starting work
 2. Set `needs_clarification` if the brief is ambiguous — do not guess
-3. Complete with a clear summary of exactly what changed
+3. Complete with a clear summary of exactly what changed and commit hash
 4. Push to GitHub, do NOT deploy — Felix handles Vercel
+
+---
+
+## Critical Coding Rules
+
+### ⚠️ ALWAYS use `printf` — NEVER `echo` for env vars
+
+Trailing newlines from `echo` have broken production four separate times:
+- `STRIPE_SECRET_KEY` — payment failures
+- `RESEND_API_KEY` — email delivery failures
+- `STRIPE_WEBHOOK_SECRET` — webhook verification failures
+- `GITHUB_WEBHOOK_SECRET` — webhook failures
+
+```bash
+# ✅ CORRECT
+printf '%s' "$VALUE" > file
+
+# ❌ WRONG — adds trailing newline
+echo "$VALUE" > file
+```
+
+### Server Component / Client Component rules
+
+- Never add `onMouseEnter`, `onMouseLeave`, or any JS event handlers to Server Components (async functions or files without `'use client'` at the top)
+- Always use Tailwind CSS `hover:` classes instead
+- If interactivity is needed, extract to a separate Client Component with `'use client'`
+
+### Code routing rules
+
+- Never write code directly for trivial config without routing through OpsGrid
+- Never spawn sub-agents for code tasks — all code goes through Claude Code only
+
+---
+
+## Key Infrastructure
+
+| Resource | Value |
+|----------|-------|
+| Supabase project | `nzfdzlhsdqlillayzuxn` |
+| GitHub org | `voltgrid-jobs` |
+| Vercel project | `prj_ROb1t6kekVY85pAO5CSH2a1pb8C6` |
+| VPS | `204.168.182.195` — user: `openclaw`, Ubuntu 24.04 |
+| Telegram group | `-1003829819989` |
+
+---
+
+## VoltGrid Voice Rules (for any copy or content tasks)
+
+- Use **"we" not "I"** — always: "we built", "we launched", "we have 359 roles"
+- **No em dashes** — use commas, periods, or colons instead
+- **No filler openers** — never start with "Great news!", "Exciting update!", "I'm thrilled to..."
+- **Numbers = credibility** — use specific numbers whenever possible
+- Always invoke the **VoltGrid Content Repurposer Skill** (`~/.openclaw/workspace/skills/voltgrid-content-repurposer/SKILL.md`) for any VoltGrid copy
+
+---
+
+## Outreach Rules
+
+- **Preview first**: send all outreach emails to `fhillesland@gmail.com` first, wait for "confirmed" reply before sending to real recipients
+- **Max 8 outreach emails per day**
+- **Signal-based outreach only**: every email must reference a specific hiring signal (e.g., "saw you're hiring 12 electricians for the Phoenix campus")
+- **End all outreach emails with "Best regards"** on its own line before the signature
 
 ---
 
@@ -262,4 +341,4 @@ curl -X POST -H "X-API-Key: 00ccf4caff0343a65c4aac9b74ed1ec2" \
 
 - **Felix** (AI agent / ops lead): manages via Telegram, monitors GitHub, triggers deploys
 - **Filip** (founder): reviews strategy, handles payments, runs Claude Code sessions
-- **OpsGrid dashboard:** https://ops.voltgridjobs.com
+- **OpsGrid dashboard:** https://ops-dashboard-volt-grid.vercel.app
