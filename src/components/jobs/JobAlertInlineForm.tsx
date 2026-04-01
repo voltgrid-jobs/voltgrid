@@ -16,10 +16,12 @@ export function JobAlertInlineForm({
   variant = 'homepage',
   defaultTrade = '',
   subscriberCount,
+  jobId,
 }: {
   variant?: 'homepage' | 'jobs'
   defaultTrade?: string
   subscriberCount?: number
+  jobId?: string
 }) {
   const [email, setEmail] = useState('')
   const [trade, setTrade] = useState(defaultTrade)
@@ -52,7 +54,7 @@ export function JobAlertInlineForm({
       const res = await fetch('/api/alerts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, category: trade || null, location: '', frequency: 'daily' }),
+        body: JSON.stringify({ email, category: trade || null, location: '', frequency: 'daily', ...(jobId && { job_id: jobId }) }),
       })
       if (res.ok || res.status === 409 || res.status === 429 || res.status >= 500) {
         localStorage.setItem('jobAlertSignedUp', 'true')

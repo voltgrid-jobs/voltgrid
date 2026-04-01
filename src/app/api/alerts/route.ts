@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
 
   const supabase = await createClient()
   const body = await req.json()
-  const { email, keywords, location, category, frequency, background } = body
+  const { email, keywords, location, category, frequency, background, job_id } = body
 
   if (!email) return NextResponse.json({ error: 'Email required' }, { status: 400 })
 
@@ -85,6 +85,7 @@ export async function POST(req: NextRequest) {
     category: category || null,
     frequency: frequency || 'daily',
     is_active: true,
+    ...(job_id && { source_job_id: job_id }),
   }, { onConflict: 'email,category', ignoreDuplicates: true })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })

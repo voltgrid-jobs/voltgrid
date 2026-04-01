@@ -40,10 +40,12 @@ export function AlertSignupWidget({
   keywords,
   category,
   subscriberCount,
+  jobId,
 }: {
   keywords?: string
   category?: string
   subscriberCount?: number
+  jobId?: string
 }) {
   const [email, setEmail] = useState('')
   const [background, setBackground] = useState('')
@@ -82,6 +84,7 @@ export function AlertSignupWidget({
           category,
           frequency: 'daily',
           ...(bg && { background: bg }),
+          ...(jobId && { job_id: jobId }),
         }),
       })
       if (res.ok || res.status === 409 || res.status === 429 || res.status >= 500) {
