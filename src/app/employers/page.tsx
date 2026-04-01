@@ -6,7 +6,7 @@ import { getLogoUrl, getDomain } from '@/lib/company-logos'
 import { CompanyLogo } from '@/components/employers/CompanyLogo'
 
 export const metadata: Metadata = {
-  title: 'Post Trades Jobs for Data Centers',
+  title: 'Find Verified Data Center Electricians & HVAC Techs Faster — VoltGrid Jobs',
   description:
     'Reach electricians, HVAC techs, and low voltage specialists who already know what a data center is. Flat pricing from $149. Go live in 5 minutes.',
   alternates: { canonical: 'https://voltgridjobs.com/employers' },
@@ -182,8 +182,8 @@ export default async function EmployersPage() {
           </div>
           <h1 className="leading-none mb-6"
             style={{ fontFamily: 'var(--font-display), system-ui, sans-serif', fontSize: 'clamp(2.8rem, 7vw, 5rem)', fontWeight: 800, color: 'var(--fg)', maxWidth: '800px' }}>
-            Find licensed electricians and HVAC techs<br />
-            <span style={{ color: 'var(--yellow)' }}>who already know data center work.</span>
+            Find verified data center<br />electricians & HVAC techs<br />
+            <span style={{ color: 'var(--yellow)' }}>faster.</span>
           </h1>
           <p className="text-lg mb-4" style={{ color: 'var(--fg-muted)', maxWidth: '580px', lineHeight: 1.7 }}>
             The pool of data center-experienced trades workers is small. Every DC employer is competing
@@ -399,6 +399,45 @@ export default async function EmployersPage() {
               Need a featured boost? Add +$99 to any listing to pin it to the top for 30 days.&nbsp;
               <a href="mailto:hello@voltgridjobs.com" style={{ color: 'var(--yellow)' }}>hello@voltgridjobs.com</a>
             </p>
+          </div>
+        </section>
+
+        {/* ── Why Pay for VoltGrid? ── */}
+        <section className="max-w-5xl mx-auto px-4 sm:px-6 py-16">
+          <h2 className="text-2xl font-bold mb-2 text-center" style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif' }}>
+            Why pay for VoltGrid?
+          </h2>
+          <p className="text-center mb-10 max-w-lg mx-auto text-sm" style={{ color: 'var(--fg-muted)' }}>
+            You&apos;ve already tried the free boards. Here&apos;s what&apos;s different.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {[
+              {
+                objection: 'Indeed sends general applicants.',
+                answer: 'VoltGrid sends trades workers who searched for "data center electrician jobs" — not the guy who applied to 400 positions today. Every candidate on VoltGrid is here specifically for data center or AI infrastructure work.',
+              },
+              {
+                objection: 'LinkedIn is expensive and slow.',
+                answer: 'LinkedIn is built for office workers. Your DC electrician role competes with SaaS sales jobs for attention. VoltGrid is a vertical board — the only candidates here are the ones you actually want.',
+              },
+              {
+                objection: 'I can find people through a staffing agency.',
+                answer: 'You can — for $3,000–$8,000 per hire. VoltGrid is $149 flat, applications go directly to your email, and you own the relationship. The candidate list from one listing is often worth more than the fee.',
+              },
+              {
+                objection: 'Our ATS already posts to job boards.',
+                answer: 'Generic ATS distribution posts to 50 boards that trades workers don\'t use. VoltGrid is where data center electricians and HVAC techs come specifically because it\'s the one board for their niche — not a side tab on a general site.',
+              },
+            ].map(({ objection, answer }) => (
+              <div key={objection} className="rounded-xl p-6" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
+                <p className="text-sm font-semibold mb-2" style={{ color: 'var(--fg-faint)', fontStyle: 'italic' }}>
+                  &ldquo;{objection}&rdquo;
+                </p>
+                <p className="text-sm" style={{ color: 'var(--fg-muted)', lineHeight: 1.7 }}>
+                  {answer}
+                </p>
+              </div>
+            ))}
           </div>
         </section>
 
