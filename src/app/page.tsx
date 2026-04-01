@@ -77,7 +77,7 @@ export default async function HomePage() {
                 color: 'var(--fg)',
               }}
             >
-              You Build AI.<br />
+              You Power AI.<br />
               <span style={{ color: 'var(--yellow)' }}>We&apos;ll Find You<br />the Job.</span>
             </h1>
 

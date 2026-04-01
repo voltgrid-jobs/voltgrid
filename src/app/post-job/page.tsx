@@ -6,6 +6,12 @@ export const revalidate = 3600
 
 export const metadata: Metadata = {
   title: 'Post a Job — VoltGrid Jobs',
+  description: 'Post your data center electrician, HVAC, or low voltage job to 350+ qualified trades workers. Flat-rate listings starting at $149. No recruiter fees.',
+  openGraph: {
+    title: 'Post a Job — VoltGrid Jobs',
+    description: 'Post your data center electrician, HVAC, or low voltage job to 350+ qualified trades workers. Flat-rate listings starting at $149.',
+    url: 'https://voltgridjobs.com/post-job',
+  },
   alternates: { canonical: 'https://voltgridjobs.com/post-job' },
 }
 

@@ -37,12 +37,21 @@ export const metadata: Metadata = {
     siteName: 'VoltGrid Jobs',
     type: 'website',
     locale: 'en_US',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'VoltGrid Jobs — Data Center Trades Jobs for Electricians, HVAC & Low Voltage Techs',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'VoltGrid Jobs',
     description: 'Trades jobs powering the AI infrastructure boom.',
     site: '@voltgridjobs',
+    images: ['/og-image.png'],
   },
   robots: {
     index: true,

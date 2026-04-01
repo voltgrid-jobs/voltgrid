@@ -143,7 +143,7 @@ export default async function JobsPage({
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif', letterSpacing: '-0.01em' }}>
-          {params.company ? `${params.company} Jobs` : activeCategory ? `${CATEGORY_LABELS[activeCategory]} Jobs` : 'All Jobs'}
+          {params.company ? `${params.company} Jobs` : activeCategory ? `${CATEGORY_LABELS[activeCategory]} Jobs` : 'Data Center Electrician, HVAC & Trades Jobs'}
         </h1>
         <p style={{ color: 'var(--fg-muted)' }}>
           {totalJobs} {hasFilters ? 'matching' : 'open'} position{totalJobs !== 1 ? 's' : ''} at data centers and AI infrastructure projects

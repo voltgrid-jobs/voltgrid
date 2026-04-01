@@ -33,7 +33,7 @@ const PLANS = [
     name: '5-Pack',
     price: '$499',
     period: 'one-time',
-    description: '5 listings at $99 each — best for project ramp-ups',
+    description: '5 listings at $99 each. Best for project ramp-ups.',
     features: [
       '5 job listings',
       '60-day window to use',
@@ -81,17 +81,17 @@ const PAIN_POINTS = [
     platform: 'Staffing Agencies',
     problem: '$3,000–$8,000 per placement',
     detail:
-      'Agency fees run 15–25% of first-year salary. For a journeyman electrician at $80k, that\'s $12,000–$20,000 per hire — before you know if they\'ll work out.',
+      'Agency fees run 15–25% of first-year salary. For a journeyman electrician at $80k, that\'s $12,000–$20,000 per hire before you know if they\'ll work out.',
     solution: 'At $149 per listing, one hire on VoltGrid pays for 50 more postings.',
   },
 ]
 
 const WHO_POSTS = [
   { title: 'General Contractors', desc: 'GCs managing hyperscale and colocation builds who need licensed electricians and HVAC crews on tight timelines.' },
-  { title: 'Data Center Operators', desc: 'Cologix, Equinix, EdgeConneX — operators with in-house facilities teams hiring for critical environment roles.' },
-  { title: 'MEP Subcontractors', desc: 'Helix Electric, Faith Technologies, Rosendin — electrical and mechanical subs whose project schedules depend on headcount.' },
-  { title: 'Staffing Firms', desc: 'Aerotek, Insight Global — firms placing trades workers on data center projects who need a niche sourcing channel.' },
-  { title: 'Facility Management', desc: 'CBRE, Cushman & Wakefield — facility managers overseeing data center O&M who need certified, experienced technicians.' },
+  { title: 'Data Center Operators', desc: 'Cologix, Equinix, EdgeConneX: operators with in-house facilities teams hiring for critical environment roles.' },
+  { title: 'MEP Subcontractors', desc: 'Helix Electric, Faith Technologies, Rosendin: electrical and mechanical subs whose project schedules depend on headcount.' },
+  { title: 'Staffing Firms', desc: 'Aerotek, Insight Global: firms placing trades workers on data center projects who need a niche sourcing channel.' },
+  { title: 'Facility Management', desc: 'CBRE, Cushman & Wakefield: facility managers overseeing data center O&M who need certified, experienced technicians.' },
 ]
 
 // Kept as fallback for static export — dynamic version used in component below
@@ -104,31 +104,31 @@ const FAQS = [
   },
   {
     q: "What's the difference from Indeed?",
-    a: "Indeed is a general job board serving every industry. Your data center electrician listing sits next to barista and retail roles. VoltGrid is niche — every candidate on the platform is a trades professional interested in data center and AI infrastructure work, so your listing gets in front of the right people, not just the most people.",
+    a: "Indeed is a general job board serving every industry. Your data center electrician listing sits next to barista and retail roles. VoltGrid is niche: every candidate on the platform is a trades professional interested in data center and AI infrastructure work, so your listing gets in front of the right people, not just the most people.",
   },
   {
     q: 'Can I post multiple locations?',
-    a: "Yes. Each listing can specify a city/state and job type. If you're hiring for the same role across three sites, post three listings — or grab the 5-Pack at $99 each and save.",
+    a: "Yes. Each listing can specify a city/state and job type. If you're hiring for the same role across three sites, post three listings, or grab the 5-Pack at $99 each and save.",
   },
   {
     q: 'Do you offer refunds?',
-    a: "If your listing goes live and you have a genuine issue (technical problem, accidental duplicate), reach out within 48 hours and we'll make it right. We don't offer refunds simply because applications were slow — but we do want every employer to get value, so contact us and we'll work something out.",
+    a: "If your listing goes live and you have a genuine issue (technical problem, accidental duplicate), reach out within 48 hours and we'll make it right. We don't offer refunds simply because applications were slow, but we do want every employer to get value, so contact us and we'll work something out.",
   },
   {
     q: 'How quickly does my listing go live?',
-    a: "Within minutes. There's no manual review queue. Fill out the form, pay, and your listing is live immediately — visible to every trades worker who visits VoltGrid.",
+    a: "Within minutes. There's no manual review queue. Fill out the form, pay, and your listing is live immediately, visible to every trades worker who visits VoltGrid.",
   },
   {
     q: 'Is $149 worth it?',
     a: "If your open electrician role pays $75/hour, a 40-hour week unfilled costs roughly $3,000 in lost project output. If VoltGrid gets you one qualified applicant faster than anywhere else, the listing paid for itself 20 times over. If it does not work, you spent $149.",
   },
   {
-    q: 'Do you just pull jobs from other sites?',
-    a: "Yes, for now — that is how we built the initial catalog. But every job is filtered to data center and AI infrastructure trades work only. On Indeed, your posting competes with millions of others. On VoltGrid, it is one of 351. The curation is the product.",
+    q: 'Where do the jobs on VoltGrid come from?',
+    a: "Two sources: direct employer listings (like yours) and jobs sourced from public employer career pages. Every listing is manually filtered to data center and AI infrastructure trades work only. On Indeed, your posting competes with millions of others. On VoltGrid, it is one of a few hundred. The curation is the product.",
   },
   {
     q: 'What experience should candidates have?',
-    a: "For electrical: low/medium voltage, power and lighting experience is what DC employers need — not high voltage, not residential. For HVAC: precision cooling, energy modeling, load calcs. If a candidate knows these, they can make the transition. VoltGrid attracts people already looking specifically for DC work.",
+    a: "For electrical: low/medium voltage, power and lighting experience is what DC employers need. Not high voltage, not residential. For HVAC: precision cooling, energy modeling, load calcs. If a candidate knows these, they can make the transition. VoltGrid attracts people already looking specifically for DC work.",
   },
 ]
 
@@ -245,7 +245,7 @@ export default async function EmployersPage() {
             Where everyone else falls short
           </h2>
           <p className="text-center mb-12 max-w-xl mx-auto" style={{ color: 'var(--fg-muted)' }}>
-            General job boards weren't built for niche hiring. Here's the problem — and how VoltGrid fixes it.
+            General job boards weren't built for niche hiring. Here's the problem, and how VoltGrid fixes it.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             {PAIN_POINTS.map((item) => (
@@ -295,7 +295,7 @@ export default async function EmployersPage() {
             Who&apos;s hiring on VoltGrid
           </h2>
           <p className="text-center mb-12 max-w-lg mx-auto" style={{ color: 'var(--fg-muted)' }}>
-            From hyperscale buildouts to ongoing O&amp;M — if you need licensed trades workers in data centers, this is your board.
+            From hyperscale buildouts to ongoing O&amp;M: if you need licensed trades workers in data centers, this is your board.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {WHO_POSTS.map(({ title, desc }) => (
@@ -374,7 +374,7 @@ export default async function EmployersPage() {
             </div>
             {/* Launch urgency */}
             <p className="text-center text-sm mt-4 mb-2" style={{ color: 'var(--yellow)' }}>
-              🚀 Launch pricing — rates increase after April 30
+              🚀 Launch pricing — post now before rates increase
             </p>
 
             {/* Guarantee badges */}
@@ -384,14 +384,14 @@ export default async function EmployersPage() {
                 style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)', color: 'var(--fg-muted)' }}
               >
                 <span style={{ color: 'var(--green)' }}>✓</span>
-                <span>14-day listing guarantee — if you have a technical issue, we&apos;ll make it right.</span>
+                <span>14-day listing guarantee. If you have a technical issue, we&apos;ll make it right.</span>
               </div>
               <div
                 className="inline-flex items-center gap-2 text-sm px-4 py-2 rounded-full"
                 style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)', color: 'var(--fg-muted)' }}
               >
                 <span style={{ color: 'var(--green)' }}>✓</span>
-                <span>Not getting traction? We&apos;ll extend your listing free — no questions asked.</span>
+                <span>Not getting traction? We&apos;ll extend your listing free. No questions asked.</span>
               </div>
             </div>
 
@@ -414,19 +414,19 @@ export default async function EmployersPage() {
             {[
               {
                 objection: 'Indeed sends general applicants.',
-                answer: 'VoltGrid sends trades workers who searched for "data center electrician jobs" — not the guy who applied to 400 positions today. Every candidate on VoltGrid is here specifically for data center or AI infrastructure work.',
+                answer: 'VoltGrid sends trades workers who searched for "data center electrician jobs," not the guy who applied to 400 positions today. Every candidate on VoltGrid is here specifically for data center or AI infrastructure work.',
               },
               {
                 objection: 'LinkedIn is expensive and slow.',
-                answer: 'LinkedIn is built for office workers. Your DC electrician role competes with SaaS sales jobs for attention. VoltGrid is a vertical board — the only candidates here are the ones you actually want.',
+                answer: 'LinkedIn is built for office workers. Your DC electrician role competes with SaaS sales jobs for attention. VoltGrid is a vertical board: the only candidates here are the ones you actually want.',
               },
               {
                 objection: 'I can find people through a staffing agency.',
-                answer: 'You can — for $3,000–$8,000 per hire. VoltGrid is $149 flat, applications go directly to your email, and you own the relationship. The candidate list from one listing is often worth more than the fee.',
+                answer: 'You can, for $3,000–$8,000 per hire. VoltGrid is $149 flat, applications go directly to your email, and you own the relationship. The candidate list from one listing is often worth more than the fee.',
               },
               {
                 objection: 'Our ATS already posts to job boards.',
-                answer: 'Generic ATS distribution posts to 50 boards that trades workers don\'t use. VoltGrid is where data center electricians and HVAC techs come specifically because it\'s the one board for their niche — not a side tab on a general site.',
+                answer: 'Generic ATS distribution posts to 50 boards that trades workers don\'t use. VoltGrid is where data center electricians and HVAC techs come specifically because it\'s the one board for their niche, not a side tab on a general site.',
               },
             ].map(({ objection, answer }) => (
               <div key={objection} className="rounded-xl p-6" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
@@ -463,11 +463,11 @@ export default async function EmployersPage() {
               The electricians you want are getting three offers right now.
             </h2>
             <p className="mb-8 text-lg" style={{ color: 'rgba(10,10,10,0.75)' }}>
-              Post today. Live in 5 minutes. $149 flat — no bidding, no account manager, no agency fees.
+              Post today. Live in 5 minutes. $149 flat. No bidding, no account manager, no agency fees.
             </p>
             <Link href="/post-job" className="inline-block px-10 py-4 rounded-xl font-bold text-lg transition-opacity"
               style={{ background: '#0A0A0A', color: 'var(--yellow)' }}>
-              Post a Job — $149
+              Post a Job for $149
             </Link>
           </div>
         </section>
