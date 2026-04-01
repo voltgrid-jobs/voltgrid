@@ -102,6 +102,32 @@ export default async function SuccessPage({
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-20 text-center">
+      {/* 3-step progress — all done */}
+      <div className="flex items-center justify-center gap-2 mb-10">
+        {[
+          { n: 1, label: 'Job Details' },
+          { n: 2, label: 'Payment' },
+          { n: 3, label: 'Live!' },
+        ].map(({ n, label }, i) => (
+          <div key={n} className="flex items-center gap-2">
+            {i > 0 && (
+              <div className="h-px w-8" style={{ background: 'var(--yellow)' }} />
+            )}
+            <div className="flex items-center gap-1.5">
+              <span
+                className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
+                style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
+              >
+                ✓
+              </span>
+              <span className="text-xs font-medium hidden sm:block" style={{ color: 'var(--fg-muted)' }}>
+                {label}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+
       <div
         className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-6 text-2xl"
         style={{ background: 'var(--yellow-dim)', border: '1px solid var(--yellow-border)' }}

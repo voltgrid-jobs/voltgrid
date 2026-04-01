@@ -22,19 +22,26 @@ function FieldHelp({ children }: { children: React.ReactNode }) {
   return <p className={helpCls} style={{ color: 'var(--fg-faint)' }}>{children}</p>
 }
 
-// Step progress indicator
-function StepIndicator({ step }: { step: 1 | 2 }) {
+// Step progress indicator — step: 1=Job Details, 2=Payment, 3=Live (success page)
+function StepIndicator({ step }: { step: 1 | 2 | 3 }) {
+  const steps = [
+    { n: 1, label: 'Job Details' },
+    { n: 2, label: 'Payment' },
+    { n: 3, label: 'Live!' },
+  ]
   return (
     <div className="flex items-center gap-2 mb-8">
-      {[
-        { n: 1, label: 'Job Details' },
-        { n: 2, label: 'Review & Pay' },
-      ].map(({ n, label }, i) => {
+      {steps.map(({ n, label }, i) => {
         const active = step === n
         const done = step > n
         return (
           <div key={n} className="flex items-center gap-2">
-            {i > 0 && <div className="flex-1 h-px w-8" style={{ background: done || active ? 'var(--yellow)' : 'var(--border)' }} />}
+            {i > 0 && (
+              <div
+                className="flex-1 h-px w-8"
+                style={{ background: done ? 'var(--yellow)' : 'var(--border)' }}
+              />
+            )}
             <div className="flex items-center gap-1.5">
               <span
                 className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
@@ -46,7 +53,10 @@ function StepIndicator({ step }: { step: 1 | 2 }) {
               >
                 {done ? '✓' : n}
               </span>
-              <span className="text-xs font-medium hidden sm:block" style={{ color: active ? 'var(--fg)' : 'var(--fg-faint)' }}>
+              <span
+                className="text-xs font-medium hidden sm:block"
+                style={{ color: active ? 'var(--fg)' : done ? 'var(--fg-muted)' : 'var(--fg-faint)' }}
+              >
                 {label}
               </span>
             </div>
