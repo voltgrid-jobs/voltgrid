@@ -23,14 +23,19 @@ export function ApplyButton({
   const defaultStyle = { background: 'var(--yellow)', color: '#0A0A0A' }
 
   function handleClick() {
-    // Fire-and-forget — do not block navigation
-    fetch('/api/apply-click', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ job_id: jobId, source }),
-    }).catch(() => {
-      // Silently ignore — tracking should never break the apply flow
-    })
+    // sendBeacon is reliable on page unload; fetch is dropped when the browser navigates away
+    const payload = JSON.stringify({ job_id: jobId, source })
+    if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
+      navigator.sendBeacon('/api/apply-click', new Blob([payload], { type: 'application/json' }))
+    } else {
+      // Fallback for environments without sendBeacon
+      fetch('/api/apply-click', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: payload,
+        keepalive: true,
+      }).catch(() => {})
+    }
   }
 
   return (
