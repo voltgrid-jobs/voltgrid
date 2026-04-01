@@ -209,11 +209,66 @@ export default async function JobDetailPage({
     }),
   }
 
+  // ── FAQPage schema ────────────────────────────────────────────────────────
+  const CERT_ANSWERS: Partial<Record<string, string>> = {
+    electrical: 'A Journeyman Electrician license is typically required. Many data center projects also prefer or require an OSHA 30 card and NFPA 70E arc flash training. Some sites require an IBEW card for union work.',
+    hvac: 'EPA 608 certification is required for refrigerant handling. Most data center roles also expect OSHA 10 or OSHA 30, and experience with precision cooling (CRAC/CRAH units) is a strong plus.',
+    low_voltage: 'A BICSI RCDD or DCDC credential is valued for structured cabling and data center work. Some jurisdictions require a low-voltage contractor license. CompTIA Network+ or equivalent networking certifications are a plus.',
+    construction: 'An OSHA 30 card is standard for supervisory construction roles. NCCER certification is recognized across the industry. Specific trade licenses may apply depending on scope.',
+    project_management: 'PMP (Project Management Professional) or CAPM certification is valued. For data center projects, a CDCP (Certified Data Centre Professional) credential from EPI or equivalent is a strong differentiator.',
+    operations: 'CDCDP (Certified Data Center Design Professional) or CDCTP (Certified Data Center Technician Professional) credentials are common. CompTIA Server+ and vendor-specific certifications (Schneider, Vertiv) are also valued.',
+  }
+  const certAnswer = CERT_ANSWERS[job.category] ?? 'Requirements vary by role. Review the job description for specific certifications. OSHA 10 and relevant trade licenses are commonly expected.'
+
+  const unionAnswer = job.is_union == null
+    ? 'This listing does not specify union affiliation. Contact the employer directly to confirm whether the role is covered by a collective bargaining agreement.'
+    : job.is_union
+    ? 'This is a union role covered by a collective bargaining agreement (CBA). Wages, benefits, and working conditions are governed by the applicable union contract.'
+    : 'This is a non-union position. Compensation and benefits are set directly by the employer.'
+
+  const SHIFT_ANSWERS: Partial<Record<string, string>> = {
+    day: 'This is a day shift position, typically Monday through Friday during standard business hours.',
+    night: 'This is a night shift position. Exact hours vary by employer but generally run from late evening through early morning.',
+    rotating: 'This role uses a rotating shift schedule, meaning workers alternate between day and night shifts on a set cycle.',
+    '4x10': 'This role follows a 4×10 schedule: four 10-hour days per week with three days off.',
+    '5x8': 'This role follows a standard 5×8 schedule: five 8-hour days per week.',
+    other: 'This role has a non-standard shift arrangement. See the job description or contact the employer for specifics.',
+  }
+  const shiftAnswer = job.shift_type
+    ? (SHIFT_ANSWERS[job.shift_type] ?? 'See the job description for shift details.')
+    : 'Shift details are not specified in this listing. Contact the employer to confirm expected hours.'
+
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'What certifications do I need for this role?',
+        acceptedAnswer: { '@type': 'Answer', text: certAnswer },
+      },
+      {
+        '@type': 'Question',
+        name: 'Is this job union or non-union?',
+        acceptedAnswer: { '@type': 'Answer', text: unionAnswer },
+      },
+      {
+        '@type': 'Question',
+        name: 'What shift is this?',
+        acceptedAnswer: { '@type': 'Answer', text: shiftAnswer },
+      },
+    ],
+  }
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
         <div className="mb-6">
