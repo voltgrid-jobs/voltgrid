@@ -75,7 +75,8 @@ export async function POST(req: NextRequest) {
 
   // Use adminClient to bypass RLS — this is a server-side API route with its own
   // validation (rate limit + email format check + per-email cap above).
-  const { error } = await adminClient.from('job_alerts').insert({
+  // Upsert on (email, category) to prevent duplicate alerts for the same trade.
+  const { error } = await adminClient.from('job_alerts').upsert({
     email: email.toLowerCase().trim(),
     ...(background && { background }),
     user_id: user?.id || null,
@@ -84,7 +85,7 @@ export async function POST(req: NextRequest) {
     category: category || null,
     frequency: frequency || 'daily',
     is_active: true,
-  })
+  }, { onConflict: 'email,category', ignoreDuplicates: true })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
