@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { JobAlertInlineForm } from '@/components/jobs/JobAlertInlineForm'
 
 export const metadata: Metadata = {
   title: 'Data Center Trades Career Resources — VoltGrid Jobs',
@@ -122,6 +123,11 @@ export default function ResourcesPage() {
           <p className="text-base" style={{ color: 'var(--fg-muted)', lineHeight: 1.7, maxWidth: '600px' }}>
             Guides, salary data, and interview prep built specifically for electricians, HVAC techs, and low voltage specialists working in data centers and AI infrastructure.
           </p>
+        </div>
+
+        {/* Job alert signup strip */}
+        <div className="mb-10 -mx-4 sm:-mx-6">
+          <JobAlertInlineForm variant="homepage" />
         </div>
 
         {/* Resource cards */}
