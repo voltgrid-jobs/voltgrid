@@ -324,7 +324,7 @@ export default async function JobDetailPage({
 
             <div className="sm:flex-shrink-0 flex flex-col gap-2">
               {applyUrl && (
-                <ApplyButton jobId={job.id} applyUrl={applyUrl} isExternalUrl={!!job.apply_url} source="top_button" />
+                <ApplyButton jobId={job.id} applyUrl={applyUrl} isExternalUrl={!!job.apply_url} source="top_button" category={job.category} companyName={job.company_name} />
               )}
               <SaveJobButton jobId={job.id} initialSaved={isSaved} isLoggedIn={!!user} jobCategory={job.category} />
             </div>
@@ -476,6 +476,8 @@ export default async function JobDetailPage({
                 isExternalUrl={!!job.apply_url}
                 label="Apply for this Job →"
                 source="bottom_button"
+                category={job.category}
+                companyName={job.company_name}
                 className="inline-block px-10 py-4 rounded-xl font-semibold text-lg transition-opacity"
                 style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
               />
