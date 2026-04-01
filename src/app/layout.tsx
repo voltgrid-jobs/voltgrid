@@ -3,6 +3,7 @@ import { Barlow_Condensed, Barlow } from 'next/font/google'
 import './globals.css'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
+import { FeedbackWidget } from '@/components/layout/FeedbackWidget'
 
 const barlowCondensed = Barlow_Condensed({
   subsets: ['latin'],
@@ -60,6 +61,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Header />
         <main id="main-content" style={{ flex: 1 }}>{children}</main>
         <Footer />
+        <FeedbackWidget />
       </body>
     </html>
   )
