@@ -331,6 +331,11 @@ export default async function JobDetailPage({
           </div>
         </div>
 
+        {/* Alert signup — positioned above the fold, right after job header */}
+        <div className="mb-4">
+          <AlertSignupWidget keywords={job.title} category={job.category} subscriberCount={alertSubscribers ?? undefined} />
+        </div>
+
         {/* Salary Guide CTA */}
         <Link
           href="/salary-guide"
@@ -496,9 +501,6 @@ export default async function JobDetailPage({
           </div>
         )}
 
-        <div className="mt-4">
-          <AlertSignupWidget keywords={job.title} category={job.category} subscriberCount={alertSubscribers ?? undefined} />
-        </div>
       </div>
     </>
   )

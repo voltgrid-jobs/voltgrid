@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { CATEGORY_LABELS } from '@/types'
 
 const BACKGROUNDS = [
   { value: 'electrician_commercial', label: 'Licensed electrician (commercial/industrial)' },
@@ -13,6 +14,16 @@ const BACKGROUNDS = [
   { value: 'operations', label: 'Operations / facilities' },
   { value: 'other', label: 'Other trades' },
 ]
+
+const DC_COMPANIES_BY_CATEGORY: Record<string, string> = {
+  electrician: 'Cologix, Iron Mountain, and CoreWeave',
+  hvac: 'Equinix, Digital Realty, and QTS',
+  low_voltage: 'Cologix, CyrusOne, and Aligned',
+  operations: 'Equinix, Digital Realty, and NTT',
+  construction: 'Turner, DPR, and Holder Construction',
+  mep_engineer: 'Turner, DPR, and Holder Construction',
+}
+const DEFAULT_COMPANIES = 'Cologix, CoreWeave, and Equinix'
 
 const BACKGROUND_NOTES: Record<string, string> = {
   electrician_commercial: 'Your background transfers well. DC employers look for MV/LV and power experience — which you likely have.',
@@ -125,10 +136,10 @@ export function AlertSignupWidget({
       {step === 'email' ? (
         <>
           <h3 className="font-semibold text-sm mb-1" style={{ color: 'var(--fg)' }}>
-            Get alerts for {keywords ? `"${keywords}"` : category ? `${category.replace(/_/g, ' ')} jobs` : 'similar roles'}
+            Be first when {category ? `${CATEGORY_LABELS[category as keyof typeof CATEGORY_LABELS] ?? category.replace(/_/g, ' ')}` : keywords ? `"${keywords}"` : 'similar'} roles open
           </h3>
           <p className="text-xs mb-4" style={{ color: 'var(--fg-muted)' }}>
-            Be first to know when matching roles open — daily alerts + weekly top-10 digest.
+            Get daily alerts from {DC_COMPANIES_BY_CATEGORY[category ?? ''] ?? DEFAULT_COMPANIES} before they hit the big boards.
           </p>
           <form onSubmit={handleEmailSubmit} className="flex gap-2">
             <label htmlFor="alert-signup-email" className="sr-only">Email address</label>
