@@ -453,10 +453,10 @@ function SalaryGuideContent() {
                     letterSpacing: '-0.01em',
                   }}
                 >
-                  Get the full report free
+                  Where should we send it?
                 </h2>
                 <p style={{ fontSize: '0.875rem', color: 'var(--fg-muted)', marginBottom: '1.5rem', lineHeight: 1.6 }}>
-                  Full salary tables for electrical, HVAC, low voltage & construction across every major data center market. No spam — just the data.
+                  Full salary tables for electrical, HVAC, low voltage & construction across every major data center market.
                 </p>
                 <form onSubmit={handleSubmit}>
                   <div style={{ display: 'flex', gap: '0.5rem', flexDirection: 'column' }}>
@@ -497,7 +497,7 @@ function SalaryGuideContent() {
                         transition: 'opacity 0.15s',
                       }}
                     >
-                      {loading ? 'Sending…' : 'Unlock the guide →'}
+                      {loading ? 'Sending…' : 'Get the guide →'}
                     </button>
                   </div>
                   {error && (
@@ -505,7 +505,7 @@ function SalaryGuideContent() {
                   )}
                 </form>
                 <p style={{ fontSize: '0.7rem', color: 'var(--fg-faint)', marginTop: '1rem' }}>
-                  We&apos;ll also send you new data center job alerts matching your trade. No spam — unsubscribe anytime.
+                  No spam. One-time delivery.
                 </p>
               </div>
             </>

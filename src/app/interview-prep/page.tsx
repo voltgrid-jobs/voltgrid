@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { InterviewPrepGate } from '@/components/InterviewPrepGate'
 
 export const metadata: Metadata = {
   title: 'Data Center Trades Interview Questions & Prep Guide — VoltGrid Jobs',
@@ -244,8 +245,8 @@ export default function InterviewPrepPage() {
           <a href="#low-voltage" className="hover:text-yellow-400 transition-colors" style={{ color: 'var(--yellow)' }}>Low Voltage</a>
         </p>
 
-        {/* Trade sections */}
-        {TRADES.map((trade) => (
+        {/* Electrician section — free, always visible, fully crawlable */}
+        {TRADES.slice(0, 1).map((trade) => (
           <section key={trade.id} id={trade.id} className="mb-14">
             <h2
               className="text-2xl font-bold mb-3 flex items-center gap-3"
@@ -257,7 +258,6 @@ export default function InterviewPrepPage() {
             <p className="text-sm mb-8" style={{ color: 'var(--fg-muted)', lineHeight: 1.7 }}>
               {trade.intro}
             </p>
-
             <ol className="space-y-6">
               {trade.questions.map((item, i) => (
                 <li key={i} className="flex gap-4">
@@ -274,59 +274,31 @@ export default function InterviewPrepPage() {
                 </li>
               ))}
             </ol>
-
-            {/* Per-trade alert CTA */}
             <div
               className="mt-8 rounded-xl px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-3"
-              style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+              style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}
             >
               <div className="flex-1">
                 <p className="text-sm font-semibold" style={{ color: 'var(--fg)' }}>
-                  Get notified when new {trade.title.split(' ').slice(2, 4).join(' ').replace('Interview', '').trim()} jobs post
+                  Get notified when new electrician jobs post
                 </p>
                 <p className="text-xs" style={{ color: 'var(--fg-faint)' }}>
                   Free job alerts — we notify you when matching roles appear at data centers.
                 </p>
               </div>
               <Link
-                href={`/jobs?category=${trade.category}`}
+                href="/jobs?category=electrical"
                 className="text-sm font-bold px-4 py-2 rounded-lg transition-colors whitespace-nowrap"
                 style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
               >
-                Browse {trade.icon} jobs →
+                Browse ⚡ jobs →
               </Link>
             </div>
           </section>
         ))}
 
-        {/* Bottom CTA */}
-        <div
-          className="rounded-xl px-6 py-8 text-center mt-4"
-          style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
-        >
-          <p className="text-lg font-bold mb-2" style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif' }}>
-            Ready to find your next role?
-          </p>
-          <p className="text-sm mb-5" style={{ color: 'var(--fg-muted)' }}>
-            Browse data center trades jobs — electricians, HVAC techs, low voltage specialists, and more.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              href="/jobs"
-              className="inline-block font-bold px-6 py-3 rounded-xl transition-colors"
-              style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
-            >
-              Browse all open jobs →
-            </Link>
-            <Link
-              href="/break-into-data-center-work"
-              className="inline-block font-semibold px-6 py-3 rounded-xl transition-colors"
-              style={{ border: '1px solid var(--border)', color: 'var(--fg-muted)' }}
-            >
-              Break into data center work →
-            </Link>
-          </div>
-        </div>
+        {/* HVAC + Low Voltage — gated until email captured */}
+        <InterviewPrepGate />
       </div>
     </>
   )
