@@ -20,7 +20,7 @@ const articleSchema = {
   author: { '@type': 'Organization', name: 'VoltGrid Jobs', url: 'https://voltgridjobs.com' },
   publisher: { '@type': 'Organization', name: 'VoltGrid Jobs', url: 'https://voltgridjobs.com' },
   datePublished: '2026-03-30',
-  dateModified: '2026-03-30',
+  dateModified: '2026-04-01',
   mainEntityOfPage: 'https://voltgridjobs.com/break-into-data-center-work',
 }
 
@@ -350,6 +350,97 @@ export default function BreakIntoDataCenterWork() {
             style={{ color: 'var(--yellow)' }}>
             Download the 2026 Salary Guide →
           </Link>
+        </section>
+
+        {/* Career Transition Scenarios */}
+        <section className="mb-10">
+          <h2 className="text-xl font-bold mb-2" style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif' }}>
+            Career Transition Paths: Your Specific Scenario
+          </h2>
+          <p className="text-base mb-8" style={{ color: 'var(--fg-muted)', lineHeight: 1.8 }}>
+            The path into data center work depends on where you are starting. Here are the three most common transitions — with realistic timelines and first job titles to target.
+          </p>
+
+          {/* Scenario 1: Residential Electrician → DC Electrician */}
+          <div className="mb-8 rounded-xl p-6" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
+            <h3 className="text-base font-bold mb-4" style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif' }}>
+              ⚡ Residential Electrician → Data Center Electrician
+            </h3>
+            <p className="text-sm mb-4" style={{ color: 'var(--fg-muted)', lineHeight: 1.7 }}>
+              This is the most common transition — and the longest. Residential work teaches code compliance and installation fundamentals, but DC employers want commercial-grade systems experience. Plan for a deliberate intermediate step.
+            </p>
+            <ul className="space-y-2 mb-4">
+              {[
+                'Transferable: journeyman license, OSHA knowledge, conduit and wire installation, reading blueprints, service entrance and panel work',
+                'Not transferable: residential circuits, 200A panels, simple home wiring — these don\'t appear in DC environments',
+                'Bridge step: move to commercial or industrial electrical work for 2+ years before targeting DC roles — hospitals, industrial facilities, or large commercial builds are the best stepping stones',
+                'Certifications to get now: OSHA-30 (required on most DC construction sites), NFPA 70E (arc flash safety), DCCA from Schneider Electric (free, self-paced)',
+                'Timeline: 2–3 years of commercial work after residential, then you\'re competitive for DC construction roles',
+                'First job title to target: Journeyman Electrician (Data Center Construction) at a specialty GC — starting pay $45–$60/hr, often with travel per diem',
+              ].map((item, i) => (
+                <li key={i} className="flex gap-3 text-sm" style={{ color: 'var(--fg-muted)', lineHeight: 1.7 }}>
+                  <span style={{ color: 'var(--yellow)', flexShrink: 0, fontWeight: 700 }}>—</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Scenario 2: Commercial HVAC → DC HVAC */}
+          <div className="mb-8 rounded-xl p-6" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
+            <h3 className="text-base font-bold mb-4" style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif' }}>
+              ❄️ Commercial HVAC Tech → Data Center HVAC (Precision Cooling)
+            </h3>
+            <p className="text-sm mb-4" style={{ color: 'var(--fg-muted)', lineHeight: 1.7 }}>
+              Commercial HVAC is a much shorter path to DC work than residential electrical. Chilled water experience and controls familiarity get you 70% of the way there. The gap is precision cooling systems — CRAC/CRAH units and tight tolerance environment management.
+            </p>
+            <ul className="space-y-2 mb-4">
+              {[
+                'Transferable: chilled water systems, centrifugal and scroll chillers, cooling towers, AHUs, EPA 608 certification, BMS/controls familiarity',
+                'Highest-value transfer: any hospital, cleanroom, pharmaceutical, or semiconductor fab cooling experience — these share the same precision tolerances as DC facilities',
+                'Gap to close: CRAC/CRAH unit-specific training (Liebert/Vertiv, Schneider, Stulz offer OEM certification), hot/cold aisle containment concepts',
+                'Certifications to pursue: NATE certification, Liebert or Stulz OEM training (often free or subsidized by employers), DCCA from Schneider Energy University',
+                'Timeline: 3–6 months to close the gap if you have solid commercial chilled water background — faster if you have cleanroom or mission-critical experience',
+                'First job title to target: Critical Facilities HVAC Technician or Data Center Mechanical Technician — $40–$65/hr depending on market and facility type',
+              ].map((item, i) => (
+                <li key={i} className="flex gap-3 text-sm" style={{ color: 'var(--fg-muted)', lineHeight: 1.7 }}>
+                  <span style={{ color: 'var(--yellow)', flexShrink: 0, fontWeight: 700 }}>—</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Scenario 3: IT/Network → Low Voltage */}
+          <div className="rounded-xl p-6" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>
+            <h3 className="text-base font-bold mb-4" style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif' }}>
+              📡 IT / Network Background → Low Voltage & Structured Cabling
+            </h3>
+            <p className="text-sm mb-4" style={{ color: 'var(--fg-muted)', lineHeight: 1.7 }}>
+              IT and network experience is underrated as a path into data center low voltage work. You already understand how the physical layer relates to network performance — the transition is learning the installation trade skills and earning the structured cabling certifications.
+            </p>
+            <ul className="space-y-2 mb-4">
+              {[
+                'Transferable: understanding of network topologies, cable categories (Cat5e, Cat6, Cat6A), fiber types, cable testing concepts, familiarity with MDA/EDA/HDA zone architecture',
+                'Highest-value transfer: hands-on experience terminating cables, running patch cords, managing cable trays, or maintaining cable plant documentation',
+                'Gap to close: formal structured cabling installation training, fiber splicing (fusion and mechanical), OTDR testing, and physical installation at commercial scale',
+                'Certifications to get: BICSI INST1 (the entry-level structured cabling installation certification) is the priority — it validates hands-on installation skills and is recognized by DC contractors nationwide. BICSI INST2 follows for advanced fiber work. RCDD (Registered Communications Distribution Designer) is the long-term credential for design work.',
+                'Timeline: 3–6 months to complete BICSI INST1 and land a first role; 12–18 months to INST2 and meaningful fiber splicing experience',
+                'First job title to target: Structured Cabling Installer or Low Voltage Technician at a cabling contractor with DC project experience — starting at $28–$45/hr, rising to $50–$70/hr with BICSI credentials and fiber expertise',
+              ].map((item, i) => (
+                <li key={i} className="flex gap-3 text-sm" style={{ color: 'var(--fg-muted)', lineHeight: 1.7 }}>
+                  <span style={{ color: 'var(--yellow)', flexShrink: 0, fontWeight: 700 }}>—</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="text-sm" style={{ color: 'var(--fg-faint)', lineHeight: 1.7 }}>
+              For more on what low voltage interviewers ask: see the{' '}
+              <Link href="/interview-prep#low-voltage" style={{ color: 'var(--yellow)' }} className="hover:underline">
+                low voltage interview prep section →
+              </Link>
+            </p>
+          </div>
         </section>
 
         {/* Footer nav */}
