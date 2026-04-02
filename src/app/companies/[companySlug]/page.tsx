@@ -18,10 +18,10 @@ function slugify(str: string): string {
 // ── generateStaticParams ──────────────────────────────────────────────────────
 
 export async function generateStaticParams() {
-  const supabase = createAdminClient()
-
-  // Try companies table first
   try {
+    const supabase = createAdminClient()
+
+    // Try companies table first
     const { data: companies, error } = await supabase
       .from('companies')
       .select('slug, id')
@@ -41,12 +41,8 @@ export async function generateStaticParams() {
       }
       if (results.length > 0) return results
     }
-  } catch {
-    // companies table may not exist yet — fall through
-  }
 
-  // Fallback: derive from jobs table directly
-  try {
+    // Fallback: derive from jobs table directly
     const { data: jobs } = await supabase
       .from('jobs')
       .select('company_name')
