@@ -27,6 +27,11 @@ const webPageSchema = {
       url: 'https://voltgridjobs.com/salary-guide',
     },
     {
+      '@type': 'SoftwareApplication',
+      name: 'Data Center Trades Salary Calculator',
+      url: 'https://voltgridjobs.com/salary-calculator',
+    },
+    {
       '@type': 'Article',
       name: 'How to Break Into Data Center Work as an Electrician or HVAC Tech',
       url: 'https://voltgridjobs.com/break-into-data-center-work',
@@ -48,6 +53,15 @@ const RESOURCES = [
     badgeColor: 'var(--green)',
     badgeBg: 'var(--green-dim)',
     icon: '💰',
+  },
+  {
+    href: '/salary-calculator',
+    title: 'Data Center Trades Salary Calculator',
+    description: 'Estimate your 2026 pay range by trade, city, and experience level. Compare Northern Virginia to Phoenix to Dallas — and see how you stack up against the national average.',
+    badge: 'Tool',
+    badgeColor: 'var(--yellow)',
+    badgeBg: 'var(--yellow-dim)',
+    icon: '🧮',
   },
   {
     href: '/break-into-data-center-work',
