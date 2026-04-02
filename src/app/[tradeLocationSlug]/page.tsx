@@ -287,8 +287,9 @@ export default async function TradeLocationPage({ params }: Props) {
   const jobs: Job[] = jobsData ?? []
 
   // If no jobs and we're not a statically generated page (params not in generateStaticParams),
-  // return 404 to avoid thin content pages
-  if (jobs.length === 0 && !locationName) notFound()
+  // return 404 to avoid thin content pages — but always render known markets even with 0 jobs
+  const isKnownMarket = parsed.locationSlug in LOCATION_CONTEXT
+  if (jobs.length === 0 && !locationName && !isKnownMarket) notFound()
 
   const h1 = `Data Center ${tradeDef.labelPlural} in ${locationDisplay}`
   const intro = buildLocationIntro(tradeDef, parsed.locationSlug, locationDisplay)
