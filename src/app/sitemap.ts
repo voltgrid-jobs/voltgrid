@@ -1,6 +1,9 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import type { MetadataRoute } from 'next'
 
+// Force dynamic — sitemap includes live job URLs, must not be pre-rendered at build time
+export const dynamic = 'force-dynamic'
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://voltgridjobs.com'
   const supabase = createAdminClient()
