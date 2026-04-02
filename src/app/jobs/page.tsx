@@ -88,7 +88,6 @@ export default async function JobsPage({
 }: {
   searchParams: Promise<SearchParams>
 }) {
-  try {
   const params = await searchParams
   const supabase = await createClient()
 
@@ -221,13 +220,4 @@ export default async function JobsPage({
       </div>
     </div>
   )
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message + '\n\nSTACK:\n' + err.stack : String(err)
-    const su = process.env.SUPABASE_URL
-    const npsu = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const sak = process.env.SUPABASE_ANON_KEY
-    const npsak = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    const envInfo = `SUPABASE_URL=${su ? su.slice(0,40) : 'MISSING'}\nNEXT_PUBLIC_SUPABASE_URL=${npsu ? npsu.slice(0,40) : 'MISSING'}\nSUPABASE_ANON_KEY=${sak ? sak.slice(0,15) : 'MISSING'}\nNEXT_PUBLIC_SUPABASE_ANON_KEY=${npsak ? npsak.slice(0,15) : 'MISSING'}`
-    return <pre style={{padding:'2rem',whiteSpace:'pre-wrap',wordBreak:'break-all',color:'red',fontSize:'12px'}}>{envInfo + '\n\n' + msg}</pre>
-  }
 }
