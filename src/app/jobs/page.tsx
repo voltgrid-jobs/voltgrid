@@ -90,6 +90,8 @@ export default async function JobsPage({
 }) {
   try {
   const params = await searchParams
+  console.log('[jobs-debug] SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? 'PRESENT len=' + process.env.NEXT_PUBLIC_SUPABASE_URL.length : 'MISSING')
+  console.log('[jobs-debug] SUPABASE_KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'PRESENT len=' + process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.length : 'MISSING')
   const supabase = await createClient()
 
   const currentPage = Math.max(1, parseInt(params.page ?? '1', 10) || 1)
