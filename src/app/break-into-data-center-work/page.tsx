@@ -24,6 +24,117 @@ const articleSchema = {
   mainEntityOfPage: 'https://voltgridjobs.com/break-into-data-center-work',
 }
 
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'What certifications do I need to work at a data center as an electrician?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'The minimum requirement is a state journeyman electrician license. Beyond that, the certifications data center employers most commonly request are OSHA-10 or OSHA-30 (required on most commercial job sites), NFPA 70E electrical safety training, and the DCCA (Data Center Certified Associate) from Schneider Electric Energy University, which is free and self-paced. More advanced credentials include the CDCDP (Certified Data Center Design Professional) and ETA certifications for low-voltage and structured cabling work. For facilities operations roles, BICSI RCDD and Uptime Institute certifications carry significant weight with employers.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How do I get a job at a hyperscale data center as an electrician?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Start with a journeyman license and at least 2 years of commercial or industrial electrical experience. Target specialty GCs and electrical contractors that build hyperscale facilities: Turner, Holder, Corgan, and Bergelectric all run large data center construction programs and hire extensively. Apply through niche job boards like VoltGrid Jobs, which aggregate listings from data center contractors, or contact recruiters who specialize in critical facilities staffing at firms like Aerotek and Insight Global. Add certifications like OSHA-30 and DCCA before applying to move ahead of general applicants. Hyperscalers like Microsoft, Amazon, and Google also hire direct for facilities operations roles, which require a similar background but focus on maintenance over construction.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is the difference between a data center electrician and a regular electrician?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'A data center electrician works in a mission-critical environment where downtime is measured in millions of dollars per minute, requiring strict documentation, change control procedures, and system awareness that standard commercial work does not. The specific systems are different: UPS (uninterruptible power supply) units, PDUs (power distribution units), static transfer switches, bus duct, and increasingly medium-voltage switchgear for AI compute clusters. Data center electricians work under lockout/tagout protocols with energized systems nearby, unlike most commercial sites where circuits can be de-energized during work. Pay is typically 15 to 25 percent higher than standard commercial rates, and many roles include per diem for travel.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Are data center HVAC jobs union?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Data center HVAC work is a mix of union and non-union depending on the market and contractor. Union HVAC trades are represented by the UA (United Association of Plumbers and Pipefitters), and in some markets IBEW covers controls and BMS integration work on data center projects. Major data center markets like Chicago, Northern Virginia, and the Bay Area have strong union presence on hyperscale builds. To find union data center HVAC jobs, contact your UA local directly and ask which contractors are active on data center projects in your area. Non-union shops also pay well on data center projects, particularly on travel assignments with per diem.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What does a data center electrician make in Northern Virginia?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Data center electricians in Northern Virginia (Ashburn, Loudoun County) typically earn $55–$85/hr depending on experience, union status, and whether the role is construction or operations. Northern Virginia is the world\'s largest data center market, which drives wages above national norms — a journeyman electrician on a hyperscale construction project in Ashburn can realistically earn $65–$75/hr base, often with per diem on top for workers traveling to the market. IBEW Local 26 covers much of Northern Virginia and sets prevailing wage rates for union construction.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What does an HVAC tech make at a data center in Phoenix?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Data center HVAC technicians in Phoenix, Arizona earn $38–$65/hr depending on role type and experience. Phoenix is a fast-growing data center market driven by lower land costs, available power, and proximity to California hyperscale demand. Precision cooling technicians with CRAC/CRAH and chilled water experience are at the higher end. The market is largely non-union, with competitive wages from Compass Datacenters, QTS, and major operators who have facilities in the area. Per diem is common for construction-phase roles.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What does a low voltage tech make at a data center in Dallas?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Low voltage and structured cabling technicians at data centers in Dallas, Texas typically earn $28–$55/hr. Dallas is a Tier 1 data center market with significant hyperscale and colocation presence (Equinix, CyrusOne, and several large AWS campuses). Entry-level cabling technicians with BICSI INST1 certification start in the $28–$38/hr range, while fiber splicing specialists with BICSI INST2 and OTDR testing experience earn $45–$55/hr. The Texas market is predominantly non-union for low voltage work.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Do data center electricians make more than commercial electricians?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes — data center electricians typically earn 15 to 30 percent more than general commercial electricians. The premium reflects the mission-critical environment, specialized knowledge of UPS systems, PDUs, and switchgear, and the tighter safety and documentation requirements. In active DC markets like Northern Virginia, Phoenix, and Chicago, a journeyman electrician with 2+ years of data center experience earns $60–$80/hr, compared to $45–$60/hr for comparable commercial work in the same market. Travel roles with per diem can push total compensation significantly higher.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is per diem for data center construction work?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Per diem on data center construction projects typically ranges from $75 to $150/day, with $100/day being common on hyperscale builds. It is paid on top of your hourly wage and is intended to cover lodging and meals when you\'re working away from your home market. On a 10-week rotation with 4x10 scheduling, per diem can add $4,000–$6,000 to your total earnings. Not all roles offer per diem — it is most common for travel construction roles and less common for permanent facilities operations positions.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is the average salary for a journeyman electrician at a hyperscale data center?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'The average journeyman electrician at a hyperscale data center earns between $55 and $75/hr in 2026, translating to $114,000–$156,000 annually at 40 hours per week. In top DC markets (Northern Virginia, Phoenix, Portland, Chicago), wages reach the higher end of that range. Construction-phase roles at hyperscale builds (Microsoft, Amazon, Google, Meta) often pay more than operations roles at the same facility, though operations roles offer more stability and benefits packages. Union journeymen under IBEW contracts in Northern Virginia are currently earning $67–$72/hr base.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How much do data center HVAC techs make compared to commercial HVAC?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Data center HVAC technicians earn 20 to 35 percent more than commercial HVAC technicians nationally. A commercial HVAC tech with 5 years of experience earns roughly $30–$45/hr in most US markets. The same technician with precision cooling experience (CRAC/CRAH, chilled water, containment systems) earns $40–$65/hr at a data center. The premium is driven by the 24/7 uptime requirement, the cost of downtime, and the specialized equipment knowledge required. Technicians with both EPA 608 certification and DCCA/manufacturer training command the highest wages.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What certifications increase salary for data center trades workers?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'The certifications with the strongest salary impact for data center trades workers are: NFPA 70E (arc flash safety — required by most DC employers, adds credibility); OSHA-30 (standard on commercial sites, required for most DC construction roles); DCCA from Schneider Electric (free, signals DC-specific knowledge); BICSI INST1/INST2 (structured cabling, directly tied to pay bands in low voltage roles); and OEM certifications from Vertiv/Liebert, Schneider, or Stulz for HVAC techs (can increase hourly rate by $3–$8/hr). The RCDD (BICSI) is the highest-value credential for low voltage design roles.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Do you need a master electrician license to work at a data center?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'No — most data center electrical roles require a journeyman electrician license, not a master license. A master license is generally required if you are pulling permits or running your own electrical contracting business, not for field installation work. Data center employers specify journeyman license as the standard requirement for construction and maintenance roles. Master electricians are employed in supervisor, foreman, or facilities manager positions where permit-pulling authority is needed. The key credential upgrade that actually moves your salary at a data center is experience with critical systems (UPS, PDUs, switchgear), not the license level.',
+      },
+    },
+  ],
+}
+
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mb-10">
@@ -54,6 +165,7 @@ export default function BreakIntoDataCenterWork() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
         {/* Breadcrumb */}
