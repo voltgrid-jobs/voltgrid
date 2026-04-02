@@ -17,8 +17,10 @@ const CATEGORIES: { key: JobCategory; label: string }[] = [
 ]
 
 export default async function HomePage() {
-  let featuredJobs: ReturnType<typeof Array<Record<string, unknown>>> | null = null
-  let recentJobs: typeof featuredJobs = null
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let featuredJobs: any[] | null = null
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let recentJobs: any[] | null = null
   let totalJobs: number | null = null
   let distinctCompanies = 0
   let jobsThisWeek: number | null = null
