@@ -225,6 +225,7 @@ export default async function JobsPage({
   )
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message + '\n' + err.stack : String(err)
-    return <pre style={{padding:'2rem',whiteSpace:'pre-wrap',wordBreak:'break-all',color:'red'}}>{msg}</pre>
+    const envDebug = `NEXT_PUBLIC_SUPABASE_URL: ${process.env.NEXT_PUBLIC_SUPABASE_URL ? 'PRESENT len='+process.env.NEXT_PUBLIC_SUPABASE_URL.length : 'MISSING/EMPTY'}\nNEXT_PUBLIC_SUPABASE_ANON_KEY: ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'PRESENT len='+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.length : 'MISSING/EMPTY'}`
+    return <pre style={{padding:'2rem',whiteSpace:'pre-wrap',wordBreak:'break-all',color:'red'}}>{envDebug + '\n\n' + msg}</pre>
   }
 }
