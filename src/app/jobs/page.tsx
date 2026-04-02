@@ -88,10 +88,7 @@ export default async function JobsPage({
 }: {
   searchParams: Promise<SearchParams>
 }) {
-  try {
   const params = await searchParams
-  console.log('[jobs-debug] SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? 'PRESENT len=' + process.env.NEXT_PUBLIC_SUPABASE_URL.length : 'MISSING')
-  console.log('[jobs-debug] SUPABASE_KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'PRESENT len=' + process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.length : 'MISSING')
   const supabase = await createClient()
 
   const currentPage = Math.max(1, parseInt(params.page ?? '1', 10) || 1)
@@ -223,9 +220,4 @@ export default async function JobsPage({
       </div>
     </div>
   )
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message + '\n' + err.stack : String(err)
-    const envDebug = `NEXT_PUBLIC_SUPABASE_URL: ${process.env.NEXT_PUBLIC_SUPABASE_URL ? 'PRESENT len='+process.env.NEXT_PUBLIC_SUPABASE_URL.length : 'MISSING/EMPTY'}\nNEXT_PUBLIC_SUPABASE_ANON_KEY: ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'PRESENT len='+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.length : 'MISSING/EMPTY'}`
-    return <pre style={{padding:'2rem',whiteSpace:'pre-wrap',wordBreak:'break-all',color:'red'}}>{envDebug + '\n\n' + msg}</pre>
-  }
 }
