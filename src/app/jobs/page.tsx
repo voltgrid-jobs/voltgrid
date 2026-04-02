@@ -223,6 +223,10 @@ export default async function JobsPage({
   )
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message + '\n\nSTACK:\n' + err.stack : String(err)
-    return <pre style={{padding:'2rem',whiteSpace:'pre-wrap',wordBreak:'break-all',color:'red',fontSize:'12px'}}>{msg}</pre>
+    const envDump = Object.entries(process.env)
+      .filter(([k]) => k.includes('SUPABASE'))
+      .map(([k,v]) => `${k}=${v ? v.substring(0,40) : 'UNDEFINED'}`)
+      .join('\n')
+    return <pre style={{padding:'2rem',whiteSpace:'pre-wrap',wordBreak:'break-all',color:'red',fontSize:'12px'}}>ENV DUMP:\n{envDump}\n\n{msg}</pre>
   }
 }
