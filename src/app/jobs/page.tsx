@@ -88,6 +88,7 @@ export default async function JobsPage({
 }: {
   searchParams: Promise<SearchParams>
 }) {
+  try {
   const params = await searchParams
   const supabase = await createClient()
 
@@ -220,4 +221,8 @@ export default async function JobsPage({
       </div>
     </div>
   )
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message + '\n\nSTACK:\n' + err.stack : String(err)
+    return <pre style={{padding:'2rem',whiteSpace:'pre-wrap',wordBreak:'break-all',color:'red',fontSize:'12px'}}>{msg}</pre>
+  }
 }
