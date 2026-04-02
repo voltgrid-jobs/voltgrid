@@ -9,7 +9,7 @@ import { getLogoUrl, getDomain } from '@/lib/company-logos'
 export const revalidate = 3600
 
 export const metadata: Metadata = {
-  title: 'Companies Hiring Data Center Trades Workers — VoltGrid Jobs',
+  title: 'Companies Hiring Data Center Trades Workers',
   description:
     'Browse companies actively hiring electricians, HVAC techs, and low voltage specialists for data center and AI infrastructure projects.',
   alternates: { canonical: 'https://voltgridjobs.com/companies' },

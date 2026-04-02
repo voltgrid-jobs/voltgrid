@@ -8,7 +8,7 @@ import { getLogoUrl, getDomain } from '@/lib/company-logos'
 import { CompanyLogo } from '@/components/employers/CompanyLogo'
 
 export const metadata: Metadata = {
-  title: 'Find Verified Data Center Electricians & HVAC Techs Faster — VoltGrid Jobs',
+  title: 'Find Verified Data Center Electricians & HVAC Techs Faster',
   description:
     'Reach electricians, HVAC techs, and low voltage specialists who already know what a data center is. Flat pricing from $149. Go live in 5 minutes.',
   alternates: { canonical: 'https://voltgridjobs.com/employers' },

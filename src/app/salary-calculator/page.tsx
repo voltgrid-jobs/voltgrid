@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { SalaryCalculatorClient } from './SalaryCalculatorClient'
 
 export const metadata: Metadata = {
-  title: 'Data Center Trades Salary Calculator (2026) — VoltGrid Jobs',
+  title: 'Data Center Trades Salary Calculator (2026)',
   description:
     'Calculate 2026 hourly and annual salary ranges for data center electricians, HVAC techs, low voltage specialists, and more. Compare pay by city and experience level.',
   alternates: { canonical: 'https://voltgridjobs.com/salary-calculator' },

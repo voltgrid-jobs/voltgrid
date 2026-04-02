@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { JobAlertInlineForm } from '@/components/jobs/JobAlertInlineForm'
 
 export const metadata: Metadata = {
-  title: 'Data Center Trades Career Resources — VoltGrid Jobs',
+  title: 'Data Center Trades Career Resources',
   description: 'Guides, salary data, and interview prep for electricians, HVAC techs, and low voltage specialists working in data centers and AI infrastructure.',
   alternates: { canonical: 'https://voltgridjobs.com/resources' },
   openGraph: {

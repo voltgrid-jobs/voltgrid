@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { InterviewPrepGate } from '@/components/InterviewPrepGate'
 
 export const metadata: Metadata = {
-  title: 'Data Center Trades Interview Questions & Prep Guide — VoltGrid Jobs',
+  title: 'Data Center Trades Interview Questions & Prep Guide',
   description: 'Top interview questions for data center electricians, HVAC techs, and low voltage specialists. Technical and behavioral questions with answers, straight from the industry.',
   alternates: { canonical: 'https://voltgridjobs.com/interview-prep' },
   openGraph: {

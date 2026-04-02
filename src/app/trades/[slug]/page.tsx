@@ -84,7 +84,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const categoryDef = CATEGORIES.find(c => c.slug === slug)
   if (!categoryDef) return { title: 'Not Found' }
   return {
-    title: `${categoryDef.name} — VoltGrid Jobs`,
+    title: categoryDef.name,
     description: categoryDef.metaDescription,
   }
 }
@@ -110,7 +110,38 @@ export default async function TradePage({ params }: Props) {
     // DB unavailable — render page with 0 jobs
   }
 
+  const pageUrl = `https://voltgridjobs.com/trades/${slug}`
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://voltgridjobs.com' },
+      { '@type': 'ListItem', position: 2, name: 'Trades', item: 'https://voltgridjobs.com/trades' },
+      { '@type': 'ListItem', position: 3, name: categoryDef.name, item: pageUrl },
+    ],
+  }
+
+  const itemListJsonLd = jobs.length > 0 ? {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: categoryDef.name,
+    url: pageUrl,
+    numberOfItems: Math.min(jobs.length, 10),
+    itemListElement: jobs.slice(0, 10).map((job, idx) => ({
+      '@type': 'ListItem',
+      position: idx + 1,
+      url: `https://voltgridjobs.com/jobs/${job.id}`,
+      name: job.title,
+    })),
+  } : null
+
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+      {itemListJsonLd && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }} />
+      )}
     <main className="min-h-screen">
       {/* Breadcrumb */}
       <nav className="max-w-5xl mx-auto px-4 pt-6 pb-2">
@@ -196,5 +227,6 @@ export default async function TradePage({ params }: Props) {
         </Link>
       </section>
     </main>
+    </>
   )
 }

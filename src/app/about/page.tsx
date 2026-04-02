@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'About — VoltGrid Jobs',
+  title: 'About',
   description:
     'VoltGrid Jobs is the job board for trades workers at data centers and AI infrastructure sites — electricians, HVAC techs, and low voltage specialists.',
   alternates: { canonical: 'https://voltgridjobs.com/about' },

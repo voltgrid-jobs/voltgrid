@@ -92,9 +92,9 @@ export async function generateMetadata({
   const { id } = await params
   const supabase = await createClient()
   const { data: job } = await supabase.from('jobs').select('title, company_name, location').eq('id', id).single()
-  if (!job) return { title: 'Job Not Found — VoltGrid Jobs' }
+  if (!job) return { title: 'Job Not Found' }
   return {
-    title: `${job.title} at ${job.company_name} — VoltGrid Jobs`,
+    title: `${job.title} at ${job.company_name}`,
     description: `${job.title} at ${job.company_name} in ${job.location}. Apply on VoltGrid Jobs.`,
   }
 }

@@ -270,14 +270,14 @@ export default async function TradeLocationPage({ params }: Props) {
       .limit(50)
     jobsData = data
   } else {
-    // Fallback: match on any word in location slug
-    const firstWord = parsed.locationSlug.split('-')[0]
+    // Fallback: match on full title-cased location name derived from slug
+    // e.g. northern-virginia → "Northern Virginia" so ilike('%Northern Virginia%') hits "Northern Virginia, VA"
     const { data } = await supabase
       .from('jobs')
       .select('*')
       .eq('is_active', true)
       .eq('category', tradeDef.category)
-      .ilike('location', `%${firstWord}%`)
+      .ilike('location', `%${locationDisplay}%`)
       .order('is_featured', { ascending: false })
       .order('created_at', { ascending: false })
       .limit(50)
