@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
@@ -92,14 +94,20 @@ export default async function CityPage({ params }: Props) {
   const hub = HUBS.find(h => h.slug === city)
   if (!hub) notFound()
 
-  const supabase = await createClient()
-  const { data: allJobs } = await supabase
-    .from('jobs')
-    .select('*')
-    .eq('is_active', true)
-    .limit(200)
+  let allJobs: Job[] = []
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase
+      .from('jobs')
+      .select('*')
+      .eq('is_active', true)
+      .limit(200)
+    allJobs = data ?? []
+  } catch {
+    // DB unavailable — render page with 0 jobs
+  }
 
-  const jobs: Job[] = (allJobs ?? []).filter((job: Job) => {
+  const jobs: Job[] = allJobs.filter((job: Job) => {
     const loc = (job.location ?? '').toLowerCase()
     return hub.locationPatterns.some(pattern => loc.includes(pattern))
   })

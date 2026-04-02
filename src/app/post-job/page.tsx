@@ -1,8 +1,8 @@
+export const dynamic = 'force-dynamic'
+
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { PostJobPageClient } from '@/components/jobs/PostJobPageClient'
-
-export const revalidate = 3600
 
 export const metadata: Metadata = {
   title: 'Post a Job — VoltGrid Jobs',

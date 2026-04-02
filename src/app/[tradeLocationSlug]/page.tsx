@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
@@ -6,8 +8,6 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { JobCard } from '@/components/jobs/JobCard'
 import { AlertSignupWidget } from '@/components/jobs/AlertSignupWidget'
 import type { Job, JobCategory } from '@/types'
-
-export const revalidate = 86400 // 24-hour ISR
 
 function slugify(str: string): string {
   return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')

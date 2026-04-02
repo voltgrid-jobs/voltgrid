@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Metadata } from 'next'
@@ -147,15 +149,21 @@ const faqSchema = {
 
 export default async function EmployersPage() {
   // Fetch top companies with active listings dynamically
-  const supabase = await createClient()
-  const { data: jobRows } = await supabase
-    .from('jobs')
-    .select('company_name')
-    .eq('is_active', true)
+  let jobRows: { company_name: string | null }[] = []
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase
+      .from('jobs')
+      .select('company_name')
+      .eq('is_active', true)
+    jobRows = data ?? []
+  } catch {
+    // DB unavailable — render page with empty company list
+  }
 
   // Get top companies by listing count, with known logos first
   const counts: Record<string, number> = {}
-  jobRows?.forEach(j => { if (j.company_name) counts[j.company_name] = (counts[j.company_name] || 0) + 1 })
+  jobRows.forEach(j => { if (j.company_name) counts[j.company_name] = (counts[j.company_name] || 0) + 1 })
 
   const featuredCompanies = Object.entries(counts)
     .sort((a, b) => b[1] - a[1])

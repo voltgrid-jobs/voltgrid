@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
@@ -92,17 +94,21 @@ export default async function TradePage({ params }: Props) {
   const categoryDef = CATEGORIES.find(c => c.slug === slug)
   if (!categoryDef) notFound()
 
-  const supabase = await createClient()
-  const { data: jobsData } = await supabase
-    .from('jobs')
-    .select('*')
-    .eq('is_active', true)
-    .eq('category', categoryDef.category)
-    .order('is_featured', { ascending: false })
-    .order('created_at', { ascending: false })
-    .limit(50)
-
-  const jobs: Job[] = jobsData ?? []
+  let jobs: Job[] = []
+  try {
+    const supabase = await createClient()
+    const { data: jobsData } = await supabase
+      .from('jobs')
+      .select('*')
+      .eq('is_active', true)
+      .eq('category', categoryDef.category)
+      .order('is_featured', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(50)
+    jobs = jobsData ?? []
+  } catch {
+    // DB unavailable — render page with 0 jobs
+  }
 
   return (
     <main className="min-h-screen">
