@@ -59,7 +59,14 @@ export const metadata: Metadata = {
     googleBot: { index: true, follow: true, 'max-video-preview': -1, 'max-image-preview': 'large', 'max-snippet': -1 },
   },
   verification: { google: 'kxEivUYz_8VjIEZuK3WDKxgEYrs6g9Le44fiWMyGoD0' },
-  icons: { icon: '/favicon.ico', shortcut: '/favicon.ico', apple: '/favicon.png' },
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: '48x48' },
+      { url: '/icon.png', sizes: '192x192', type: 'image/png' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

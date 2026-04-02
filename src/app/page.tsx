@@ -53,7 +53,22 @@ export default async function HomePage() {
     .filter(c => c.domain)
     .slice(0, 8)
 
+  const orgSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'VoltGrid Jobs',
+    url: 'https://voltgridjobs.com',
+    logo: 'https://voltgridjobs.com/voltgrid-logo-horizontal.png',
+    description: 'Niche job board for data center electricians, HVAC technicians, and low-voltage specialists.',
+    sameAs: [
+      'https://twitter.com/VoltGridJobs',
+      'https://www.linkedin.com/company/voltgrid-jobs',
+    ],
+  }
+
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
     <div>
       {/* HERO */}
       <section style={{ borderBottom: '1px solid var(--border)' }}>
@@ -271,5 +286,6 @@ export default async function HomePage() {
         </div>
       </section>
     </div>
+    </>
   )
 }
