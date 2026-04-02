@@ -81,9 +81,9 @@ function locationDisplayName(locationSlug: string): string {
 // ── generateStaticParams ──────────────────────────────────────────────────────
 
 export async function generateStaticParams() {
-  const supabase = createAdminClient()
-
   try {
+    const supabase = createAdminClient()
+
     const { data: jobs } = await supabase
       .from('jobs')
       .select('category, location')

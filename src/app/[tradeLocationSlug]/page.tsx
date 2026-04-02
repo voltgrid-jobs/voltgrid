@@ -149,9 +149,9 @@ function parseSlug(tradeLocationSlug: string): { tradeSlug: string; locationSlug
 // ── generateStaticParams ──────────────────────────────────────────────────────
 
 export async function generateStaticParams() {
-  const supabase = createAdminClient()
-
   try {
+    const supabase = createAdminClient()
+
     const { data: jobs } = await supabase
       .from('jobs')
       .select('category, location')
