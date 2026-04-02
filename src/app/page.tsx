@@ -17,41 +17,57 @@ const CATEGORIES: { key: JobCategory; label: string }[] = [
 ]
 
 export default async function HomePage() {
-  const supabase = await createClient()
+  let featuredJobs: ReturnType<typeof Array<Record<string, unknown>>> | null = null
+  let recentJobs: typeof featuredJobs = null
+  let totalJobs: number | null = null
+  let distinctCompanies = 0
+  let jobsThisWeek: number | null = null
+  let alertSubscribers: number | null = null
+  let logoBarCompanies: { name: string; logoUrl: string | null; domain: string | null }[] = []
 
-  const { data: featuredJobs } = await supabase
-    .from('jobs').select('*').eq('is_active', true).eq('is_featured', true)
-    .order('created_at', { ascending: false }).limit(3)
+  try {
+    const supabase = await createClient()
 
-  const { data: recentJobs } = await supabase
-    .from('jobs').select('*').eq('is_active', true)
-    .order('created_at', { ascending: false }).limit(9)
+    const [
+      { data: featured },
+      { data: recent },
+      { count: total },
+      { data: companiesData },
+    ] = await Promise.all([
+      supabase.from('jobs').select('*').eq('is_active', true).eq('is_featured', true)
+        .order('created_at', { ascending: false }).limit(3),
+      supabase.from('jobs').select('*').eq('is_active', true)
+        .order('created_at', { ascending: false }).limit(9),
+      supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('is_active', true),
+      supabase.from('jobs').select('company_name').eq('is_active', true),
+    ])
 
-  const { count: totalJobs } = await supabase
-    .from('jobs').select('*', { count: 'exact', head: true }).eq('is_active', true)
+    featuredJobs = featured
+    recentJobs = recent
+    totalJobs = total
+    distinctCompanies = companiesData
+      ? new Set(companiesData.map((j) => j.company_name)).size
+      : 0
 
-  // Distinct companies currently hiring
-  const { data: companiesData } = await supabase
-    .from('jobs').select('company_name').eq('is_active', true)
-  const distinctCompanies = companiesData
-    ? new Set(companiesData.map((j) => j.company_name)).size
-    : 0
+    const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+    const [{ count: thisWeek }, { count: alertSubs }] = await Promise.all([
+      supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('is_active', true).gte('created_at', oneWeekAgo),
+      supabase.from('job_alerts').select('*', { count: 'exact', head: true }),
+    ])
+    jobsThisWeek = thisWeek
+    alertSubscribers = alertSubs
 
-  // Jobs added this week
-  const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-  const [{ count: jobsThisWeek }, { count: alertSubscribers }] = await Promise.all([
-    supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('is_active', true).gte('created_at', oneWeekAgo),
-    supabase.from('job_alerts').select('*', { count: 'exact', head: true }),
-  ])
-
-  // Companies for logo bar
-  const companyCounts: Record<string, number> = {}
-  companiesData?.forEach(j => { if (j.company_name) companyCounts[j.company_name] = (companyCounts[j.company_name] || 0) + 1 })
-  const logoBarCompanies = Object.entries(companyCounts)
-    .sort((a, b) => b[1] - a[1])
-    .map(([name]) => ({ name, logoUrl: getLogoUrl(name), domain: getDomain(name) }))
-    .filter(c => c.domain)
-    .slice(0, 8)
+    const companyCounts: Record<string, number> = {}
+    companiesData?.forEach(j => { if (j.company_name) companyCounts[j.company_name] = (companyCounts[j.company_name] || 0) + 1 })
+    logoBarCompanies = Object.entries(companyCounts)
+      .sort((a, b) => b[1] - a[1])
+      .map(([name]) => ({ name, logoUrl: getLogoUrl(name), domain: getDomain(name) }))
+      .filter(c => c.domain)
+      .slice(0, 8)
+  } catch (err) {
+    console.error('[HomePage] Supabase error:', err)
+    // Page renders with fallback zeros — no 500
+  }
 
   const orgSchema = {
     '@context': 'https://schema.org',

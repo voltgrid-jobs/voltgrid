@@ -24,37 +24,44 @@ function slugify(str: string): string {
 }
 
 export default async function CompaniesPage() {
-  const supabase = await createClient()
+  let companies: { name: string; count: number; slug: string; logoUrl: string | null; domain: string | null; trades: string[] }[] = []
 
-  const { data: jobs } = await supabase
-    .from('jobs')
-    .select('company_name, category')
-    .eq('is_active', true)
-    .not('company_name', 'is', null)
+  try {
+    const supabase = await createClient()
 
-  // Aggregate job counts per company
-  const counts = new Map<string, number>()
-  const categories = new Map<string, Set<string>>()
-  for (const job of jobs ?? []) {
-    if (!job.company_name) continue
-    counts.set(job.company_name, (counts.get(job.company_name) ?? 0) + 1)
-    if (job.category) {
-      if (!categories.has(job.company_name)) categories.set(job.company_name, new Set())
-      categories.get(job.company_name)!.add(job.category)
+    const { data: jobs } = await supabase
+      .from('jobs')
+      .select('company_name, category')
+      .eq('is_active', true)
+      .not('company_name', 'is', null)
+
+    // Aggregate job counts per company
+    const counts = new Map<string, number>()
+    const categories = new Map<string, Set<string>>()
+    for (const job of jobs ?? []) {
+      if (!job.company_name) continue
+      counts.set(job.company_name, (counts.get(job.company_name) ?? 0) + 1)
+      if (job.category) {
+        if (!categories.has(job.company_name)) categories.set(job.company_name, new Set())
+        categories.get(job.company_name)!.add(job.category)
+      }
     }
-  }
 
-  const companies = [...counts.entries()]
-    .filter(([, count]) => count >= 1)
-    .sort((a, b) => b[1] - a[1])
-    .map(([name, count]) => ({
-      name,
-      count,
-      slug: slugify(name),
-      logoUrl: getLogoUrl(name),
-      domain: getDomain(name),
-      trades: [...(categories.get(name) ?? [])],
-    }))
+    companies = [...counts.entries()]
+      .filter(([, count]) => count >= 1)
+      .sort((a, b) => b[1] - a[1])
+      .map(([name, count]) => ({
+        name,
+        count,
+        slug: slugify(name),
+        logoUrl: getLogoUrl(name),
+        domain: getDomain(name),
+        trades: [...(categories.get(name) ?? [])],
+      }))
+  } catch (err) {
+    console.error('[CompaniesPage] Supabase error:', err)
+    // Render empty state — no 500
+  }
 
   const TRADE_LABELS: Record<string, string> = {
     electrical: 'Electrical',
