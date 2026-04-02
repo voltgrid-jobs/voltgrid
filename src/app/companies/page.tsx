@@ -6,8 +6,6 @@ import { createClient } from '@/lib/supabase/server'
 import { CompanyLogo } from '@/components/employers/CompanyLogo'
 import { getLogoUrl, getDomain } from '@/lib/company-logos'
 
-export const revalidate = 3600
-
 export const metadata: Metadata = {
   title: 'Companies Hiring Data Center Trades Workers',
   description:

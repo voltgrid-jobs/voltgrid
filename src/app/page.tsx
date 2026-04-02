@@ -164,7 +164,6 @@ export default async function HomePage() {
                 href="/post-job"
                 className="px-8 py-4 rounded-xl font-semibold text-lg transition-colors"
                 style={{ border: '1px solid var(--border-strong)', color: 'var(--fg-muted)' }}
-                onMouseEnter={undefined}
               >
                 Hire Trades Workers →
               </Link>

@@ -3,7 +3,6 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/client'
 
 // NOTE: This is a client component. Metadata is defined inline as static constants
