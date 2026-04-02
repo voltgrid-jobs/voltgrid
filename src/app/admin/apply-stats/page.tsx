@@ -3,8 +3,8 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Apply Click Stats — VoltGrid Admin' }
 
-// Revalidate every 5 minutes
-export const revalidate = 300
+// Force dynamic rendering — admin page, not pre-renderable at build time
+export const dynamic = 'force-dynamic'
 
 interface ClickRow {
   job_id: string
