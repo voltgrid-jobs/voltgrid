@@ -63,6 +63,18 @@ const CANADA_KEYWORDS = [
 function isCanadaJob(location: string): boolean {
   return CANADA_KEYWORDS.some((kw) => location.includes(kw))
 }
+
+function parsePostalAddress(location: string, isCanada: boolean) {
+  const parts = location.split(',').map((p) => p.trim()).filter(Boolean)
+  const city = parts[0] || location
+  const region = parts.length > 1 ? parts[parts.length - 1] : undefined
+  return {
+    '@type': 'PostalAddress' as const,
+    addressLocality: city,
+    ...(region && { addressRegion: region }),
+    addressCountry: isCanada ? 'CA' : 'US',
+  }
+}
 const FRENCH_WORDS = ['poste', 'emploi', 'vous', 'notre', 'nous', 'pour', 'avec', 'dans', 'une', 'des']
 function isFrenchDescription(description: string): boolean {
   if (!description) return false
@@ -189,7 +201,7 @@ export default async function JobDetailPage({
     },
     jobLocation: {
       '@type': 'Place',
-      address: { '@type': 'PostalAddress', addressLocality: job.location },
+      address: parsePostalAddress(job.location ?? '', isCanada),
     },
     ...(job.remote && { jobLocationType: 'TELECOMMUTE' }),
     employmentType: employmentTypeMap[job.job_type] ?? 'OTHER',
@@ -197,7 +209,7 @@ export default async function JobDetailPage({
     ...(job.expires_at && { validThrough: job.expires_at }),
     ...(applyUrl && { url: applyUrl }),
     directApply: true,
-    ...(job.salary_min && {
+    ...((job.salary_min || job.salary_max) && {
       baseSalary: {
         '@type': 'MonetaryAmount',
         currency: job.salary_currency ?? 'USD',
