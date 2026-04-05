@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 
-const INGEST_SECRET = process.env.INGEST_SECRET
+const PAYMENT_CHECK_SECRET = process.env.PAYMENT_CHECK_SECRET
 
 export async function GET(req: NextRequest) {
-  // Auth check
-  const authHeader = req.headers.get('authorization')
+  // Auth via query parameter (Felix's web_fetch does not support custom headers)
+  const secret = req.nextUrl.searchParams.get('secret')
 
-  if (!authHeader || authHeader !== `Bearer ${INGEST_SECRET}` || !INGEST_SECRET) {
+  if (!PAYMENT_CHECK_SECRET || secret !== PAYMENT_CHECK_SECRET) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
