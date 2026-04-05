@@ -225,14 +225,14 @@ import { createAdminClient } from '@/lib/supabase/admin'
 
 OpsGrid is the **mission control dashboard** at `ops-dashboard-volt-grid.vercel.app`. It is the **single source of truth for all Claude Code tasks.** Fetch your tasks from OpsGrid at the start of every session — do NOT wait for Filip to relay tasks manually.
 
-**API Key:** `00ccf4caff0343a65c4aac9b74ed1ec2`
+**API Key:** `5323c76261c136d86d2df19d8ac890647dd079d54a5999c78ac279cd87752049`
 **Base URL:** https://ops-dashboard-volt-grid.vercel.app
 
 ### Session Start Workflow (mandatory)
 
 1. Fetch all tasks with status `tagged_for_claude`:
 ```bash
-curl -H "X-API-Key: 00ccf4caff0343a65c4aac9b74ed1ec2" \
+curl -H "X-API-Key: 5323c76261c136d86d2df19d8ac890647dd079d54a5999c78ac279cd87752049" \
   "https://ops-dashboard-volt-grid.vercel.app/api/tasks?assignee=claude-code&status=tagged_for_claude"
 ```
 2. For each task: claim it, execute it, update status on completion or failure.
@@ -243,25 +243,25 @@ On failure → update status to `blocked` with error reason.
 Never ask Filip to relay tasks — always pull from OpsGrid directly.
 
 **Base URL:** https://ops-dashboard-volt-grid.vercel.app
-**API Key header:** `X-API-Key: 00ccf4caff0343a65c4aac9b74ed1ec2`
+**API Key header:** `X-API-Key: 5323c76261c136d86d2df19d8ac890647dd079d54a5999c78ac279cd87752049`
 
 ```bash
 # Get tasks assigned to you
-curl -H "X-API-Key: 00ccf4caff0343a65c4aac9b74ed1ec2" \
+curl -H "X-API-Key: 5323c76261c136d86d2df19d8ac890647dd079d54a5999c78ac279cd87752049" \
   "https://ops-dashboard-volt-grid.vercel.app/api/tasks?assignee=claude-code&status=tagged_for_claude"
 
 # Claim a task (do this before starting)
-curl -X POST -H "X-API-Key: 00ccf4caff0343a65c4aac9b74ed1ec2" \
+curl -X POST -H "X-API-Key: 5323c76261c136d86d2df19d8ac890647dd079d54a5999c78ac279cd87752049" \
   "https://ops-dashboard-volt-grid.vercel.app/api/tasks/{id}/claim"
 
 # Complete a task
-curl -X POST -H "X-API-Key: 00ccf4caff0343a65c4aac9b74ed1ec2" \
+curl -X POST -H "X-API-Key: 5323c76261c136d86d2df19d8ac890647dd079d54a5999c78ac279cd87752049" \
   -H "Content-Type: application/json" \
   -d '{"summary":"What I changed and why"}' \
   "https://ops-dashboard-volt-grid.vercel.app/api/tasks/{id}/complete"
 
 # Request clarification (if brief is unclear — do NOT guess)
-curl -X POST -H "X-API-Key: 00ccf4caff0343a65c4aac9b74ed1ec2" \
+curl -X POST -H "X-API-Key: 5323c76261c136d86d2df19d8ac890647dd079d54a5999c78ac279cd87752049" \
   -H "Content-Type: application/json" \
   -d '{"question":"What does X mean?"}' \
   "https://ops-dashboard-volt-grid.vercel.app/api/tasks/{id}/clarify"
