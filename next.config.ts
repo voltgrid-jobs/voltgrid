@@ -22,6 +22,9 @@ const nextConfig: NextConfig = {
       'electrician-jobs': 'electrical',
       'hvac-jobs': 'hvac',
       'low-voltage-jobs': 'low-voltage',
+      'operations-jobs': 'operations',
+      'construction-jobs': 'construction',
+      'project-management-jobs': 'project-management',
     }
     const rules = []
     for (const [tradeJobs, tradeSlug] of Object.entries(tradeMap)) {
