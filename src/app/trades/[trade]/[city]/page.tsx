@@ -133,25 +133,41 @@ type Props = {
 
 export async function generateStaticParams() {
   const combos = [
+    // ── Electrician (all 6 markets) ──────────────────────────────────────────
     ['electrician-jobs', 'northern-virginia'],
     ['electrician-jobs', 'phoenix'],
     ['electrician-jobs', 'dallas'],
     ['electrician-jobs', 'chicago'],
     ['electrician-jobs', 'atlanta'],
     ['electrician-jobs', 'portland'],
+    // ── HVAC (all 6 markets) ─────────────────────────────────────────────────
     ['hvac-jobs', 'northern-virginia'],
     ['hvac-jobs', 'phoenix'],
     ['hvac-jobs', 'dallas'],
     ['hvac-jobs', 'chicago'],
     ['hvac-jobs', 'atlanta'],
     ['hvac-jobs', 'portland'],
+    // ── Low-voltage (4 new markets added 2026-04-06) ──────────────────────────
     ['low-voltage-jobs', 'northern-virginia'],
     ['low-voltage-jobs', 'atlanta'],
+    ['low-voltage-jobs', 'phoenix'],
+    ['low-voltage-jobs', 'dallas'],
+    ['low-voltage-jobs', 'chicago'],
+    ['low-voltage-jobs', 'portland'],
+    // ── Operations (4 new markets added 2026-04-06) ─────────────────────────
     ['operations-jobs', 'northern-virginia'],
     ['operations-jobs', 'atlanta'],
+    ['operations-jobs', 'phoenix'],
+    ['operations-jobs', 'dallas'],
+    ['operations-jobs', 'chicago'],
+    ['operations-jobs', 'portland'],
+    // ── Construction (3 new markets added 2026-04-06) ────────────────────────
     ['construction-jobs', 'chicago'],
     ['construction-jobs', 'atlanta'],
     ['construction-jobs', 'dallas'],
+    ['construction-jobs', 'northern-virginia'],
+    ['construction-jobs', 'phoenix'],
+    ['construction-jobs', 'portland'],
   ]
   return combos.map(([trade, city]) => ({ trade, city }))
 }
