@@ -169,14 +169,73 @@ export async function generateStaticParams() {
       counts.set(key, (counts.get(key) ?? 0) + 1)
     }
 
-    // Top 60 combos with at least 2 jobs
+    // Top 60 combos with at least 1 job — include singletons for high-value markets
     const topCombos = [...counts.entries()]
-      .filter(([, count]) => count >= 2)
+      .filter(([, count]) => count >= 1)
       .sort(([, a], [, b]) => b - a)
       .slice(0, 60)
 
     const seen = new Set<string>()
     const params: { tradeLocationSlug: string }[] = []
+
+    // ── Hardcoded high-value market × trade combinations ────────────────────
+    // These ensure major DC markets are always generated even if DB count is 1
+    // or if location name slug differs from the canonical market slug (e.g.
+    // "Phoenix, Maricopa County" slugifies differently from the HUBS "phoenix").
+    const MARKET_TRADE_COMBOS = [
+      // Northern Virginia
+      ['electrical', 'northern-virginia'],
+      ['hvac', 'northern-virginia'],
+      ['low_voltage', 'northern-virginia'],
+      ['operations', 'northern-virginia'],
+      // Phoenix
+      ['electrical', 'phoenix'],
+      ['hvac', 'phoenix'],
+      ['low_voltage', 'phoenix'],
+      // Dallas
+      ['electrical', 'dallas'],
+      ['hvac', 'dallas'],
+      ['low_voltage', 'dallas'],
+      ['operations', 'dallas'],
+      // Chicago
+      ['electrical', 'chicago'],
+      ['hvac', 'chicago'],
+      ['low_voltage', 'chicago'],
+      ['operations', 'chicago'],
+      // Atlanta
+      ['electrical', 'atlanta'],
+      ['hvac', 'atlanta'],
+      ['low_voltage', 'atlanta'],
+      ['operations', 'atlanta'],
+      // Portland
+      ['electrical', 'portland'],
+      ['hvac', 'portland'],
+      ['low_voltage', 'portland'],
+      // Top-volume DB combos not already covered above
+      ['electrical', 'houston'],
+      ['electrical', 'memphis'],
+      ['electrical', 'columbus'],
+      ['electrical', 'cedar-rapids'],
+      ['electrical', 'denver'],
+      ['electrical', 'san-francisco'],
+      ['electrical', 'los-angeles'],
+      ['electrical', 'new-york'],
+      ['electrical', 'charlotte'],
+      ['electrical', 'austin'],
+      ['hvac', 'new-york'],
+      ['hvac', 'san-diego'],
+      ['operations', 'atlanta'],
+      ['construction', 'atlanta'],
+    ]
+    for (const [cat, locSlug] of MARKET_TRADE_COMBOS) {
+      const tSlug = CATEGORY_TO_TRADE_SLUG[cat]
+      if (!tSlug) continue
+      const combined = `${tSlug}-jobs-in-${locSlug}`
+      if (!seen.has(combined)) {
+        seen.add(combined)
+        params.push({ tradeLocationSlug: combined })
+      }
+    }
 
     for (const [key] of topCombos) {
       const [category, location] = key.split('|||')

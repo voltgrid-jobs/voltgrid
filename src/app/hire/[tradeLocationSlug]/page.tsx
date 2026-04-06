@@ -101,12 +101,47 @@ export async function generateStaticParams() {
     }
 
     const topCombos = [...counts.entries()]
-      .filter(([, count]) => count >= 2)
+      .filter(([, count]) => count >= 1)
       .sort(([, a], [, b]) => b - a)
       .slice(0, 50)
 
     const seen = new Set<string>()
     const params: { tradeLocationSlug: string }[] = []
+
+    // ── Hardcoded high-value market × trade combinations ────────────────────
+    const MARKET_TRADE_COMBOS = [
+      ['electrical', 'northern-virginia'],
+      ['hvac', 'northern-virginia'],
+      ['low_voltage', 'northern-virginia'],
+      ['operations', 'northern-virginia'],
+      ['electrical', 'phoenix'],
+      ['hvac', 'phoenix'],
+      ['electrical', 'dallas'],
+      ['hvac', 'dallas'],
+      ['electrical', 'chicago'],
+      ['hvac', 'chicago'],
+      ['electrical', 'atlanta'],
+      ['hvac', 'atlanta'],
+      ['electrical', 'portland'],
+      ['hvac', 'portland'],
+      ['electrical', 'houston'],
+      ['electrical', 'memphis'],
+      ['electrical', 'columbus'],
+      ['electrical', 'denver'],
+      ['electrical', 'san-francisco'],
+      ['electrical', 'new-york'],
+      ['hvac', 'new-york'],
+      ['operations', 'atlanta'],
+    ]
+    for (const [cat, locSlug] of MARKET_TRADE_COMBOS) {
+      const tSlug = CATEGORY_TO_TRADE_SLUG[cat]
+      if (!tSlug) continue
+      const combined = `${tSlug}-in-${locSlug}`
+      if (!seen.has(combined)) {
+        seen.add(combined)
+        params.push({ tradeLocationSlug: combined })
+      }
+    }
 
     for (const [key] of topCombos) {
       const [category, location] = key.split('|||')
