@@ -112,6 +112,8 @@ export default async function CityPage({ params }: Props) {
     return hub.locationPatterns.some(pattern => loc.includes(pattern))
   })
 
+  if (jobs.length === 0) notFound()
+
   return (
     <main className="min-h-screen">
       {/* Breadcrumb */}

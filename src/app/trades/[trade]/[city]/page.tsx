@@ -196,6 +196,8 @@ export default async function TradeCityPage({ params }: Props) {
     return marketDef.locationPatterns.some(pattern => loc.includes(pattern))
   })
 
+  if (jobs.length === 0) notFound()
+
   const pageUrl = `https://voltgridjobs.com/trades/${trade}/${city}`
 
   const breadcrumbJsonLd = {

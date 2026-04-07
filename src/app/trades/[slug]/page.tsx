@@ -110,6 +110,8 @@ export default async function TradePage({ params }: Props) {
     // DB unavailable — render page with 0 jobs
   }
 
+  if (jobs.length === 0) notFound()
+
   const pageUrl = `https://voltgridjobs.com/trades/${slug}`
 
   const breadcrumbJsonLd = {
