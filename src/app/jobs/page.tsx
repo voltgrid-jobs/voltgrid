@@ -8,10 +8,18 @@ import { CATEGORY_LABELS, type JobCategory, type Job } from '@/types'
 import { JobAlertInlineForm } from '@/components/jobs/JobAlertInlineForm'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = {
-  title: 'Browse Data Center & AI Infrastructure Jobs',
-  description: 'Browse electrician, HVAC, low voltage, and construction jobs at data centers and AI infrastructure projects.',
-  alternates: { canonical: 'https://voltgridjobs.com/jobs' },
+type MetadataProps = { searchParams: Promise<SearchParams> }
+
+export async function generateMetadata({ searchParams }: MetadataProps): Promise<Metadata> {
+  const params = await searchParams
+  const hasFilters = Object.keys(params).some((k) => k !== 'page')
+
+  return {
+    title: 'Browse Data Center & AI Infrastructure Jobs',
+    description: 'Browse electrician, HVAC, low voltage, and construction jobs at data centers and AI infrastructure projects.',
+    alternates: { canonical: 'https://voltgridjobs.com/jobs' },
+    ...(hasFilters && { robots: { index: false, follow: false } }),
+  }
 }
 
 const PAGE_SIZE = 20

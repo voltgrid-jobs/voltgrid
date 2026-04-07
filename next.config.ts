@@ -36,6 +36,20 @@ const nextConfig: NextConfig = {
         })
       }
     }
+    // Legacy county-level URLs → closest valid trade page
+    rules.push(
+      {
+        source: '/electrical-jobs-in-madison-dane-county',
+        destination: '/trades/electrician-jobs',
+        permanent: true,
+      },
+      {
+        source: '/electrical-jobs-in-cedar-rapids-linn-county',
+        destination: '/trades/electrician-jobs',
+        permanent: true,
+      },
+    )
+
     return rules
   },
 };

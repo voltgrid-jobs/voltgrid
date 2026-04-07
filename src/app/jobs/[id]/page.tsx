@@ -148,6 +148,7 @@ export default async function JobDetailPage({
   const supabase = await createClient()
   const { data: job } = await supabase.from('jobs').select('*').eq('id', id).eq('is_active', true).single()
   if (!job) notFound()
+  if (job.expires_at && new Date(job.expires_at) < new Date()) notFound()
 
   const [{ data: { user } }, { data: similarJobs }, { count: alertSubscribers }] = await Promise.all([
     supabase.auth.getUser(),
