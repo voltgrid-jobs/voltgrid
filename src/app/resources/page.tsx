@@ -46,13 +46,13 @@ const webPageSchema = {
 
 const RESOURCES = [
   {
-    href: '/salary-guide',
-    title: '2026 Data Center Trades Salary Guide',
-    description: 'Current pay rates for electricians, HVAC techs, and low voltage specialists on data center and AI infrastructure projects — by role, experience level, and region.',
-    badge: 'Salary Data',
-    badgeColor: 'var(--green)',
-    badgeBg: 'var(--green-dim)',
-    icon: '💰',
+    href: '/break-into-data-center-work',
+    title: 'How to Break Into Data Center Work',
+    description: 'What data center employers actually look for, what transfers from your current trade, certifications that move your resume to the top, and how to find these roles.',
+    badge: 'Career Guide',
+    badgeColor: 'var(--yellow)',
+    badgeBg: 'var(--yellow-dim)',
+    icon: '🚀',
   },
   {
     href: '/salary-calculator',
@@ -64,15 +64,6 @@ const RESOURCES = [
     icon: '🧮',
   },
   {
-    href: '/break-into-data-center-work',
-    title: 'How to Break Into Data Center Work',
-    description: 'What data center employers actually look for, what transfers from your current trade, certifications that move your resume to the top, and how to find these roles.',
-    badge: 'Career Guide',
-    badgeColor: 'var(--yellow)',
-    badgeBg: 'var(--yellow-dim)',
-    icon: '🚀',
-  },
-  {
     href: '/interview-prep',
     title: 'Data Center Trades Interview Prep Guide',
     description: 'The 20 questions data center employers actually ask — for electricians, HVAC techs, and low voltage specialists. Technical and behavioral questions with answers.',
@@ -80,6 +71,15 @@ const RESOURCES = [
     badgeColor: 'var(--yellow)',
     badgeBg: 'var(--yellow-dim)',
     icon: '🎯',
+  },
+  {
+    href: '/salary-guide',
+    title: '2026 Data Center Trades Salary Guide',
+    description: 'Current pay rates for electricians, HVAC techs, and low voltage specialists on data center and AI infrastructure projects — by role, experience level, and region.',
+    badge: 'Salary Data',
+    badgeColor: 'var(--green)',
+    badgeBg: 'var(--green-dim)',
+    icon: '💰',
   },
 ]
 
