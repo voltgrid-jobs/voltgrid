@@ -1,30 +1,62 @@
-import { getLogoUrl, getDomain } from '@/lib/company-logos'
+'use client'
 
-const CAROUSEL_COMPANIES = [
-  'Syska Hennessy',
-  'T5 Data Centers',
-  'Serverfarm',
-  'Oracle',
-  'CoreWeave',
-  'xAI',
-  'BRPH',
-  'EdgeConneX',
+import { useState } from 'react'
+
+const CAROUSEL_COMPANIES: { name: string; domain: string }[] = [
+  { name: 'Syska Hennessy', domain: 'syska.com' },
+  { name: 'T5 Data Centers', domain: 't5datacenters.com' },
+  { name: 'Serverfarm', domain: 'serverfarm.com' },
+  { name: 'Oracle', domain: 'oracle.com' },
+  { name: 'CoreWeave', domain: 'coreweave.com' },
+  { name: 'xAI', domain: 'x.ai' },
+  { name: 'BRPH', domain: 'brph.com' },
+  { name: 'EdgeConneX', domain: 'edgeconnex.com' },
 ]
 
+function LogoItem({ name, domain, ariaHidden }: { name: string; domain: string; ariaHidden?: boolean }) {
+  const [failed, setFailed] = useState(false)
+
+  return (
+    <div
+      className="flex items-center justify-center shrink-0 px-8"
+      style={{ height: '32px', minWidth: '140px' }}
+      aria-hidden={ariaHidden || undefined}
+    >
+      {failed ? (
+        <span
+          className="text-sm font-semibold tracking-wide whitespace-nowrap"
+          style={{ color: '#6B7280' }}
+        >
+          {name}
+        </span>
+      ) : (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={`https://logo.clearbit.com/${domain}`}
+          alt={ariaHidden ? '' : `${name} logo`}
+          height={28}
+          loading="lazy"
+          onError={() => setFailed(true)}
+          style={{
+            height: '28px',
+            width: 'auto',
+            filter: 'grayscale(100%) brightness(1.8)',
+            opacity: 0.55,
+          }}
+        />
+      )}
+    </div>
+  )
+}
+
 /**
- * Infinite-scrolling logo carousel. Pure CSS animation, no JS.
+ * Infinite-scrolling logo carousel. Pure CSS animation, no JS for the scroll.
  * The track contains two copies of the logo set so translateX(-50%)
  * lands exactly on the second copy for a seamless loop.
  */
 export function LogoCarousel({ label }: { label: string }) {
-  const logos = CAROUSEL_COMPANIES.map((name) => ({
-    name,
-    logoUrl: getLogoUrl(name),
-    domain: getDomain(name),
-  }))
-
   // Duplicate the set so the -50% translate creates a seamless loop
-  const doubled = [...logos, ...logos]
+  const doubled = [...CAROUSEL_COMPANIES, ...CAROUSEL_COMPANIES]
 
   return (
     <section
@@ -43,37 +75,13 @@ export function LogoCarousel({ label }: { label: string }) {
         </p>
         <div className="logo-carousel-mask overflow-hidden">
           <div className="logo-carousel-track">
-            {doubled.map((logo, i) => (
-              <div
-                key={`${logo.name}-${i}`}
-                className="flex items-center justify-center shrink-0 px-8"
-                style={{ height: '32px', minWidth: '140px' }}
-                aria-hidden={i >= logos.length ? true : undefined}
-              >
-                {logo.logoUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={logo.logoUrl}
-                    alt={i < logos.length ? `${logo.name} logo` : ''}
-                    width={120}
-                    height={32}
-                    loading="lazy"
-                    style={{
-                      maxHeight: '32px',
-                      width: 'auto',
-                      filter: 'grayscale(100%) brightness(1.6)',
-                      opacity: 0.55,
-                    }}
-                  />
-                ) : (
-                  <span
-                    className="text-sm font-semibold tracking-wide whitespace-nowrap"
-                    style={{ color: '#6B7280' }}
-                  >
-                    {logo.name}
-                  </span>
-                )}
-              </div>
+            {doubled.map((company, i) => (
+              <LogoItem
+                key={`${company.name}-${i}`}
+                name={company.name}
+                domain={company.domain}
+                ariaHidden={i >= CAROUSEL_COMPANIES.length}
+              />
             ))}
           </div>
         </div>
