@@ -140,11 +140,18 @@ export function FeedbackWidget() {
       <button
         onClick={submit}
         disabled={loading || !rating}
-        className="w-full py-2 rounded-lg text-xs font-semibold transition-opacity disabled:opacity-40"
+        title={!rating ? 'Select a star rating to send' : undefined}
+        aria-describedby={!rating ? 'feedback-hint' : undefined}
+        className="w-full py-2 rounded-lg text-xs font-semibold transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
         style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
       >
         {loading ? 'Sending...' : 'Send feedback'}
       </button>
+      {!rating && (
+        <p id="feedback-hint" className="text-xs mt-2 text-center" style={{ color: 'var(--fg-faint)' }}>
+          Select a star rating to send
+        </p>
+      )}
     </div>
   )
 }
