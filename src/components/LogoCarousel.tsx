@@ -2,29 +2,31 @@
 
 import { useState } from 'react'
 
-const CAROUSEL_COMPANIES: { name: string; domain: string }[] = [
-  { name: 'Syska Hennessy', domain: 'syska.com' },
-  { name: 'T5 Data Centers', domain: 't5datacenters.com' },
-  { name: 'Serverfarm', domain: 'serverfarm.com' },
-  { name: 'Oracle', domain: 'oracle.com' },
-  { name: 'CoreWeave', domain: 'coreweave.com' },
-  { name: 'xAI', domain: 'x.ai' },
-  { name: 'BRPH', domain: 'brph.com' },
-  { name: 'EdgeConneX', domain: 'edgeconnex.com' },
+type Company = { name: string; src: string }
+
+const CAROUSEL_COMPANIES: Company[] = [
+  { name: 'Syska Hennessy', src: '/logos/syska-hennessy.svg' },
+  { name: 'T5 Data Centers', src: '/logos/t5-data-centers.png' },
+  { name: 'Serverfarm', src: '/logos/serverfarm.svg' },
+  { name: 'Oracle', src: '/logos/oracle.svg' },
+  { name: 'CoreWeave', src: '/logos/coreweave.png' },
+  { name: 'xAI', src: '/logos/xai.svg' },
+  { name: 'BRPH', src: '/logos/brph.png' },
+  { name: 'EdgeConneX', src: '/logos/edgeconnex.svg' },
 ]
 
-function LogoItem({ name, domain, ariaHidden }: { name: string; domain: string; ariaHidden?: boolean }) {
+function LogoItem({ name, src, ariaHidden }: { name: string; src: string; ariaHidden?: boolean }) {
   const [failed, setFailed] = useState(false)
 
   return (
     <div
-      className="flex items-center justify-center shrink-0 px-8"
-      style={{ height: '32px', minWidth: '140px' }}
+      className="flex items-center justify-center shrink-0 px-10 sm:px-14"
+      style={{ height: '40px', minWidth: '160px' }}
       aria-hidden={ariaHidden || undefined}
     >
       {failed ? (
         <span
-          className="text-sm font-semibold tracking-wide whitespace-nowrap"
+          className="text-base font-semibold tracking-wide whitespace-nowrap"
           style={{ color: '#6B7280' }}
         >
           {name}
@@ -32,16 +34,19 @@ function LogoItem({ name, domain, ariaHidden }: { name: string; domain: string; 
       ) : (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={`https://logo.clearbit.com/${domain}`}
+          src={src}
           alt={ariaHidden ? '' : `${name} logo`}
-          height={28}
+          height={40}
           loading="lazy"
           onError={() => setFailed(true)}
           style={{
-            height: '28px',
+            height: '40px',
             width: 'auto',
-            filter: 'grayscale(100%) brightness(1.8)',
-            opacity: 0.55,
+            maxWidth: '180px',
+            objectFit: 'contain',
+            // Flatten any colored logo to pure white, then dim slightly
+            filter: 'brightness(0) invert(1)',
+            opacity: 0.75,
           }}
         />
       )}
@@ -66,9 +71,9 @@ export function LogoCarousel({ label }: { label: string }) {
         background: 'var(--bg-subtle)',
       }}
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-7">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
         <p
-          className="text-xs uppercase tracking-widest mb-5 font-medium text-center"
+          className="text-xs uppercase tracking-widest mb-7 font-medium text-center"
           style={{ color: 'var(--fg-faint)' }}
         >
           {label}
@@ -79,7 +84,7 @@ export function LogoCarousel({ label }: { label: string }) {
               <LogoItem
                 key={`${company.name}-${i}`}
                 name={company.name}
-                domain={company.domain}
+                src={company.src}
                 ariaHidden={i >= CAROUSEL_COMPANIES.length}
               />
             ))}
