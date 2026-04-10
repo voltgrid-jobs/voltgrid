@@ -4,6 +4,7 @@ import './globals.css'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { FeedbackWidget } from '@/components/layout/FeedbackWidget'
+import { Analytics } from '@vercel/analytics/next'
 
 const barlowCondensed = Barlow_Condensed({
   subsets: ['latin'],
@@ -78,6 +79,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main id="main-content" style={{ flex: 1 }}>{children}</main>
         <Footer />
         <FeedbackWidget />
+        <Analytics />
       </body>
     </html>
   )
