@@ -159,7 +159,7 @@ git commit -m "feat/fix/chore: description"
 git push origin main
 ```
 
-Felix (the AI agent) monitors GitHub and triggers Vercel deploy after reviewing the diff.
+Hermes (the AI agent) monitors GitHub and triggers Vercel deploy after reviewing the diff.
 
 **Vercel project:** `prj_ROb1t6kekVY85pAO5CSH2a1pb8C6` | org: `volt-grid`
 **Production URL:** https://voltgridjobs.com
@@ -271,7 +271,7 @@ curl -X POST -H "X-API-Key: 5323c76261c136d86d2df19d8ac890647dd079d54a5999c78ac2
 1. Always claim before starting work
 2. Set `needs_clarification` if the brief is ambiguous — do not guess
 3. Complete with a clear summary of exactly what changed and commit hash
-4. Push to GitHub, do NOT deploy — Felix handles Vercel
+4. Push to GitHub, do NOT deploy — Hermes handles Vercel
 
 ---
 
@@ -339,6 +339,7 @@ echo "$VALUE" > file
 
 ## Contact
 
-- **Felix** (AI agent / ops lead): manages via Telegram, monitors GitHub, triggers deploys
+- **Felix** (AI agent / ops lead): manages via Telegram, monitors GitHub
+- **Hermes** (AI agent): triggers Vercel deploys after reviewing GitHub diffs
 - **Filip** (founder): reviews strategy, handles payments, runs Claude Code sessions
 - **OpsGrid dashboard:** https://ops-dashboard-volt-grid.vercel.app
