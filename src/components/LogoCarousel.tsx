@@ -5,7 +5,7 @@ import { useState } from 'react'
 type Company = { name: string; src: string }
 
 const CAROUSEL_COMPANIES: Company[] = [
-  { name: 'Syska Hennessy', src: '/logos/syska-hennessy.svg' },
+  { name: 'Syska Hennessy', src: '/logos/syska-hennessy.png' },
   { name: 'T5 Data Centers', src: '/logos/t5-data-centers.png' },
   { name: 'Serverfarm', src: '/logos/serverfarm.svg' },
   { name: 'Oracle', src: '/logos/oracle.svg' },
