@@ -3,9 +3,7 @@ export const dynamic = 'force-dynamic'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Metadata } from 'next'
-import { createClient } from '@/lib/supabase/server'
-import { getLogoUrl, getDomain } from '@/lib/company-logos'
-import { CompanyLogo } from '@/components/employers/CompanyLogo'
+import { LogoCarousel } from '@/components/LogoCarousel'
 
 export const metadata: Metadata = {
   title: 'Find Verified Data Center Electricians & HVAC Techs Faster',
@@ -96,9 +94,6 @@ const WHO_POSTS = [
   { title: 'Facility Management', desc: 'CBRE, Cushman & Wakefield: facility managers overseeing data center O&M who need certified, experienced technicians.' },
 ]
 
-// Kept as fallback for static export — dynamic version used in component below
-const FEATURED_COMPANIES_FALLBACK = ['Cologix', 'Oracle', 'Helix Electric', 'CBRE', 'Aerotek', 'EdgeConneX', 'Vertiv', 'Carrier']
-
 const FAQS = [
   {
     q: 'Who sees my listing?',
@@ -148,32 +143,6 @@ const faqSchema = {
 }
 
 export default async function EmployersPage() {
-  // Fetch top companies with active listings dynamically
-  let jobRows: { company_name: string | null }[] = []
-  try {
-    const supabase = await createClient()
-    const { data } = await supabase
-      .from('jobs')
-      .select('company_name')
-      .eq('is_active', true)
-    jobRows = data ?? []
-  } catch {
-    // DB unavailable — render page with empty company list
-  }
-
-  // Get top companies by listing count, with known logos first
-  const counts: Record<string, number> = {}
-  jobRows.forEach(j => { if (j.company_name) counts[j.company_name] = (counts[j.company_name] || 0) + 1 })
-
-  const featuredCompanies = Object.entries(counts)
-    .sort((a, b) => b[1] - a[1])
-    .map(([name]) => ({ name, logoUrl: getLogoUrl(name), domain: getDomain(name) }))
-    .filter(c => c.domain) // only show companies with known domains
-    .slice(0, 8)
-
-  const displayCompanies = featuredCompanies.length >= 4
-    ? featuredCompanies
-    : FEATURED_COMPANIES_FALLBACK.map(name => ({ name, logoUrl: getLogoUrl(name), domain: getDomain(name) }))
   return (
     <>
       <script
@@ -213,21 +182,8 @@ export default async function EmployersPage() {
           </div>
         </section>
 
-        {/* ── Company trust bar — dynamic, logo-based ── */}
-        <section style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', background: 'var(--bg-subtle)' }}>
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-            <p className="text-xs uppercase tracking-widest mb-6 font-medium text-center" style={{ color: 'var(--fg-faint)' }}>
-              Employers already on VoltGrid
-            </p>
-            <div className="flex flex-wrap justify-center items-center gap-8">
-              {displayCompanies.map(({ name, logoUrl, domain }) => (
-                <div key={name} className="flex items-center justify-center" style={{ height: '32px' }}>
-                  <CompanyLogo name={name} logoUrl={logoUrl} domain={domain} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+        {/* ── Company trust bar — auto-scrolling carousel ── */}
+        <LogoCarousel label="Employers already on VoltGrid" />
 
         {/* ── Market context ── */}
         <section style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-subtle)' }}>
