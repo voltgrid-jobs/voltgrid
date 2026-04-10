@@ -15,10 +15,6 @@
     {
       "path": "/api/send-weekly-digest",
       "schedule": "0 8 * * 1"
-    },
-    {
-      "path": "/api/cron/employer-onboarding",
-      "schedule": "0 * * * *"
     }
   ]
 }
