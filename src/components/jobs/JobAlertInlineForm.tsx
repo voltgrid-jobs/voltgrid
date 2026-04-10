@@ -146,8 +146,6 @@ export function JobAlertInlineForm({
   }
 
   // Homepage variant — includes trade dropdown, renders its own section wrapper
-  const tradeLabel = TRADE_OPTIONS.find((o) => o.value === trade)?.label ?? 'trades'
-
   return (
     <section
       style={{
@@ -156,16 +154,20 @@ export function JobAlertInlineForm({
         borderBottom: '1px solid var(--border)',
       }}
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-        <p className="text-sm font-medium mb-1" style={{ color: 'var(--fg)' }}>
-          Get notified when $45–$85/hr data center jobs post
-        </p>
-        <p className="text-xs mb-4" style={{ color: 'var(--fg-muted)' }}>
-          New {tradeLabel !== 'All trades' ? tradeLabel.toLowerCase() : 'trades'} roles posted daily — be first to apply.
-        </p>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+        <div className="max-w-2xl">
+          <p className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--yellow)' }}>
+            Stay in the loop
+          </p>
+          <p className="text-base font-semibold mb-1" style={{ color: 'var(--fg)' }}>
+            Get updates on high-paying trades jobs
+          </p>
+          <p className="text-sm mb-4" style={{ color: 'var(--fg-muted)' }}>
+            Data center electricians, HVAC techs, and low voltage roles — delivered to your inbox.
+          </p>
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col sm:flex-row gap-2 max-w-2xl"
+          className="flex flex-col sm:flex-row gap-2"
         >
           <label htmlFor="job-alert-email" className="sr-only">Email address</label>
           <input
@@ -221,6 +223,7 @@ export function JobAlertInlineForm({
             ✓ Join {subscriberCount >= 1000 ? `${Math.floor(subscriberCount / 100) * 100}+` : `${subscriberCount}+`} electricians, HVAC techs, and trades workers already subscribed
           </p>
         )}
+        </div>
       </div>
     </section>
   )

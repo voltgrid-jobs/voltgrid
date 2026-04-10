@@ -6,7 +6,6 @@ import { JobCard } from '@/components/jobs/JobCard'
 import { CATEGORY_LABELS, type JobCategory } from '@/types'
 import { LogoCarousel } from '@/components/LogoCarousel'
 import { JobAlertInlineForm } from '@/components/jobs/JobAlertInlineForm'
-import { NewsletterCaptureWidget } from '@/components/jobs/NewsletterCaptureWidget'
 
 const CATEGORIES: { key: JobCategory; label: string }[] = [
   { key: 'electrical',          label: 'Electrical' },
@@ -161,9 +160,6 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* NEWSLETTER CAPTURE */}
-      <NewsletterCaptureWidget />
 
       {/* JOB ALERT CAPTURE */}
       <JobAlertInlineForm variant="homepage" subscriberCount={alertSubscribers ?? undefined} />
