@@ -4,8 +4,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { JobCard } from '@/components/jobs/JobCard'
 import { CATEGORY_LABELS, type JobCategory } from '@/types'
-import { getLogoUrl, getDomain } from '@/lib/company-logos'
-import { CompanyLogo } from '@/components/employers/CompanyLogo'
+import { LogoCarousel } from '@/components/LogoCarousel'
 import { JobAlertInlineForm } from '@/components/jobs/JobAlertInlineForm'
 import { NewsletterCaptureWidget } from '@/components/jobs/NewsletterCaptureWidget'
 
@@ -27,7 +26,6 @@ export default async function HomePage() {
   let distinctCompanies = 0
   let jobsThisWeek: number | null = null
   let alertSubscribers: number | null = null
-  let logoBarCompanies: { name: string; logoUrl: string | null; domain: string | null }[] = []
 
   try {
     const supabase = await createClient()
@@ -60,14 +58,6 @@ export default async function HomePage() {
     ])
     jobsThisWeek = thisWeek
     alertSubscribers = alertSubs
-
-    const companyCounts: Record<string, number> = {}
-    companiesData?.forEach(j => { if (j.company_name) companyCounts[j.company_name] = (companyCounts[j.company_name] || 0) + 1 })
-    logoBarCompanies = Object.entries(companyCounts)
-      .sort((a, b) => b[1] - a[1])
-      .map(([name]) => ({ name, logoUrl: getLogoUrl(name), domain: getDomain(name) }))
-      .filter(c => c.domain)
-      .slice(0, 8)
   } catch (err) {
     console.error('[HomePage] Supabase error:', err)
     // Page renders with fallback zeros — no 500
@@ -178,23 +168,8 @@ export default async function HomePage() {
       {/* JOB ALERT CAPTURE */}
       <JobAlertInlineForm variant="homepage" subscriberCount={alertSubscribers ?? undefined} />
 
-      {/* COMPANY LOGO BAR */}
-      {logoBarCompanies.length > 0 && (
-        <section style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', background: 'var(--bg-subtle)' }}>
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-7">
-            <p className="text-xs uppercase tracking-widest mb-5 font-medium text-center" style={{ color: 'var(--fg-faint)' }}>
-              Open Roles From
-            </p>
-            <div className="flex flex-wrap justify-center items-center gap-8">
-              {logoBarCompanies.map(({ name, logoUrl, domain }) => (
-                <div key={name} className="flex items-center justify-center" style={{ height: '28px' }}>
-                  <CompanyLogo name={name} logoUrl={logoUrl} domain={domain} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+      {/* COMPANY LOGO BAR — auto-scrolling carousel */}
+      <LogoCarousel label="Open Roles From" />
 
       {/* CATEGORIES */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
