@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
 
   const supabase = await createClient()
   const body = await req.json()
-  const { email, keywords, location, category, frequency, background, job_id } = body
+  const { email, keywords, location, category, frequency, background, job_id, source } = body
 
   if (!email) return NextResponse.json({ error: 'Email required' }, { status: 400 })
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -97,8 +97,10 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  // Source page — best effort from referer header
-  const sourcePage = req.headers.get('referer') || null
+  // Source page — prefer explicit body value (so each placement is
+  // distinguishable), fall back to Referer for anything that doesn't
+  // pass a source.
+  const sourcePage = (typeof source === 'string' && source) || req.headers.get('referer') || null
 
   // Get user if logged in (best-effort — doesn't block unauthenticated signups)
   const { data: { user } } = await supabase.auth.getUser()

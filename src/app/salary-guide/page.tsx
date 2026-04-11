@@ -507,6 +507,26 @@ export default function SalaryGuidePage() {
           </Lede>
           <SalaryTable rows={ELECTRICIAN_MARKETS} title="Electrician — base hourly and annual pay" />
 
+          {/* Email capture — Placement 1: after electrician tables, before HVAC */}
+          <div
+            style={{
+              background: 'rgba(250, 204, 21, 0.05)',
+              border: '1px solid var(--yellow-border)',
+              borderRadius: '14px',
+              padding: 'clamp(1.25rem, 3vw, 1.75rem)',
+              marginBottom: '2rem',
+            }}
+          >
+            <JobAlertInlineForm
+              variant="jobs"
+              defaultTrade="electrical"
+              source="salary-guide-top"
+              headline="Get electrician jobs in your market by email"
+              subtext="New data center electrician roles — filtered by city. Delivered weekly. Unsubscribe anytime."
+              buttonLabel="Send me jobs"
+            />
+          </div>
+
           {/* HVAC by market */}
           <SectionTitle id="hvac">Data center HVAC technician salary by market (2026)</SectionTitle>
           <Lede>
@@ -769,7 +789,7 @@ export default function SalaryGuidePage() {
               Use this guide to benchmark offers, then hand us your email and we send the
               roles that match your trade and market. No spam, unsubscribe anytime.
             </p>
-            <JobAlertInlineForm variant="jobs" />
+            <JobAlertInlineForm variant="jobs" source="salary-guide-bottom" />
           </section>
 
           {/* FAQ */}
@@ -809,6 +829,55 @@ export default function SalaryGuidePage() {
                 </p>
               </details>
             ))}
+          </div>
+
+          {/* Email capture — Placement 2: after FAQ, before related links */}
+          <div
+            style={{
+              background: 'rgba(250, 204, 21, 0.05)',
+              border: '1px solid var(--yellow-border)',
+              borderRadius: '14px',
+              padding: 'clamp(1.25rem, 3vw, 1.75rem)',
+              marginTop: '2rem',
+              marginBottom: '2rem',
+            }}
+          >
+            <p
+              className="text-xs font-semibold tracking-widest uppercase mb-2"
+              style={{ color: 'var(--yellow)' }}
+            >
+              Ready to find your next role?
+            </p>
+            <h3
+              style={{
+                fontFamily: 'var(--font-display), system-ui, sans-serif',
+                fontSize: '1.25rem',
+                fontWeight: 800,
+                color: 'var(--fg)',
+                letterSpacing: '-0.01em',
+                marginBottom: '0.5rem',
+              }}
+            >
+              Get matching jobs delivered to your inbox
+            </h3>
+            <p
+              style={{
+                fontSize: '0.85rem',
+                color: 'var(--fg-muted)',
+                lineHeight: 1.6,
+                marginBottom: '1rem',
+                maxWidth: '560px',
+              }}
+            >
+              Data center electrician, HVAC, and low voltage roles — filtered to your trade and market. Weekly digest, no spam.
+            </p>
+            <JobAlertInlineForm
+              variant="jobs"
+              source="salary-guide-faq"
+              headline="Pick your trade and city"
+              subtext="We filter by trade, region, and pay floor. Your inbox stays quiet unless there's a real match."
+              buttonLabel="Send me jobs"
+            />
           </div>
 
           {/* Related links */}

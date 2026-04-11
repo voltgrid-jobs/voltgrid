@@ -322,6 +322,12 @@ export default async function JobDetailPage({
                 <div className="mt-2">
                   <p className="font-semibold" style={{ color: 'var(--green)' }}>{salary.primary}</p>
                   {salary.secondary && <p className="text-sm" style={{ color: 'var(--fg-muted)' }}>{salary.secondary}</p>}
+                  <p className="text-xs mt-1" style={{ color: 'var(--fg-faint)' }}>
+                    See how this compares to market rates →{' '}
+                    <Link href="/salary-guide" style={{ color: 'var(--yellow)' }}>
+                      2026 Data Center Salary Guide
+                    </Link>
+                  </p>
                 </div>
               ) : marketRate ? (
                 <div className="mt-2">

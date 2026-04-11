@@ -17,11 +17,19 @@ export function JobAlertInlineForm({
   defaultTrade = '',
   subscriberCount,
   jobId,
+  source,
+  headline,
+  subtext,
+  buttonLabel,
 }: {
   variant?: 'homepage' | 'jobs'
   defaultTrade?: string
   subscriberCount?: number
   jobId?: string
+  source?: string
+  headline?: string
+  subtext?: string
+  buttonLabel?: string
 }) {
   const [email, setEmail] = useState('')
   const [trade, setTrade] = useState(defaultTrade)
@@ -55,7 +63,14 @@ export function JobAlertInlineForm({
       const res = await fetch('/api/alerts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, category: trade || null, location: '', frequency: 'daily', ...(jobId && { job_id: jobId }) }),
+        body: JSON.stringify({
+          email,
+          category: trade || null,
+          location: '',
+          frequency: 'daily',
+          ...(jobId && { job_id: jobId }),
+          ...(source && { source }),
+        }),
       })
       const data = await res.json().catch(() => ({}))
       if (res.ok && data?.success) {
@@ -112,10 +127,10 @@ export function JobAlertInlineForm({
         style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}
       >
         <p className="font-semibold text-sm mb-1" style={{ color: 'var(--fg)' }}>
-          Don&apos;t see the right role?
+          {headline ?? "Don't see the right role?"}
         </p>
         <p className="text-xs mb-3" style={{ color: 'var(--fg-muted)' }}>
-          Get notified when new jobs match your search.
+          {subtext ?? 'Get notified when new jobs match your search.'}
         </p>
         <form onSubmit={handleSubmit} className="flex gap-2 flex-wrap sm:flex-nowrap">
           <label htmlFor="job-alert-sidebar-email" className="sr-only">Email address</label>
@@ -141,7 +156,7 @@ export function JobAlertInlineForm({
             className="px-4 py-2 rounded-lg font-semibold text-sm transition-opacity disabled:opacity-60 whitespace-nowrap"
             style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
           >
-            {loading ? '...' : 'Get Alerts'}
+            {loading ? '...' : (buttonLabel ?? 'Get Alerts')}
           </button>
         </form>
         {error && (
@@ -173,10 +188,10 @@ export function JobAlertInlineForm({
             Stay in the loop
           </p>
           <p className="text-base font-semibold mb-1" style={{ color: 'var(--fg)' }}>
-            Get updates on high-paying trades jobs
+            {headline ?? 'Get updates on high-paying trades jobs'}
           </p>
           <p className="text-sm mb-4" style={{ color: 'var(--fg-muted)' }}>
-            Data center electricians, HVAC techs, and low voltage roles — delivered to your inbox.
+            {subtext ?? 'Data center electricians, HVAC techs, and low voltage roles — delivered to your inbox.'}
           </p>
         <form
           onSubmit={handleSubmit}
@@ -223,7 +238,7 @@ export function JobAlertInlineForm({
             className="px-5 py-2.5 rounded-lg font-semibold text-sm transition-opacity disabled:opacity-60 whitespace-nowrap"
             style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
           >
-            {loading ? '...' : 'Get Alerts'}
+            {loading ? '...' : (buttonLabel ?? 'Get Alerts')}
           </button>
         </form>
         {error && (
