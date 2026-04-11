@@ -102,19 +102,18 @@ export default async function HomePage() {
               className="animate-fade-up delay-100 leading-none mb-6"
               style={{
                 fontFamily: 'var(--font-display), system-ui, sans-serif',
-                fontSize: 'clamp(3rem, 8vw, 6rem)',
+                fontSize: 'clamp(2.5rem, 7vw, 5rem)',
                 fontWeight: 800,
                 letterSpacing: '-0.01em',
                 color: 'var(--fg)',
               }}
             >
-              You Power AI.<br />
-              <span style={{ color: 'var(--yellow)' }}>We&apos;ll Find You<br />the Job.</span>
+              Fill Your Data Center<br />
+              <span style={{ color: 'var(--yellow)' }}>Trades Roles Faster.</span>
             </h1>
 
             <p className="text-lg sm:text-xl mb-6 max-w-xl animate-fade-up delay-200" style={{ color: 'var(--fg-muted)', lineHeight: 1.6 }}>
-              Join trades workers earning $45–$85/hr at CoreWeave, xAI, T5, and the other companies
-              building the data centers powering AI.
+              VoltGrid connects you with electricians, HVAC techs, and low voltage techs pre-qualified for AI data center work. Post a job and reach hundreds of trades workers actively looking for data center roles.
             </p>
 
             {/* Trust stats row */}
@@ -170,11 +169,11 @@ export default async function HomePage() {
               <CompactHeroSignup
                 source="homepage-hero"
                 defaultTrade="electrical"
-                headline="Get daily data center jobs sent to you"
-                subtext="Pay, per diem, and travel filters. No junk. No generic construction spam."
+                headline="Post a job — reach trades workers today."
+                subtext="Targeted reach to electricians, HVAC, and low voltage techs actively seeking data center roles."
                 trustLine={
                   electricalJobsCount && electricalJobsCount > 0
-                    ? `Join electricians tracking ${electricalJobsCount} live electrical roles on VoltGrid.`
+                    ? `${electricalJobsCount} live electrical roles posted now on VoltGrid.`
                     : undefined
                 }
               />
