@@ -162,7 +162,7 @@ export default async function HomePage() {
       </section>
 
       {/* JOB ALERT CAPTURE */}
-      <JobAlertInlineForm variant="homepage" subscriberCount={alertSubscribers ?? undefined} />
+      <JobAlertInlineForm variant="homepage" subscriberCount={alertSubscribers ?? undefined} source="homepage" />
 
       {/* COMPANY LOGO BAR — auto-scrolling carousel */}
       <LogoCarousel label="Open Roles From" />

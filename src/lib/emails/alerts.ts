@@ -25,7 +25,12 @@ interface ConfirmArgs {
 
 export function buildConfirmationEmail({ confirmToken, tradeLabel, baseUrl }: ConfirmArgs) {
   const confirmUrl = `${baseUrl}/alerts/confirm?t=${confirmToken}`
-  const subject = 'Confirm your VoltGrid job alert'
+  // Subject reflects the chosen trade so inbox scanners recognise what
+  // the email is for. "data center trades" is the fallback for all-trades
+  // signups.
+  const subject = tradeLabel === 'data center trades'
+    ? 'Confirm your VoltGrid job alerts'
+    : `Confirm your ${tradeLabel} job alerts`
   const html = `<div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:32px 24px;background:${BG};color:${FG}">
   <p style="font-size:18px;font-weight:700;color:${YELLOW};margin:0 0 16px 0">⚡ One click to confirm</p>
 

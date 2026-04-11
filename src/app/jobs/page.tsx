@@ -193,7 +193,7 @@ export default async function JobsPage({
                 totalPages={totalPages}
                 basePath={basePath}
               />
-              <div id="get-alerts"><JobAlertInlineForm variant="jobs" defaultTrade={activeCategory ?? ''} /></div>
+              <div id="get-alerts"><JobAlertInlineForm variant="jobs" defaultTrade={activeCategory === 'electrical' || activeCategory === 'hvac' || activeCategory === 'low_voltage' ? activeCategory : undefined} source="jobs-sidebar" /></div>
             </>
           ) : (
             <div className="rounded-xl p-10 text-center" style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}>

@@ -141,7 +141,7 @@ export default function ResourcesPage() {
 
         {/* Job alert signup strip */}
         <div className="mb-10 -mx-4 sm:-mx-6">
-          <JobAlertInlineForm variant="homepage" />
+          <JobAlertInlineForm variant="homepage" source="resources" />
         </div>
 
         {/* Resource cards */}

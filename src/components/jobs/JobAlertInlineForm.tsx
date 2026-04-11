@@ -1,53 +1,57 @@
 'use client'
-import { useState, useEffect } from 'react'
+
+import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { TwoStepAlertForm, type TradePref } from './TwoStepAlertForm'
 
-const TRADE_OPTIONS = [
-  { value: '', label: 'All trades' },
-  { value: 'electrical', label: 'Electrical' },
-  { value: 'hvac', label: 'HVAC' },
-  { value: 'low_voltage', label: 'Low Voltage' },
-  { value: 'project_management', label: 'Project Mgmt' },
-  { value: 'operations', label: 'Operations' },
-  { value: 'construction', label: 'Construction' },
-]
-
+/**
+ * Public email capture component. Two visual variants wrap the same
+ * TwoStepAlertForm:
+ *   - variant="homepage" — full-bleed bordered section, for placements
+ *     that live between major page sections (homepage, resources,
+ *     blog index, /salary-guide-bottom CTA).
+ *   - variant="jobs" — compact card, for placements that live inside
+ *     an already-framed container (in-content cards on /salary-guide,
+ *     /jobs sidebar, post-FAQ callouts).
+ *
+ * All signups flow through /api/alerts which dual-writes the legacy
+ * (category, location) columns AND the explicit (trade_pref,
+ * location_pref) columns.
+ */
 export function JobAlertInlineForm({
   variant = 'homepage',
-  defaultTrade = '',
+  defaultTrade,
   subscriberCount,
-  jobId,
   source,
   headline,
   subtext,
-  buttonLabel,
 }: {
   variant?: 'homepage' | 'jobs'
-  defaultTrade?: string
+  /** Pre-select a trade and skip step 1. Use when the caller already knows the user's trade (e.g. trade landing pages). */
+  defaultTrade?: TradePref
   subscriberCount?: number
-  jobId?: string
+  /** Source identifier for funnel analytics (e.g. 'salary-guide-top'). */
   source?: string
+  /** Optional heading. Only shown in step 1 of the form. */
   headline?: string
+  /** Optional subtitle. Only shown in step 1 of the form. */
   subtext?: string
+  /** @deprecated Not used by the 2-step form but kept for backward compat with existing callers. */
+  jobId?: string
+  /** @deprecated The 2-step form always uses "Send me jobs". */
   buttonLabel?: string
 }) {
-  const [email, setEmail] = useState('')
-  const [trade, setTrade] = useState(defaultTrade)
-  const [loading, setLoading] = useState(false)
-  const [done, setDone] = useState(false)
-  const [doneStatus, setDoneStatus] = useState<'pending' | 'already'>('pending')
   const [isAuth, setIsAuth] = useState(false)
   const [authChecking, setAuthChecking] = useState(true)
-  const [error, setError] = useState('')
+  const [alreadySignedUp, setAlreadySignedUp] = useState(false)
 
   useEffect(() => {
-    // Check localStorage — suppress form for returning visitors who already signed up
-    if (localStorage.getItem('jobAlertSignedUp') === 'true') {
-      setDone(true)
+    if (typeof window === 'undefined') return
+    if (window.localStorage?.getItem('jobAlertSignedUp') === 'true') {
+      setAlreadySignedUp(true)
       setAuthChecking(false)
       return
     }
-    // Check auth — logged-in users don't need to sign up via this widget
     const supabase = createClient()
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) setIsAuth(true)
@@ -55,204 +59,96 @@ export function JobAlertInlineForm({
     })
   }, [])
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
-    try {
-      const res = await fetch('/api/alerts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email,
-          category: trade || null,
-          location: '',
-          frequency: 'daily',
-          ...(jobId && { job_id: jobId }),
-          ...(source && { source }),
-        }),
-      })
-      const data = await res.json().catch(() => ({}))
-      if (res.ok && data?.success) {
-        localStorage.setItem('jobAlertSignedUp', 'true')
-        setDoneStatus(data.status === 'already_subscribed' ? 'already' : 'pending')
-        setDone(true)
-      } else if (res.status === 429) {
-        setError(data?.error || 'Too many signups. Try again in an hour.')
-      } else {
-        setError(data?.error || 'Something went wrong. Try again.')
-      }
-    } catch {
-      setError('Something went wrong. Try again.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
   // While checking auth/localStorage, render nothing to avoid form flash
   if (authChecking) return null
 
   // Logged-in users manage alerts in their dashboard — no widget needed
   if (isAuth) return null
 
-  if (done) {
-    const isAlready = doneStatus === 'already'
+  // Returning visitor who already signed up — show a compact "already in" state
+  if (alreadySignedUp) {
     return (
       <div
         className="rounded-xl p-4 text-center"
         style={{
-          background: isAlready ? 'var(--yellow-dim)' : 'var(--green-dim)',
-          border: `1px solid ${isAlready ? 'var(--yellow-border)' : 'rgba(74,222,128,0.2)'}`,
+          background: 'var(--green-dim)',
+          border: '1px solid rgba(74,222,128,0.25)',
         }}
       >
-        <p
-          className="font-semibold text-sm"
-          style={{ color: isAlready ? 'var(--yellow)' : 'var(--green)' }}
-        >
-          {isAlready ? '✓ Already subscribed' : '📬 Check your email to confirm'}
+        <p className="font-semibold text-sm" style={{ color: 'var(--green)' }}>
+          ✓ You&apos;re on the list
         </p>
         <p className="text-xs mt-1" style={{ color: 'var(--fg-muted)' }}>
-          {isAlready
-            ? "You're already getting these alerts. Matching jobs keep arriving on your usual schedule."
-            : "We sent a one-click confirmation link. Your first alert arrives after you confirm."}
+          Matching jobs arrive daily. Check your inbox.
         </p>
       </div>
     )
   }
 
-  if (variant === 'jobs') {
+  const defaultHeadline = headline ?? 'Get data center trades jobs in your inbox'
+  const defaultSubtext =
+    subtext ?? 'Filtered to your trade and region. Weekly digest. Unsubscribe anytime.'
+
+  // ── Homepage variant — full section wrapper ───────────────────────
+  if (variant === 'homepage') {
     return (
-      <div
-        className="rounded-xl p-5 mt-6"
-        style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}
+      <section
+        style={{
+          background: 'var(--bg-subtle)',
+          borderTop: '1px solid var(--border)',
+          borderBottom: '1px solid var(--border)',
+        }}
       >
-        <p className="font-semibold text-sm mb-1" style={{ color: 'var(--fg)' }}>
-          {headline ?? "Don't see the right role?"}
-        </p>
-        <p className="text-xs mb-3" style={{ color: 'var(--fg-muted)' }}>
-          {subtext ?? 'Get notified when new jobs match your search.'}
-        </p>
-        <form onSubmit={handleSubmit} className="flex gap-2 flex-wrap sm:flex-nowrap">
-          <label htmlFor="job-alert-sidebar-email" className="sr-only">Email address</label>
-          <input
-            id="job-alert-sidebar-email"
-            type="email"
-            name="email"
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            placeholder="your@email.com"
-            className="flex-1 min-w-0 px-3 py-2 rounded-lg text-sm focus:outline-none autofill-bg-dark"
-            style={{
-              background: 'var(--bg)',
-              border: '1px solid var(--border-strong)',
-              color: 'var(--fg)',
-            }}
-          />
-          <button
-            type="submit"
-            disabled={loading}
-            className="px-4 py-2 rounded-lg font-semibold text-sm transition-opacity disabled:opacity-60 whitespace-nowrap"
-            style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
-          >
-            {loading ? '...' : (buttonLabel ?? 'Get Alerts')}
-          </button>
-        </form>
-        {error && (
-          <p className="text-xs mt-2" style={{ color: '#F87171' }}>
-            {error}
-          </p>
-        )}
-        {subscriberCount != null && subscriberCount > 0 && (
-          <p className="text-xs mt-2" style={{ color: 'var(--fg-faint)' }}>
-            ✓ Join {subscriberCount >= 1000 ? `${Math.floor(subscriberCount / 100) * 100}+` : `${subscriberCount}+`} trades workers already subscribed
-          </p>
-        )}
-      </div>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+          <div className="max-w-xl">
+            <p
+              className="text-xs font-semibold tracking-widest uppercase mb-2"
+              style={{ color: 'var(--yellow)' }}
+            >
+              Stay in the loop
+            </p>
+            <TwoStepAlertForm
+              source={source}
+              defaultTrade={defaultTrade}
+              headline={defaultHeadline}
+              subtext={defaultSubtext}
+            />
+            {subscriberCount != null && subscriberCount > 0 && (
+              <p className="text-xs mt-3" style={{ color: 'var(--fg-faint)' }}>
+                ✓ Join{' '}
+                {subscriberCount >= 1000
+                  ? `${Math.floor(subscriberCount / 100) * 100}+`
+                  : `${subscriberCount}+`}{' '}
+                electricians, HVAC techs, and trades workers already subscribed
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
     )
   }
 
-  // Homepage variant — includes trade dropdown, renders its own section wrapper
+  // ── Jobs variant — compact card ──────────────────────────────────
   return (
-    <section
-      style={{
-        background: 'var(--bg-subtle)',
-        borderTop: '1px solid var(--border)',
-        borderBottom: '1px solid var(--border)',
-      }}
+    <div
+      className="rounded-xl p-5"
+      style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
-        <div className="max-w-2xl">
-          <p className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--yellow)' }}>
-            Stay in the loop
-          </p>
-          <p className="text-base font-semibold mb-1" style={{ color: 'var(--fg)' }}>
-            {headline ?? 'Get updates on high-paying trades jobs'}
-          </p>
-          <p className="text-sm mb-4" style={{ color: 'var(--fg-muted)' }}>
-            {subtext ?? 'Data center electricians, HVAC techs, and low voltage roles — delivered to your inbox.'}
-          </p>
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col sm:flex-row gap-2"
-        >
-          <label htmlFor="job-alert-email" className="sr-only">Email address</label>
-          <input
-            id="job-alert-email"
-            type="email"
-            name="email"
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            placeholder="your@email.com"
-            className="flex-1 px-3 py-2.5 rounded-lg text-sm focus:outline-none autofill-bg-dark"
-            style={{
-              background: 'var(--bg)',
-              border: '1px solid var(--border-strong)',
-              color: 'var(--fg)',
-            }}
-          />
-          <label htmlFor="job-alert-trade" className="sr-only">Trade</label>
-          <select
-            id="job-alert-trade"
-            value={trade}
-            onChange={(e) => setTrade(e.target.value)}
-            className="px-3 py-2.5 rounded-lg text-sm focus:outline-none"
-            style={{
-              background: 'var(--bg)',
-              border: '1px solid var(--border-strong)',
-              color: 'var(--fg)',
-            }}
-          >
-            {TRADE_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
-          <button
-            type="submit"
-            disabled={loading}
-            className="px-5 py-2.5 rounded-lg font-semibold text-sm transition-opacity disabled:opacity-60 whitespace-nowrap"
-            style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
-          >
-            {loading ? '...' : (buttonLabel ?? 'Get Alerts')}
-          </button>
-        </form>
-        {error && (
-          <p className="text-xs mt-2" style={{ color: '#F87171' }}>
-            {error}
-          </p>
-        )}
-        {subscriberCount != null && subscriberCount > 0 && (
-          <p className="text-xs mt-3" style={{ color: 'var(--fg-faint)' }}>
-            ✓ Join {subscriberCount >= 1000 ? `${Math.floor(subscriberCount / 100) * 100}+` : `${subscriberCount}+`} electricians, HVAC techs, and trades workers already subscribed
-          </p>
-        )}
-        </div>
-      </div>
-    </section>
+      <TwoStepAlertForm
+        source={source}
+        defaultTrade={defaultTrade}
+        headline={defaultHeadline}
+        subtext={defaultSubtext}
+      />
+      {subscriberCount != null && subscriberCount > 0 && (
+        <p className="text-xs mt-3 text-center" style={{ color: 'var(--fg-faint)' }}>
+          ✓ Join{' '}
+          {subscriberCount >= 1000
+            ? `${Math.floor(subscriberCount / 100) * 100}+`
+            : `${subscriberCount}+`}{' '}
+          trades workers already subscribed
+        </p>
+      )}
+    </div>
   )
 }

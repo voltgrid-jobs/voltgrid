@@ -31,14 +31,20 @@ function checkRateLimit(ip: string): boolean {
   return true
 }
 
-function tradeLabelFor(category: string | null | undefined) {
-  if (!category) return 'trades'
-  return category.replace(/_/g, ' ')
+function tradeLabelFor(tradePref: string | null | undefined, category: string | null | undefined) {
+  // Prefer the explicit trade_pref if present, fall back to legacy category.
+  const t = tradePref || category
+  if (!t || t === 'all') return 'data center trades'
+  if (t === 'electrical') return 'electrician'
+  if (t === 'hvac') return 'HVAC'
+  if (t === 'low_voltage') return 'low voltage'
+  return t.replace(/_/g, ' ')
 }
 
 async function sendConfirmation(
   email: string,
   confirmToken: string,
+  tradePref: string | null | undefined,
   category: string | null | undefined,
   baseUrl: string
 ) {
@@ -47,7 +53,7 @@ async function sendConfirmation(
   const { subject, html, text } = buildConfirmationEmail({
     email,
     confirmToken,
-    tradeLabel: tradeLabelFor(category),
+    tradeLabel: tradeLabelFor(tradePref, category),
     baseUrl,
   })
   await resend.emails.send({
@@ -71,7 +77,18 @@ export async function POST(req: NextRequest) {
 
   const supabase = await createClient()
   const body = await req.json()
-  const { email, keywords, location, category, frequency, background, job_id, source } = body
+  const {
+    email,
+    keywords,
+    location,
+    category,
+    frequency,
+    background,
+    job_id,
+    source,
+    trade_pref,
+    location_pref,
+  } = body
 
   if (!email) return NextResponse.json({ error: 'Email required' }, { status: 400 })
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -80,6 +97,23 @@ export async function POST(req: NextRequest) {
 
   const normalizedEmail = email.toLowerCase().trim()
   const normalizedCategory = category || null
+
+  // Explicit trade/location preferences. Accept the new trade_pref and
+  // location_pref params, fall back to mapping from legacy category/location
+  // so older callers keep working.
+  const VALID_TRADES = new Set(['electrical', 'hvac', 'low_voltage', 'all'])
+  const normalizedTradePref: string | null = (() => {
+    if (typeof trade_pref === 'string' && VALID_TRADES.has(trade_pref)) return trade_pref
+    if (normalizedCategory && VALID_TRADES.has(normalizedCategory)) return normalizedCategory
+    // Missing trade_pref and no legacy category → treat as explicit 'all'
+    return normalizedCategory === null ? 'all' : null
+  })()
+  const normalizedLocationPref: string = (() => {
+    if (typeof location_pref === 'string' && location_pref.trim()) return location_pref.trim()
+    if (typeof location === 'string' && location.trim()) return location.trim()
+    return 'all'
+  })()
+
   const adminClient = createAdminClient()
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://voltgridjobs.com'
 
@@ -142,13 +176,15 @@ export async function POST(req: NextRequest) {
         keywords: keywords || null,
         location: location || null,
         frequency: frequency || 'daily',
+        trade_pref: normalizedTradePref,
+        location_pref: normalizedLocationPref,
         ...(background && { background }),
         ...(sourcePage && { source_page: sourcePage }),
       })
       .eq('id', existing.id)
 
     try {
-      await sendConfirmation(normalizedEmail, existing.confirmation_token, normalizedCategory, baseUrl)
+      await sendConfirmation(normalizedEmail, existing.confirmation_token, normalizedTradePref, normalizedCategory, baseUrl)
     } catch (err) {
       console.error('[alerts] resend confirmation error:', err)
     }
@@ -180,6 +216,8 @@ export async function POST(req: NextRequest) {
       frequency: frequency || 'daily',
       is_active: true,
       confirmed_at: null,
+      trade_pref: normalizedTradePref,
+      location_pref: normalizedLocationPref,
       ...(background && { background }),
       ...(job_id && { source_job_id: job_id }),
       ...(sourcePage && { source_page: sourcePage }),
@@ -195,7 +233,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    await sendConfirmation(normalizedEmail, inserted.confirmation_token, normalizedCategory, baseUrl)
+    await sendConfirmation(normalizedEmail, inserted.confirmation_token, normalizedTradePref, normalizedCategory, baseUrl)
   } catch (err) {
     // Non-critical — the row is saved, the user can request a resend
     console.error('[alerts] confirmation email error:', err)
