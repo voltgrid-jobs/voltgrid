@@ -87,7 +87,7 @@ export function JobAlertInlineForm({
 
   const defaultHeadline = headline ?? 'Get data center trades jobs in your inbox'
   const defaultSubtext =
-    subtext ?? 'Filtered to your trade and region. Weekly digest. Unsubscribe anytime.'
+    subtext ?? 'Filtered to your trade and region. Daily alerts. Unsubscribe anytime.'
 
   // ── Homepage variant — full section wrapper ───────────────────────
   if (variant === 'homepage') {

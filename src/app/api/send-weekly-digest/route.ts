@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Resend } from 'resend'
 import { logFunnelEvent } from '@/lib/analytics/events'
+import { buildLocationOrFilter } from '@/lib/alerts/location-match'
 
 const INGEST_SECRET = process.env.INGEST_SECRET
 
@@ -172,20 +173,26 @@ export async function GET(req: NextRequest) {
   let alerts: JobAlert[] | null = null
   let alertsError: unknown = null
 
+  // IMPORTANT: only send the Monday digest to subscribers who explicitly
+  // chose weekly frequency. Daily subscribers already receive alerts every
+  // morning via /api/send-alerts — sending them a weekly summary on top of
+  // that would mean 8 emails/week and guaranteed unsubscribes.
   const { data: alertsWithDedup, error: dedupError } = await supabase
     .from('job_alerts')
     .select('id, email, keywords, location, category, last_digest_sent_at, is_active, confirmation_token')
     .eq('is_active', true)
+    .eq('frequency', 'weekly')
     .not('confirmed_at', 'is', null)
     .or(`last_digest_sent_at.is.null,last_digest_sent_at.lt.${sixDaysAgo}`)
 
   if (dedupError) {
-    // Column likely doesn't exist yet — fall back to all active subscribers (no dedup)
-    console.warn('[send-weekly-digest] last_digest_sent_at column missing, falling back to all subscribers. Apply migration 20260329_digest_tracking.sql.')
+    // Column likely doesn't exist yet — fall back to all active weekly subscribers (no dedup)
+    console.warn('[send-weekly-digest] last_digest_sent_at column missing, falling back without dedup. Apply migration 20260329_digest_tracking.sql.')
     const { data: allAlerts, error: fallbackError } = await supabase
       .from('job_alerts')
       .select('id, email, keywords, location, category, is_active, confirmation_token')
       .eq('is_active', true)
+      .eq('frequency', 'weekly')
       .not('confirmed_at', 'is', null)
     alerts = allAlerts as JobAlert[] | null
     alertsError = fallbackError
@@ -224,7 +231,8 @@ export async function GET(req: NextRequest) {
         .limit(8)
 
       if (alert.category) query = query.eq('category', alert.category)
-      if (alert.location) query = query.ilike('location', `%${alert.location}%`)
+      const locationFilter = buildLocationOrFilter(alert.location)
+      if (locationFilter) query = query.or(locationFilter)
       if (alert.keywords) {
         query = query.or(
           `title.ilike.%${alert.keywords}%,company_name.ilike.%${alert.keywords}%`

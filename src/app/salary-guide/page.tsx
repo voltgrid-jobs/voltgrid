@@ -524,7 +524,7 @@ export default function SalaryGuidePage() {
                 defaultTrade="electrical"
                 source="salary-guide-top"
                 headline="Get electrician jobs in your market by email"
-                subtext="New data center electrician roles — filtered by city. Delivered weekly. Unsubscribe anytime."
+                subtext="New data center electrician roles — filtered to your market. Daily alerts. Unsubscribe anytime."
                 buttonLabel="Send me jobs"
               />
             </div>
@@ -875,7 +875,7 @@ export default function SalaryGuidePage() {
                 maxWidth: '560px',
               }}
             >
-              Data center electrician, HVAC, and low voltage roles — filtered to your trade and market. Weekly digest, no spam.
+              Data center electrician, HVAC, and low voltage roles — filtered to your trade and market. Daily alerts, no spam.
             </p>
             <JobAlertInlineForm
               variant="jobs"

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Resend } from 'resend'
 import { logFunnelEvent } from '@/lib/analytics/events'
+import { buildLocationOrFilter } from '@/lib/alerts/location-match'
 
 const INGEST_SECRET = process.env.INGEST_SECRET
 
@@ -55,7 +56,8 @@ export async function GET(req: NextRequest) {
         .limit(10)
 
       if (alert.category) query = query.eq('category', alert.category)
-      if (alert.location) query = query.ilike('location', `%${alert.location}%`)
+      const locationFilter = buildLocationOrFilter(alert.location)
+      if (locationFilter) query = query.or(locationFilter)
       if (alert.keywords) {
         query = query.or(
           `title.ilike.%${alert.keywords}%,company_name.ilike.%${alert.keywords}%`

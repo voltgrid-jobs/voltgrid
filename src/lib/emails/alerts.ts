@@ -98,13 +98,13 @@ export function buildWelcomeEmail({ tradeLabel, manageToken, baseUrl, category }
     <li style="display:flex;gap:12px;margin-bottom:12px">
       <span style="color:${YELLOW};font-weight:700;flex-shrink:0">→</span>
       <span style="color:${FG_MUTED};font-size:14px;line-height:1.6">
-        <strong style="color:${FG}">Daily alerts</strong> when new ${tradeLabel} jobs post at data centers and AI infrastructure sites.
+        <strong style="color:${FG}">Daily alerts</strong> at 08:00 UTC when new ${tradeLabel} jobs post at data centers and AI infrastructure sites.
       </span>
     </li>
     <li style="display:flex;gap:12px;margin-bottom:12px">
       <span style="color:${YELLOW};font-weight:700;flex-shrink:0">→</span>
       <span style="color:${FG_MUTED};font-size:14px;line-height:1.6">
-        <strong style="color:${FG}">Weekly digest</strong> every Monday with the top roles from the past seven days.
+        <strong style="color:${FG}">Quiet days stay quiet.</strong> If no new roles match, you don&apos;t get an email.
       </span>
     </li>
     <li style="display:flex;gap:12px">
@@ -147,8 +147,8 @@ export function buildWelcomeEmail({ tradeLabel, manageToken, baseUrl, category }
 
 Your alert for ${tradeLabel} jobs is live. Here is what happens next:
 
-- Daily alerts when new ${tradeLabel} jobs post at data centers and AI infrastructure sites.
-- Weekly digest every Monday with the top roles from the past seven days.
+- Daily alerts at 08:00 UTC when new ${tradeLabel} jobs post at data centers and AI infrastructure sites.
+- Quiet days stay quiet. If no new roles match, you don't get an email.
 - No spam. Real job alerts only. Unsubscribe in one click any time.
 
 Free companion guide — 2026 US Data Center Trades Salary Guide

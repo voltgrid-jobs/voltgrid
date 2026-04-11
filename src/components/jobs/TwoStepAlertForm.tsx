@@ -283,7 +283,7 @@ export function TwoStepAlertForm({
             setLocation(e.target.value)
             if (error) setError('')
           }}
-          placeholder="e.g. Phoenix, Northern Virginia, Texas"
+          placeholder="e.g. Phoenix AZ, Ashburn VA, Columbus OH"
           autoComplete="address-level2"
           className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none autofill-bg-dark"
           style={{

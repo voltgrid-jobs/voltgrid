@@ -137,7 +137,7 @@ export function StickyFooterAlertCTA({
                   margin: 0,
                 }}
               >
-                Daily jobs + per diem alerts
+                Daily data center job alerts
               </p>
               <button
                 type="button"
@@ -162,7 +162,7 @@ export function StickyFooterAlertCTA({
               defaultTrade={defaultTrade}
               compact
               headline="Get matching jobs in your inbox"
-              subtext="Data center roles filtered to your trade and region. Weekly digest, unsubscribe anytime."
+              subtext="Data center roles filtered to your trade and region. Daily alerts, unsubscribe anytime."
               onSuccess={(status) => setDoneMessage(status)}
             />
           </div>
@@ -203,7 +203,7 @@ export function StickyFooterAlertCTA({
               margin: 0,
             }}
           >
-            Daily jobs + per diem alerts
+            Daily data center job alerts
           </p>
           <p
             style={{
