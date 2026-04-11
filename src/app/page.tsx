@@ -170,7 +170,7 @@ export default async function HomePage() {
               <CompactHeroSignup
                 source="homepage-hero"
                 defaultTrade="electrical"
-                headline="Get daily data center electrician jobs sent to you"
+                headline="Get daily data center jobs sent to you"
                 subtext="Pay, per diem, and travel filters. No junk. No generic construction spam."
                 trustLine={
                   electricalJobsCount && electricalJobsCount > 0
