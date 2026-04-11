@@ -22,12 +22,15 @@ export async function GET(req: NextRequest) {
   const resend = new Resend(process.env.RESEND_API_KEY)
   const supabase = createAdminClient()
 
-  // Get all active daily alerts not sent in last 23 hours
+  // Get all active, confirmed daily alerts not sent in last 23 hours.
+  // Rows with confirmed_at IS NULL are pending double opt-in and must
+  // not receive any content emails until the user clicks the confirm link.
   const { data: alerts } = await supabase
     .from('job_alerts')
-    .select('*')
+    .select('id, email, category, keywords, location, last_sent_at, confirmation_token')
     .eq('is_active', true)
     .eq('frequency', 'daily')
+    .not('confirmed_at', 'is', null)
     .or('last_sent_at.is.null,last_sent_at.lt.' + new Date(Date.now() - 23 * 60 * 60 * 1000).toISOString())
 
   if (!alerts?.length) return NextResponse.json({ sent: 0, reason: 'No alerts due' })
@@ -96,9 +99,11 @@ export async function GET(req: NextRequest) {
                 Browse All Jobs →
               </a>
             </div>
-            <p style="color:#4b5563;font-size:12px;margin-top:32px;text-align:center">
-              You're receiving this because you signed up for job alerts on VoltGrid Jobs.<br>
-              <a href="${baseUrl}/account" style="color:#4b5563">Manage alerts</a>
+            <p style="color:#4b5563;font-size:12px;margin-top:32px;text-align:center;line-height:1.6">
+              You're receiving this because you confirmed a job alert on VoltGrid Jobs.<br>
+              <a href="${baseUrl}/alerts/manage?t=${alert.confirmation_token}" style="color:#4b5563;text-decoration:underline">Manage alerts</a>
+              &nbsp;·&nbsp;
+              <a href="${baseUrl}/alerts/unsubscribe?t=${alert.confirmation_token}" style="color:#4b5563;text-decoration:underline">Unsubscribe</a>
             </p>
           </div>
         </body>

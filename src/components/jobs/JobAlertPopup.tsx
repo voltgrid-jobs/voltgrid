@@ -224,7 +224,7 @@ function StepEmail({
   trade: string
   zip: string
   onBack: () => void
-  onDone: () => void
+  onDone: (status: 'pending' | 'already') => void
 }) {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
@@ -249,13 +249,14 @@ function StepEmail({
           frequency: 'daily',
         }),
       })
-      // Accept success, duplicate (409), rate limit (429), or server error (5xx)
-      if (res.ok || [409, 429, 500, 502, 503].includes(res.status)) {
+      const data = await res.json().catch(() => ({}))
+      if (res.ok && data?.success) {
         localStorage.setItem(SIGNED_UP_KEY, 'true')
-        onDone()
+        onDone(data.status === 'already_subscribed' ? 'already' : 'pending')
+      } else if (res.status === 429) {
+        setError(data?.error || 'Too many signups. Try again in an hour.')
       } else {
-        const data = await res.json().catch(() => ({}))
-        setError(data.error || 'Something went wrong. Try again.')
+        setError(data?.error || 'Something went wrong. Try again.')
       }
     } catch {
       setError('Connection error. Try again.')
@@ -329,23 +330,26 @@ function StepEmail({
 }
 
 // ---- Done state ----
-function StepDone({ onClose }: { onClose: () => void }) {
+function StepDone({ onClose, status }: { onClose: () => void; status: 'pending' | 'already' }) {
+  const isAlready = status === 'already'
   return (
     <div className="text-center py-4">
       <div
         className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl"
-        style={{ background: 'var(--green-dim)' }}
+        style={{ background: isAlready ? 'var(--yellow-dim)' : 'var(--green-dim)' }}
       >
-        ✓
+        {isAlready ? '✓' : '📬'}
       </div>
       <h2
         className="text-xl sm:text-2xl font-bold mb-2"
         style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif', letterSpacing: '-0.01em' }}
       >
-        You&apos;re all set!
+        {isAlready ? 'Already subscribed' : 'Check your email to confirm'}
       </h2>
       <p className="text-sm mb-6" style={{ color: 'var(--fg-muted)' }}>
-        We&apos;ll email you when new jobs match your trade and area.
+        {isAlready
+          ? "You're already getting alerts for this trade and area."
+          : 'We sent a one-click confirmation link. Your first alert arrives after you confirm.'}
       </p>
       <button
         type="button"
@@ -371,6 +375,7 @@ export function JobAlertPopup() {
   const [step, setStep] = useState(0) // 0=trade, 1=zip, 2=email, 3=done
   const [trade, setTrade] = useState('')
   const [zip, setZip] = useState('')
+  const [doneStatus, setDoneStatus] = useState<'pending' | 'already'>('pending')
   const [authChecked, setAuthChecked] = useState(false)
   const [isAuth, setIsAuth] = useState(false)
 
@@ -413,7 +418,8 @@ export function JobAlertPopup() {
     setZip(z)
     setStep(2)
   }
-  function handleDone() {
+  function handleDone(status: 'pending' | 'already') {
+    setDoneStatus(status)
     setStep(3)
   }
 
@@ -465,7 +471,7 @@ export function JobAlertPopup() {
           {step === 0 && <StepTrade onNext={handleTradeNext} onSkip={() => { setTrade(''); setStep(1) }} />}
           {step === 1 && <StepZip onNext={handleZipNext} onBack={() => setStep(0)} />}
           {step === 2 && <StepEmail trade={trade} zip={zip} onBack={() => setStep(1)} onDone={handleDone} />}
-          {step === 3 && <StepDone onClose={dismiss} />}
+          {step === 3 && <StepDone onClose={dismiss} status={doneStatus} />}
         </div>
       </div>
     </>

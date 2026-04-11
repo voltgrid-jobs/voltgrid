@@ -23,6 +23,7 @@ interface JobAlert {
   category: string | null
   last_digest_sent_at: string | null
   is_active: boolean
+  confirmation_token: string
 }
 
 function formatSalary(min: number | null, max: number | null): string | null {
@@ -77,7 +78,8 @@ function buildEmailHtml(jobs: Job[], alert: JobAlert, baseUrl: string, totalJobs
     `
   }).join('')
 
-  const unsubscribeUrl = `${baseUrl}/api/alerts/unsubscribe?id=${alert.id}`
+  const manageUrl = `${baseUrl}/alerts/manage?t=${alert.confirmation_token}`
+  const unsubscribeUrl = `${baseUrl}/alerts/unsubscribe?t=${alert.confirmation_token}`
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -120,7 +122,9 @@ function buildEmailHtml(jobs: Job[], alert: JobAlert, baseUrl: string, totalJobs
     <!-- Footer -->
     <div style="border-top:1px solid #1f2937;padding-top:24px;text-align:center">
       <p style="color:#374151;font-size:12px;line-height:1.6;margin:0">
-        You're receiving this because you signed up for job alerts at <a href="${baseUrl}" style="color:#374151">voltgridjobs.com</a>.<br>
+        You confirmed a job alert at <a href="${baseUrl}" style="color:#374151">voltgridjobs.com</a>.<br>
+        <a href="${manageUrl}" style="color:#4b5563;text-decoration:underline">Manage alerts</a>
+        &nbsp;·&nbsp;
         <a href="${unsubscribeUrl}" style="color:#4b5563;text-decoration:underline">Unsubscribe</a>
       </p>
     </div>
@@ -169,8 +173,9 @@ export async function GET(req: NextRequest) {
 
   const { data: alertsWithDedup, error: dedupError } = await supabase
     .from('job_alerts')
-    .select('id, email, keywords, location, category, last_digest_sent_at, is_active')
+    .select('id, email, keywords, location, category, last_digest_sent_at, is_active, confirmation_token')
     .eq('is_active', true)
+    .not('confirmed_at', 'is', null)
     .or(`last_digest_sent_at.is.null,last_digest_sent_at.lt.${sixDaysAgo}`)
 
   if (dedupError) {
@@ -178,8 +183,9 @@ export async function GET(req: NextRequest) {
     console.warn('[send-weekly-digest] last_digest_sent_at column missing, falling back to all subscribers. Apply migration 20260329_digest_tracking.sql.')
     const { data: allAlerts, error: fallbackError } = await supabase
       .from('job_alerts')
-      .select('id, email, keywords, location, category, is_active')
+      .select('id, email, keywords, location, category, is_active, confirmation_token')
       .eq('is_active', true)
+      .not('confirmed_at', 'is', null)
     alerts = allAlerts as JobAlert[] | null
     alertsError = fallbackError
   } else {

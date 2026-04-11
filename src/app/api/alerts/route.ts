@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
+import { buildConfirmationEmail } from '@/lib/emails/alerts'
 
 // In-memory rate limit store (per cold-start instance)
 // For production scale, replace with Redis/KV — adequate for current traffic
@@ -20,22 +21,45 @@ function getClientIp(req: NextRequest): string {
 function checkRateLimit(ip: string): boolean {
   const now = Date.now()
   const record = rateLimitStore.get(ip)
-
   if (!record || now > record.resetAt) {
     rateLimitStore.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW })
-    return true // allowed
+    return true
   }
-
-  if (record.count >= RATE_LIMIT_MAX) {
-    return false // blocked
-  }
-
+  if (record.count >= RATE_LIMIT_MAX) return false
   record.count++
-  return true // allowed
+  return true
+}
+
+function tradeLabelFor(category: string | null | undefined) {
+  if (!category) return 'trades'
+  return category.replace(/_/g, ' ')
+}
+
+async function sendConfirmation(
+  email: string,
+  confirmToken: string,
+  category: string | null | undefined,
+  baseUrl: string
+) {
+  if (!process.env.RESEND_API_KEY) return
+  const resend = new Resend(process.env.RESEND_API_KEY)
+  const { subject, html, text } = buildConfirmationEmail({
+    email,
+    confirmToken,
+    tradeLabel: tradeLabelFor(category),
+    baseUrl,
+  })
+  await resend.emails.send({
+    from: `VoltGrid Jobs <${process.env.RESEND_FROM_EMAIL || 'alerts@voltgridjobs.com'}>`,
+    to: email,
+    subject,
+    html,
+    text,
+  })
 }
 
 export async function POST(req: NextRequest) {
-  // Rate limiting — 3 signups per IP per hour
+  // Rate limiting — 10 signups per IP per hour
   const ip = getClientIp(req)
   if (!checkRateLimit(ip)) {
     return NextResponse.json(
@@ -49,18 +73,20 @@ export async function POST(req: NextRequest) {
   const { email, keywords, location, category, frequency, background, job_id } = body
 
   if (!email) return NextResponse.json({ error: 'Email required' }, { status: 400 })
-
-  // Basic email format check
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return NextResponse.json({ error: 'Invalid email address' }, { status: 400 })
   }
 
-  // Prevent abuse: cap alerts per email address (check via admin client)
+  const normalizedEmail = email.toLowerCase().trim()
+  const normalizedCategory = category || null
   const adminClient = createAdminClient()
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://voltgridjobs.com'
+
+  // Cap: max 5 active alerts per email (prevents abuse)
   const { count } = await adminClient
     .from('job_alerts')
     .select('*', { count: 'exact', head: true })
-    .eq('email', email.toLowerCase())
+    .eq('email', normalizedEmail)
     .eq('is_active', true)
 
   if (count !== null && count >= 5) {
@@ -70,112 +96,108 @@ export async function POST(req: NextRequest) {
     )
   }
 
+  // Source page — best effort from referer header
+  const sourcePage = req.headers.get('referer') || null
+
   // Get user if logged in (best-effort — doesn't block unauthenticated signups)
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Use adminClient to bypass RLS — this is a server-side API route with its own
-  // validation (rate limit + email format check + per-email cap above).
-  // Upsert on (email, category) to prevent duplicate alerts for the same trade.
-  const { error } = await adminClient.from('job_alerts').upsert({
-    email: email.toLowerCase().trim(),
-    ...(background && { background }),
-    user_id: user?.id || null,
-    keywords: keywords || null,
-    location: location || null,
-    category: category || null,
-    frequency: frequency || 'daily',
-    is_active: true,
-    ...(job_id && { source_job_id: job_id }),
-  }, { onConflict: 'email,category', ignoreDuplicates: true })
+  // Check if a row already exists for this (email, category) — the table
+  // has a unique constraint on that pair. Three scenarios:
+  //   1. No existing row                 → INSERT, send confirmation email
+  //   2. Existing row, unconfirmed       → RESEND confirmation (user likely missed it)
+  //   3. Existing row, already confirmed → no-op, return success so form says "you're already subscribed"
+  const { data: existing } = await adminClient
+    .from('job_alerts')
+    .select('id, confirmation_token, confirmed_at, is_active')
+    .eq('email', normalizedEmail)
+    .eq('category', normalizedCategory)
+    .maybeSingle()
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-
-  // Welcome email — Email 1 of 3 in the onboarding sequence
-  try {
-    if (process.env.RESEND_API_KEY) {
-      const resend = new Resend(process.env.RESEND_API_KEY)
-      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://voltgridjobs.com'
-      const tradeLabel = category ? category.replace(/_/g, ' ') : 'trades'
-      await resend.emails.send({
-        from: `VoltGrid Jobs <${process.env.RESEND_FROM_EMAIL || 'alerts@voltgridjobs.com'}>`,
-        to: email.toLowerCase().trim(),
-        subject: "You're in — here's what to expect",
-        html: `<div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:32px 24px;background:#030712;color:#f9fafb">
-          <p style="font-size:18px;font-weight:700;color:#facc15;margin-bottom:16px">⚡ You're on the list</p>
-
-          <p style="font-size:15px;line-height:1.7;color:#d1d5db;margin-bottom:16px">
-            Your alert is set up. Here's what happens next:
-          </p>
-
-          <ul style="margin:0 0 20px 0;padding:0;list-style:none">
-            <li style="display:flex;gap:12px;margin-bottom:12px">
-              <span style="color:#facc15;font-weight:700;flex-shrink:0">→</span>
-              <span style="color:#d1d5db;font-size:14px;line-height:1.6">
-                <strong style="color:#fff">Daily alerts</strong> when new <strong style="color:#facc15">${tradeLabel}</strong> jobs post at data centers and AI infrastructure sites.
-              </span>
-            </li>
-            <li style="display:flex;gap:12px;margin-bottom:12px">
-              <span style="color:#facc15;font-weight:700;flex-shrink:0">→</span>
-              <span style="color:#d1d5db;font-size:14px;line-height:1.6">
-                <strong style="color:#fff">Weekly digest</strong> every Monday — top 10 highest-paying open roles.
-              </span>
-            </li>
-            <li style="display:flex;gap:12px">
-              <span style="color:#facc15;font-weight:700;flex-shrink:0">→</span>
-              <span style="color:#d1d5db;font-size:14px;line-height:1.6">
-                <strong style="color:#fff">No spam.</strong> Only real job alerts — we don't sell your email.
-              </span>
-            </li>
-          </ul>
-
-          <p style="font-size:15px;font-weight:600;color:#fff;margin-bottom:8px">Bonus resource:</p>
-          <p style="font-size:14px;line-height:1.6;color:#d1d5db;margin-bottom:20px">
-            Download the <a href="${baseUrl}/salary-guide?unlocked=true" style="color:#facc15;text-decoration:underline">2026 Data Center Trades Salary Guide</a>
-            — see what electricians, HVAC techs, and low voltage specialists are actually earning on these projects.
-          </p>
-
-          <div style="margin-bottom:24px">
-            <a href="${baseUrl}/jobs${category ? `?category=${category}` : ''}"
-              style="display:inline-block;background:#facc15;color:#0a0a0a;padding:12px 24px;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none">
-              Browse open ${tradeLabel} jobs →
-            </a>
-          </div>
-
-          <p style="font-size:13px;color:#6b7280;border-top:1px solid #1f2937;padding-top:16px;margin-top:8px">
-            VoltGrid Jobs — Built for trades workers in the data center industry.<br>
-            <a href="${baseUrl}" style="color:#facc15">voltgridjobs.com</a>
-            &nbsp;·&nbsp;
-            <a href="${baseUrl}/unsubscribe" style="color:#6b7280">Unsubscribe</a>
-          </p>
-        </div>`,
+  if (existing) {
+    if (existing.confirmed_at && existing.is_active) {
+      return NextResponse.json({
+        success: true,
+        status: 'already_subscribed',
+        message: "You're already subscribed to these alerts.",
       })
     }
-  } catch (confirmErr) {
-    // Non-critical — don't break the signup flow
-    console.error('[alerts] Welcome email error:', confirmErr)
+
+    // Unconfirmed (or previously unsubscribed) — reactivate and resend confirmation
+    await adminClient
+      .from('job_alerts')
+      .update({
+        is_active: true,
+        unsubscribed_at: null,
+        keywords: keywords || null,
+        location: location || null,
+        frequency: frequency || 'daily',
+        ...(background && { background }),
+        ...(sourcePage && { source_page: sourcePage }),
+      })
+      .eq('id', existing.id)
+
+    try {
+      await sendConfirmation(normalizedEmail, existing.confirmation_token, normalizedCategory, baseUrl)
+    } catch (err) {
+      console.error('[alerts] resend confirmation error:', err)
+    }
+
+    return NextResponse.json({
+      success: true,
+      status: 'confirmation_resent',
+      message: 'Check your email to confirm your alert.',
+    })
   }
 
-  // AUTOMATION 1: Notify employers of matching active listings
+  // New row — insert with confirmation_token defaulted by the DB, read it back
+  const { data: inserted, error } = await adminClient
+    .from('job_alerts')
+    .insert({
+      email: normalizedEmail,
+      user_id: user?.id || null,
+      keywords: keywords || null,
+      location: location || null,
+      category: normalizedCategory,
+      frequency: frequency || 'daily',
+      is_active: true,
+      confirmed_at: null,
+      ...(background && { background }),
+      ...(job_id && { source_job_id: job_id }),
+      ...(sourcePage && { source_page: sourcePage }),
+    })
+    .select('id, confirmation_token')
+    .single()
+
+  if (error || !inserted) {
+    return NextResponse.json(
+      { error: error?.message || 'Failed to create alert' },
+      { status: 500 }
+    )
+  }
+
+  try {
+    await sendConfirmation(normalizedEmail, inserted.confirmation_token, normalizedCategory, baseUrl)
+  } catch (err) {
+    // Non-critical — the row is saved, the user can request a resend
+    console.error('[alerts] confirmation email error:', err)
+  }
+
+  // Employer notification for matching listings — unchanged behaviour
   try {
     if (process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY)
-      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://voltgridjobs.com'
-
-      // Build query for active jobs matching this alert's criteria
       let jobQuery = adminClient
         .from('jobs')
         .select('id, title, company_name, location, category, employer_email')
         .eq('is_active', true)
-
-      if (category) jobQuery = jobQuery.eq('category', category)
+      if (normalizedCategory) jobQuery = jobQuery.eq('category', normalizedCategory)
       if (location) jobQuery = jobQuery.ilike('location', `%${location}%`)
-
       const { data: matchingJobs } = await jobQuery.limit(20)
 
       if (matchingJobs?.length) {
-        const categoryLabel = category || 'trades'
+        const categoryLabel = normalizedCategory || 'trades'
         const locationLabel = location || 'your area'
-
         for (const job of matchingJobs) {
           if (!job.employer_email) continue
           try {
@@ -198,9 +220,12 @@ export async function POST(req: NextRequest) {
       }
     }
   } catch (notifyErr) {
-    // Non-critical — log and continue
     console.error('[alerts] Employer notification error:', notifyErr)
   }
 
-  return NextResponse.json({ success: true })
+  return NextResponse.json({
+    success: true,
+    status: 'confirmation_sent',
+    message: 'Check your email to confirm your alert.',
+  })
 }

@@ -52,6 +52,7 @@ export function AlertSignupWidget({
   const [step, setStep] = useState<'email' | 'qualifier'>('email')
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
+  const [doneStatus, setDoneStatus] = useState<'pending' | 'already'>('pending')
   const [isAuth, setIsAuth] = useState(false)
   const [authChecking, setAuthChecking] = useState(true)
   const [error, setError] = useState('')
@@ -87,11 +88,13 @@ export function AlertSignupWidget({
           ...(jobId && { job_id: jobId }),
         }),
       })
-      if (res.ok || res.status === 409 || res.status === 429 || res.status >= 500) {
+      const data = await res.json().catch(() => ({}))
+      if (res.ok && data?.success) {
         localStorage.setItem('jobAlertSignedUp', 'true')
+        setDoneStatus(data.status === 'already_subscribed' ? 'already' : 'pending')
         setDone(true)
       } else {
-        setError('Something went wrong. Try again.')
+        setError(data?.error || 'Something went wrong. Try again.')
       }
     } finally {
       setLoading(false)
@@ -119,13 +122,27 @@ export function AlertSignupWidget({
   if (isAuth) return null
 
   if (done) {
+    const isAlready = doneStatus === 'already'
     return (
-      <div className="rounded-xl p-5 text-center" style={{ background: 'var(--green-dim)', border: '1px solid rgba(74,222,128,0.2)' }}>
-        <p className="font-semibold text-sm" style={{ color: 'var(--green)' }}>✓ Job alerts active</p>
-        <p className="text-xs mt-1" style={{ color: 'var(--fg-muted)' }}>
-          You&apos;ll get daily alerts + a weekly digest of top opportunities.
+      <div
+        className="rounded-xl p-5 text-center"
+        style={{
+          background: isAlready ? 'var(--yellow-dim)' : 'var(--green-dim)',
+          border: `1px solid ${isAlready ? 'var(--yellow-border)' : 'rgba(74,222,128,0.2)'}`,
+        }}
+      >
+        <p
+          className="font-semibold text-sm"
+          style={{ color: isAlready ? 'var(--yellow)' : 'var(--green)' }}
+        >
+          {isAlready ? '✓ Already subscribed' : '📬 Check your email to confirm'}
         </p>
-        {background && BACKGROUND_NOTES[background] && (
+        <p className="text-xs mt-1" style={{ color: 'var(--fg-muted)' }}>
+          {isAlready
+            ? "You're already getting these alerts."
+            : "We sent a one-click confirmation link. Your first alert arrives after you confirm."}
+        </p>
+        {!isAlready && background && BACKGROUND_NOTES[background] && (
           <p className="text-xs mt-2 px-2" style={{ color: 'var(--fg-faint)' }}>
             {BACKGROUND_NOTES[background]}
           </p>
