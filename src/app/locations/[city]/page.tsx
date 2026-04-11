@@ -84,7 +84,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const hub = HUBS.find(h => h.slug === city)
   if (!hub) return { title: 'Not Found' }
   return {
-    title: `${hub.name} Data Center Jobs — Electricians, HVAC & Trades | VoltGrid`,
+    title: `${hub.name} Data Center Jobs — Electricians, HVAC & Trades`,
     description: `${hub.name} data center jobs for electricians, HVAC technicians, and skilled trades. ${hub.blurb}`,
   }
 }

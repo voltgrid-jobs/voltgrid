@@ -180,7 +180,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!tradeDef || !marketDef) return { title: 'Not Found' }
 
   return {
-    title: `${tradeDef.shortName} Jobs in ${marketDef.name} — ${tradeDef.shortName}s at Data Centers | VoltGrid`,
+    title: `${tradeDef.shortName} Jobs in ${marketDef.name} — ${tradeDef.shortName}s at Data Centers`,
     description: `${tradeDef.shortName} jobs at data centers in ${marketDef.name}. ${marketDef.blurb} Browse and apply free on VoltGrid.`,
   }
 }

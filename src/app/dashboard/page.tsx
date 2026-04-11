@@ -10,7 +10,7 @@ import { SavedJobsList } from './SavedJobsList'
 import { AlertsList } from './AlertsList'
 import { JobActions } from './JobActions'
 
-export const metadata: Metadata = { title: 'Dashboard — VoltGrid Jobs' }
+export const metadata: Metadata = { title: 'Dashboard' }
 
 // ── Trade category → short badge label ──────────────────────────────────────
 const TRADE_LABELS: Record<string, string> = {

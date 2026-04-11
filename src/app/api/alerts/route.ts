@@ -38,6 +38,8 @@ function tradeLabelFor(tradePref: string | null | undefined, category: string | 
   if (t === 'electrical') return 'electrician'
   if (t === 'hvac') return 'HVAC'
   if (t === 'low_voltage') return 'low voltage'
+  if (t === 'construction') return 'construction'
+  if (t === 'operations') return 'operations'
   return t.replace(/_/g, ' ')
 }
 
@@ -101,7 +103,14 @@ export async function POST(req: NextRequest) {
   // Explicit trade/location preferences. Accept the new trade_pref and
   // location_pref params, fall back to mapping from legacy category/location
   // so older callers keep working.
-  const VALID_TRADES = new Set(['electrical', 'hvac', 'low_voltage', 'all'])
+  const VALID_TRADES = new Set([
+    'electrical',
+    'hvac',
+    'low_voltage',
+    'construction',
+    'operations',
+    'all',
+  ])
   const normalizedTradePref: string | null = (() => {
     if (typeof trade_pref === 'string' && VALID_TRADES.has(trade_pref)) return trade_pref
     if (normalizedCategory && VALID_TRADES.has(normalizedCategory)) return normalizedCategory

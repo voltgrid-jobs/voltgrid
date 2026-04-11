@@ -7,7 +7,9 @@ const DISMISSED_KEY = 'vg_alert_popup_dismissed'
 const SIGNED_UP_KEY = 'jobAlertSignedUp'
 const VIEW_THRESHOLD = 2
 
-// Large trade buttons — simple 3-way split
+// Large trade buttons — matches the 5 specific trades the rest of the
+// site exposes, plus an explicit "Skip / all trades" option handled by
+// the popup's StepTrade component.
 const TRADE_OPTIONS = [
   {
     value: 'electrical',
@@ -26,6 +28,18 @@ const TRADE_OPTIONS = [
     label: 'Low Voltage',
     icon: '📡',
     desc: 'Data & structured cabling',
+  },
+  {
+    value: 'construction',
+    label: 'Construction',
+    icon: '🏗️',
+    desc: 'General labor, PMs, estimators',
+  },
+  {
+    value: 'operations',
+    label: 'Operations',
+    icon: '🔧',
+    desc: 'Facility mgmt, building engineers',
   },
 ]
 

@@ -4,7 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { ManageForm } from './ManageForm'
 
 export const metadata: Metadata = {
-  title: 'Manage your job alert — VoltGrid Jobs',
+  title: 'Manage your job alert',
   robots: { index: false, follow: false },
 }
 

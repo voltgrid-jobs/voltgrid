@@ -1,7 +1,7 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Apply Click Stats — VoltGrid Admin' }
+export const metadata: Metadata = { title: 'Apply Click Stats — Admin' }
 
 // Force dynamic rendering — admin page, not pre-renderable at build time
 export const dynamic = 'force-dynamic'

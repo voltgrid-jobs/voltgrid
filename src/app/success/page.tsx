@@ -4,7 +4,7 @@ import { stripe } from '@/lib/stripe'
 import { createAdminClient } from '@/lib/supabase/admin'
 
 export const metadata: Metadata = {
-  title: 'Your Listing is Live — VoltGrid Jobs',
+  title: 'Your Listing is Live',
 }
 
 const CATEGORY_LABELS: Record<string, string> = {

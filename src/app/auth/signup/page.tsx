@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { AuthForm } from '@/components/auth/AuthForm'
 
-export const metadata: Metadata = { title: 'Create Account — VoltGrid Jobs' }
+export const metadata: Metadata = { title: 'Create Account' }
 
 export default function SignupPage() {
   return (

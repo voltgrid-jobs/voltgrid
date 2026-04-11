@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Alert confirmed — VoltGrid Jobs',
+  title: 'Alert confirmed',
   robots: { index: false, follow: false },
 }
 

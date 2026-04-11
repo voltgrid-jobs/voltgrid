@@ -15,12 +15,20 @@ import { useState } from 'react'
 // them as empty/fallback states — they are legitimate selections.
 // ─────────────────────────────────────────────────────────────────────
 
-export type TradePref = 'electrical' | 'hvac' | 'low_voltage' | 'all'
+export type TradePref =
+  | 'electrical'
+  | 'hvac'
+  | 'low_voltage'
+  | 'construction'
+  | 'operations'
+  | 'all'
 
 const TRADES: { value: TradePref; label: string; icon: string }[] = [
   { value: 'electrical', label: 'Electrical', icon: '⚡' },
   { value: 'hvac', label: 'HVAC', icon: '❄️' },
   { value: 'low_voltage', label: 'Low Voltage', icon: '🔌' },
+  { value: 'construction', label: 'Construction', icon: '🏗️' },
+  { value: 'operations', label: 'Operations', icon: '🔧' },
   { value: 'all', label: 'All trades', icon: '🌐' },
 ]
 
@@ -29,6 +37,8 @@ export function tradeLabel(t: TradePref | null | undefined): string {
   if (t === 'electrical') return 'electrician'
   if (t === 'hvac') return 'HVAC'
   if (t === 'low_voltage') return 'low voltage'
+  if (t === 'construction') return 'construction'
+  if (t === 'operations') return 'operations'
   return 'data center trades'
 }
 

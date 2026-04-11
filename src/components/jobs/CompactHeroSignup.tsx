@@ -16,12 +16,20 @@ import { createClient } from '@/lib/supabase/client'
 // the 2-step form.
 // ─────────────────────────────────────────────────────────────────────
 
-type Trade = 'electrical' | 'hvac' | 'low_voltage' | 'all'
+type Trade =
+  | 'electrical'
+  | 'hvac'
+  | 'low_voltage'
+  | 'construction'
+  | 'operations'
+  | 'all'
 
 const TRADES: { value: Trade; label: string }[] = [
   { value: 'electrical', label: 'Electrical' },
   { value: 'hvac', label: 'HVAC' },
   { value: 'low_voltage', label: 'Low Voltage' },
+  { value: 'construction', label: 'Construction' },
+  { value: 'operations', label: 'Operations' },
   { value: 'all', label: 'All trades' },
 ]
 

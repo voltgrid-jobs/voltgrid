@@ -5,10 +5,10 @@ import { createClient } from '@/lib/supabase/server'
 import { PostJobPageClient } from '@/components/jobs/PostJobPageClient'
 
 export const metadata: Metadata = {
-  title: 'Post a Job — VoltGrid Jobs',
+  title: 'Post a Job',
   description: 'Post your data center electrician, HVAC, or low voltage job to 350+ qualified trades workers. Flat-rate listings starting at $149. No recruiter fees.',
   openGraph: {
-    title: 'Post a Job — VoltGrid Jobs',
+    title: 'Post a Job',
     description: 'Post your data center electrician, HVAC, or low voltage job to 350+ qualified trades workers. Flat-rate listings starting at $149.',
     url: 'https://voltgridjobs.com/post-job',
   },
