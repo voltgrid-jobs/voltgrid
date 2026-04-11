@@ -86,7 +86,7 @@ function TradeSection({ trade }: { trade: typeof GATED_TRADES[0] }) {
         </div>
         <Link
           href={`/jobs?category=${trade.category}`}
-          className="text-sm font-bold px-4 py-2 rounded-lg transition-colors whitespace-nowrap"
+          className="text-sm font-bold px-4 py-2 rounded-lg transition-colors hover:opacity-80 whitespace-nowrap"
           style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
         >
           Browse {trade.icon} jobs →
@@ -152,14 +152,14 @@ export function InterviewPrepGate() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href="/jobs"
-              className="inline-block font-bold px-6 py-3 rounded-xl transition-colors"
+              className="inline-block font-bold px-6 py-3 rounded-xl transition-colors hover:opacity-80"
               style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
             >
               Browse all open jobs →
             </Link>
             <Link
               href="/break-into-data-center-work"
-              className="inline-block font-semibold px-6 py-3 rounded-xl transition-colors"
+              className="inline-block font-semibold px-6 py-3 rounded-xl transition-colors hover:opacity-80"
               style={{ border: '1px solid var(--border)', color: 'var(--fg-muted)' }}
             >
               Break into data center work →
@@ -202,7 +202,7 @@ export function InterviewPrepGate() {
         <button
           type="submit"
           disabled={loading || !email.trim()}
-          className="px-5 py-2.5 rounded-lg font-semibold text-sm transition-opacity disabled:opacity-40 whitespace-nowrap"
+          className="px-5 py-2.5 rounded-lg font-semibold text-sm transition-opacity hover:opacity-90 disabled:opacity-40 whitespace-nowrap"
           style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
         >
           {loading ? 'Loading...' : 'Continue reading →'}

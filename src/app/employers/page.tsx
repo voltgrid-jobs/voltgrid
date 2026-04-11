@@ -171,11 +171,11 @@ export default async function EmployersPage() {
             On VoltGrid, every candidate already knows what a PDU is.
           </p>
           <div className="flex flex-col sm:flex-row gap-3">
-            <Link href="/post-job" className="px-8 py-4 rounded-xl font-bold text-lg transition-opacity inline-block"
+            <Link href="/post-job" className="px-8 py-4 rounded-xl font-bold text-lg transition-opacity hover:opacity-90 inline-block"
               style={{ background: 'var(--yellow)', color: '#0A0A0A' }}>
               Post Your First Job
             </Link>
-            <a href="#pricing" className="px-8 py-4 rounded-xl font-semibold text-lg transition-colors inline-block"
+            <a href="#pricing" className="px-8 py-4 rounded-xl font-semibold text-lg transition-colors hover:opacity-80 inline-block"
               style={{ border: '1px solid var(--border-strong)', color: 'var(--fg-muted)' }}>
               See all plans
             </a>
@@ -429,7 +429,7 @@ export default async function EmployersPage() {
             <p className="mb-8 text-lg" style={{ color: 'rgba(10,10,10,0.75)' }}>
               Post today. Live in 5 minutes. $149 flat. No bidding, no account manager, no agency fees.
             </p>
-            <Link href="/post-job" className="inline-block px-10 py-4 rounded-xl font-bold text-lg transition-opacity"
+            <Link href="/post-job" className="inline-block px-10 py-4 rounded-xl font-bold text-lg transition-opacity hover:opacity-90"
               style={{ background: '#0A0A0A', color: 'var(--yellow)' }}>
               Post a Job for $149
             </Link>

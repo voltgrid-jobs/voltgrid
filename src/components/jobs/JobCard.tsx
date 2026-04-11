@@ -194,7 +194,7 @@ export function JobCard({ job, featured = false }: { job: Job; featured?: boolea
               />
             )}
             <h3
-              className="font-semibold text-base sm:text-lg truncate transition-colors"
+              className="font-semibold text-base sm:text-lg truncate transition-colors hover:opacity-80"
               style={{ color: 'var(--fg)', fontFamily: 'var(--font-sans), system-ui, sans-serif' }}
             >
               {job.title}
@@ -203,7 +203,7 @@ export function JobCard({ job, featured = false }: { job: Job; featured?: boolea
           <p className="text-sm" style={{ color: 'var(--fg-muted)' }}>
             <Link
               href={`/jobs?company=${encodeURIComponent(job.company_name)}`}
-              className="hover:underline transition-colors"
+              className="hover:underline transition-colors hover:opacity-80"
               style={{ color: 'var(--fg-muted)' }}
               onClick={e => e.stopPropagation()}
             >

@@ -288,7 +288,7 @@ export default async function JobDetailPage({
       />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
         <div className="mb-6">
-          <Link href="/jobs" className="text-sm transition-colors" style={{ color: 'var(--fg-muted)' }}>
+          <Link href="/jobs" className="text-sm transition-colors hover:opacity-80" style={{ color: 'var(--fg-muted)' }}>
             ← Back to jobs
           </Link>
         </div>
@@ -361,7 +361,7 @@ export default async function JobDetailPage({
         {/* Salary Guide CTA */}
         <Link
           href="/salary-guide"
-          className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl px-5 py-4 mb-4 transition-colors"
+          className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl px-5 py-4 mb-4 transition-colors hover:opacity-80"
           style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}
         >
           <div>
@@ -573,7 +573,7 @@ export default async function JobDetailPage({
                   category={job.category}
                   companyName={job.company_name}
                   disableModal
-                  className="inline-block px-10 py-4 rounded-xl font-semibold text-lg transition-opacity"
+                  className="inline-block px-10 py-4 rounded-xl font-semibold text-lg transition-opacity hover:opacity-90"
                   style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
                 />
                 {/* Secondary CTA below the apply button */}
@@ -594,7 +594,7 @@ export default async function JobDetailPage({
               <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--fg-faint)' }}>
                 More {CATEGORY_LABELS[job.category as keyof typeof CATEGORY_LABELS]} Jobs
               </p>
-              <Link href={`/jobs?category=${job.category}`} className="text-xs transition-colors" style={{ color: 'var(--yellow)' }}>
+              <Link href={`/jobs?category=${job.category}`} className="text-xs transition-colors hover:opacity-80" style={{ color: 'var(--yellow)' }}>
                 View all →
               </Link>
             </div>

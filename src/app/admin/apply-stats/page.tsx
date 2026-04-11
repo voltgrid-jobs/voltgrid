@@ -112,14 +112,14 @@ export default async function ApplyStatsPage() {
               {stats.map((row, i) => (
                 <tr
                   key={row.job_id}
-                  className={`border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors ${
+                  className={`border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors hover:opacity-80 ${
                     !row.is_active ? 'opacity-50' : ''
                   }`}
                 >
                   <td className="px-5 py-3">
                     <a
                       href={`/jobs/${row.job_id}`}
-                      className="text-white hover:text-yellow-400 transition-colors font-medium"
+                      className="text-white hover:text-yellow-400 transition-colors hover:opacity-80 font-medium"
                       target="_blank"
                       rel="noopener noreferrer"
                     >

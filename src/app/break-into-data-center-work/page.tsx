@@ -345,7 +345,7 @@ export default function BreakIntoDataCenterWork() {
                 href="https://www.se.com/us/en/about-us/university/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="shrink-0 inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg transition-opacity hover:opacity-80"
+                className="shrink-0 inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg transition-opacity hover:opacity-90 hover:opacity-80"
                 style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
               >
                 Enroll free
@@ -399,7 +399,7 @@ export default function BreakIntoDataCenterWork() {
             <p className="text-sm mb-3" style={{ color: 'var(--fg-muted)' }}>
               VoltGrid indexes data center and AI infrastructure trades jobs daily. Set up a trade-specific alert and get notified within hours of a new listing.
             </p>
-            <Link href="/jobs" className="inline-block px-5 py-2.5 rounded-lg font-semibold text-sm transition-opacity"
+            <Link href="/jobs" className="inline-block px-5 py-2.5 rounded-lg font-semibold text-sm transition-opacity hover:opacity-90"
               style={{ background: 'var(--yellow)', color: '#0A0A0A' }}>
               Browse current openings →
             </Link>
@@ -539,7 +539,7 @@ export default function BreakIntoDataCenterWork() {
           <p className="text-base mb-4" style={{ color: 'var(--fg-muted)', lineHeight: 1.7 }}>
             The 2026 Data Center Trades Salary Guide covers current pay rates for electricians, HVAC techs, and low voltage specialists on DC and AI infrastructure projects — by role, experience level, and region.
           </p>
-          <Link href="/salary-guide" className="inline-block text-sm font-semibold transition-colors"
+          <Link href="/salary-guide" className="inline-block text-sm font-semibold transition-colors hover:opacity-80"
             style={{ color: 'var(--yellow)' }}>
             Download the 2026 Salary Guide →
           </Link>
@@ -638,7 +638,7 @@ export default function BreakIntoDataCenterWork() {
 
         {/* Footer nav */}
         <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem' }}>
-          <Link href="/jobs" className="text-sm transition-colors" style={{ color: 'var(--fg-faint)' }}>
+          <Link href="/jobs" className="text-sm transition-colors hover:opacity-80" style={{ color: 'var(--fg-faint)' }}>
             ← Browse all data center trades jobs
           </Link>
         </div>

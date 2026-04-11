@@ -12,7 +12,7 @@ export default function AboutPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
       <div className="mb-6">
-        <Link href="/" className="text-sm transition-colors" style={{ color: 'var(--fg-muted)' }}>
+        <Link href="/" className="text-sm transition-colors hover:opacity-80" style={{ color: 'var(--fg-muted)' }}>
           ← Home
         </Link>
       </div>
@@ -66,14 +66,14 @@ export default function AboutPage() {
       <div className="mt-12 flex flex-col sm:flex-row gap-3">
         <Link
           href="/jobs"
-          className="px-6 py-3 rounded-xl font-semibold text-base transition-opacity text-center"
+          className="px-6 py-3 rounded-xl font-semibold text-base transition-opacity hover:opacity-90 text-center"
           style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
         >
           Browse Jobs
         </Link>
         <Link
           href="/post-job"
-          className="px-6 py-3 rounded-xl font-semibold text-base transition-colors text-center"
+          className="px-6 py-3 rounded-xl font-semibold text-base transition-colors hover:opacity-80 text-center"
           style={{ border: '1px solid var(--border-strong)', color: 'var(--fg-muted)' }}
         >
           Post a Job

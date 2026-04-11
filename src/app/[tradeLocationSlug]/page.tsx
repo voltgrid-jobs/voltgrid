@@ -390,9 +390,9 @@ export default async function TradeLocationPage({ params }: Props) {
       {/* Breadcrumb */}
       <nav className="max-w-5xl mx-auto px-4 pt-6 pb-2">
         <ol className="flex items-center gap-2 text-sm" style={{ color: 'var(--fg-faint)' }}>
-          <li><Link href="/" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors">Home</Link></li>
+          <li><Link href="/" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors hover:opacity-80">Home</Link></li>
           <li>/</li>
-          <li><Link href="/jobs" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors">Jobs</Link></li>
+          <li><Link href="/jobs" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors hover:opacity-80">Jobs</Link></li>
           <li>/</li>
           <li style={{ color: 'var(--fg-muted)' }}>{tradeDef.labelPlural} in {locationDisplay}</li>
         </ol>
@@ -470,7 +470,7 @@ export default async function TradeLocationPage({ params }: Props) {
         </p>
         <Link
           href="/post-job"
-          className="inline-block font-bold px-6 py-3 rounded-xl transition-colors"
+          className="inline-block font-bold px-6 py-3 rounded-xl transition-colors hover:opacity-80"
           style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
         >
           Post a job from $149 →

@@ -76,7 +76,7 @@ export default async function CompaniesPage() {
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
       {/* Breadcrumb */}
       <p className="text-sm mb-6" style={{ color: 'var(--fg-faint)' }}>
-        <Link href="/" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors">Home</Link>
+        <Link href="/" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors hover:opacity-80">Home</Link>
         {' '}/{' '}
         <span style={{ color: 'var(--fg-muted)' }}>Companies</span>
       </p>
@@ -107,7 +107,7 @@ export default async function CompaniesPage() {
             <Link
               key={name}
               href={`/companies/${slug}`}
-              className="group rounded-xl p-5 flex flex-col gap-3 transition-colors"
+              className="group rounded-xl p-5 flex flex-col gap-3 transition-colors hover:opacity-80"
               style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}
             >
               <div className="flex items-center gap-3">
@@ -123,7 +123,7 @@ export default async function CompaniesPage() {
                     {name[0].toUpperCase()}
                   </div>
                 )}
-                <p className="font-semibold text-sm leading-tight group-hover:text-yellow-400 transition-colors" style={{ color: 'var(--fg)' }}>
+                <p className="font-semibold text-sm leading-tight group-hover:text-yellow-400 transition-colors hover:opacity-80" style={{ color: 'var(--fg)' }}>
                   {name}
                 </p>
               </div>
@@ -161,7 +161,7 @@ export default async function CompaniesPage() {
         </p>
         <Link
           href="/post-job"
-          className="inline-block font-bold px-6 py-3 rounded-xl transition-colors"
+          className="inline-block font-bold px-6 py-3 rounded-xl transition-colors hover:opacity-80"
           style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
         >
           Post a job from $149 →

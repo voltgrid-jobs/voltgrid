@@ -252,15 +252,15 @@ export default async function TradeCityPage({ params }: Props) {
         <nav className="max-w-5xl mx-auto px-4 pt-6 pb-2">
           <ol className="flex items-center gap-2 text-sm text-gray-500">
             <li>
-              <Link href="/" className="hover:text-yellow-400 transition-colors">Home</Link>
+              <Link href="/" className="hover:text-yellow-400 transition-colors hover:opacity-80">Home</Link>
             </li>
             <li className="text-gray-700">/</li>
             <li>
-              <Link href="/trades" className="hover:text-yellow-400 transition-colors">Trades</Link>
+              <Link href="/trades" className="hover:text-yellow-400 transition-colors hover:opacity-80">Trades</Link>
             </li>
             <li className="text-gray-700">/</li>
             <li>
-              <Link href={`/trades/${trade}`} className="hover:text-yellow-400 transition-colors">
+              <Link href={`/trades/${trade}`} className="hover:text-yellow-400 transition-colors hover:opacity-80">
                 {tradeDef.shortName}
               </Link>
             </li>
@@ -340,7 +340,7 @@ export default async function TradeCityPage({ params }: Props) {
           </p>
           <Link
             href="/post-job"
-            className="inline-block bg-yellow-400 text-gray-950 font-bold px-6 py-3 rounded-xl hover:bg-yellow-300 transition-colors"
+            className="inline-block bg-yellow-400 text-gray-950 font-bold px-6 py-3 rounded-xl hover:bg-yellow-300 transition-colors hover:opacity-80"
           >
             Post a job from $149 →
           </Link>
@@ -351,17 +351,17 @@ export default async function TradeCityPage({ params }: Props) {
           <div className="max-w-5xl mx-auto">
             <p className="text-gray-500 text-xs uppercase tracking-widest mb-4">Browse more</p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <Link href={`/trades/${trade}`} className="text-sm text-gray-400 hover:text-yellow-400 transition-colors">
+              <Link href={`/trades/${trade}`} className="text-sm text-gray-400 hover:text-yellow-400 transition-colors hover:opacity-80">
                 ← All {tradeDef.shortName} jobs
               </Link>
-              <Link href={`/locations/${city}`} className="text-sm text-gray-400 hover:text-yellow-400 transition-colors">
+              <Link href={`/locations/${city}`} className="text-sm text-gray-400 hover:text-yellow-400 transition-colors hover:opacity-80">
                 ← All jobs in {marketDef.name}
               </Link>
               {Object.keys(MARKETS)
                 .filter(m => m !== city)
                 .slice(0, 2)
                 .map(m => (
-                  <Link key={m} href={`/trades/${trade}/${m}`} className="text-sm text-gray-400 hover:text-yellow-400 transition-colors">
+                  <Link key={m} href={`/trades/${trade}/${m}`} className="text-sm text-gray-400 hover:text-yellow-400 transition-colors hover:opacity-80">
                     {tradeDef.shortName} in {MARKETS[m].name} →
                   </Link>
                 ))}

@@ -27,7 +27,7 @@ export function ApplyButton({
   companyName,
   disableModal = false,
 }: ApplyButtonProps) {
-  const defaultClass = 'inline-block px-8 py-3 rounded-xl font-semibold transition-opacity text-center'
+  const defaultClass = 'inline-block px-8 py-3 rounded-xl font-semibold transition-opacity hover:opacity-90 text-center'
   const defaultStyle = { background: 'var(--yellow)', color: '#0A0A0A' }
 
   const [showModal, setShowModal] = useState(false)
@@ -159,7 +159,7 @@ export function ApplyButton({
                   <button
                     type="submit"
                     disabled={modalLoading || !email}
-                    className="w-full py-3 rounded-xl font-semibold text-sm transition-opacity disabled:opacity-40"
+                    className="w-full py-3 rounded-xl font-semibold text-sm transition-opacity hover:opacity-90 disabled:opacity-40"
                     style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
                   >
                     {modalLoading ? 'Saving...' : 'Get alerts + Apply →'}
@@ -169,7 +169,7 @@ export function ApplyButton({
                 <button
                   type="button"
                   onClick={openAndClose}
-                  className="w-full mt-2 py-2 text-xs transition-colors"
+                  className="w-full mt-2 py-2 text-xs transition-colors hover:opacity-80"
                   style={{ color: 'var(--fg-faint)' }}
                 >
                   Skip and apply now

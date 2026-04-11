@@ -221,13 +221,13 @@ export default async function HireByTradePage({ params }: Props) {
       <nav className="max-w-5xl mx-auto px-4 pt-6 pb-2">
         <ol className="flex items-center gap-2 text-sm" style={{ color: 'var(--fg-faint)' }}>
           <li>
-            <Link href="/" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors">
+            <Link href="/" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors hover:opacity-80">
               Home
             </Link>
           </li>
           <li>/</li>
           <li>
-            <Link href="/employers" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors">
+            <Link href="/employers" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors hover:opacity-80">
               Employers
             </Link>
           </li>
@@ -269,7 +269,7 @@ export default async function HireByTradePage({ params }: Props) {
             </Link>
             <Link
               href="/employers"
-              className="inline-block font-semibold px-6 py-3 rounded-xl transition-colors"
+              className="inline-block font-semibold px-6 py-3 rounded-xl transition-colors hover:opacity-80"
               style={{
                 border: '1px solid var(--border)',
                 color: 'var(--fg-muted)',
@@ -386,7 +386,7 @@ export default async function HireByTradePage({ params }: Props) {
             </Link>
             <Link
               href="/employers"
-              className="inline-block font-semibold px-6 py-3 rounded-xl transition-colors"
+              className="inline-block font-semibold px-6 py-3 rounded-xl transition-colors hover:opacity-80"
               style={{
                 border: '1px solid var(--border)',
                 color: 'var(--fg-muted)',

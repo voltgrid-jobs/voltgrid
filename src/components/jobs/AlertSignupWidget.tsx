@@ -202,7 +202,7 @@ export function AlertSignupWidget({
                 type="button"
                 onClick={() => handleBackgroundSelect(value)}
                 disabled={loading}
-                className="w-full text-left px-3 py-2 rounded-lg text-sm transition-colors disabled:opacity-60"
+                className="w-full text-left px-3 py-2 rounded-lg text-sm transition-colors hover:opacity-80 disabled:opacity-60"
                 style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--fg)' }}
               >
                 {label}
@@ -213,7 +213,7 @@ export function AlertSignupWidget({
             type="button"
             onClick={skipQualifier}
             disabled={loading}
-            className="text-xs transition-colors disabled:opacity-60"
+            className="text-xs transition-colors hover:opacity-80 disabled:opacity-60"
             style={{ color: 'var(--fg-faint)' }}
           >
             {loading ? 'Setting up...' : 'Skip →'}

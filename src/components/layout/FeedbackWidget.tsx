@@ -96,7 +96,7 @@ export function FeedbackWidget() {
           <button
             key={t}
             onClick={() => setUserType(t)}
-            className="flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors"
+            className="flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors hover:opacity-80"
             style={{
               background: userType === t ? 'var(--yellow)' : 'var(--bg)',
               color: userType === t ? '#0A0A0A' : 'var(--fg-muted)',
@@ -142,7 +142,7 @@ export function FeedbackWidget() {
         disabled={loading || !rating}
         title={!rating ? 'Select a star rating to send' : undefined}
         aria-describedby={!rating ? 'feedback-hint' : undefined}
-        className="w-full py-2 rounded-lg text-xs font-semibold transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+        className="w-full py-2 rounded-lg text-xs font-semibold transition-opacity hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
         style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
       >
         {loading ? 'Sending...' : 'Send feedback'}

@@ -168,7 +168,7 @@ export default async function JobsPage({
               Searching for: <strong>{params.q}</strong>
             </span>
             <a href={buildBasePath({ ...params, q: undefined })}
-              className="text-xs transition-colors"
+              className="text-xs transition-colors hover:opacity-80"
               style={{ color: 'var(--fg-faint)' }}>
               ✕ clear
             </a>
@@ -385,11 +385,11 @@ export default async function JobsPage({
                     {params.per_diem === 'true' && <span className="text-xs px-2 py-1 rounded-full" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--fg-muted)' }}>Per Diem</span>}
                   </div>
                   <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                    <a href="/jobs" className="inline-block text-sm px-5 py-2.5 rounded-lg font-semibold transition-colors"
+                    <a href="/jobs" className="inline-block text-sm px-5 py-2.5 rounded-lg font-semibold transition-colors hover:opacity-80"
                       style={{ background: 'var(--yellow)', color: '#0A0A0A' }}>
                       Clear filters
                     </a>
-                    <a href="#get-alerts" className="inline-block text-sm px-5 py-2.5 rounded-lg transition-colors"
+                    <a href="#get-alerts" className="inline-block text-sm px-5 py-2.5 rounded-lg transition-colors hover:opacity-80"
                       style={{ border: '1px solid var(--border-strong)', color: 'var(--fg-muted)' }}>
                       Get alerts when matching jobs post
                     </a>

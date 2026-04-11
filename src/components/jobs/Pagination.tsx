@@ -56,7 +56,7 @@ export function Pagination({ currentPage, totalPages, basePath }: PaginationProp
         {hasPrev ? (
           <a
             href={pageUrl(basePath, currentPage - 1)}
-            className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            className="px-4 py-2 rounded-lg text-sm font-medium transition-colors hover:opacity-80"
             style={{ color: 'var(--yellow)', border: '1px solid var(--yellow-border)', background: 'var(--bg-raised)' }}
           >
             ← Prev
@@ -77,7 +77,7 @@ export function Pagination({ currentPage, totalPages, basePath }: PaginationProp
         {hasNext ? (
           <a
             href={pageUrl(basePath, currentPage + 1)}
-            className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            className="px-4 py-2 rounded-lg text-sm font-medium transition-colors hover:opacity-80"
             style={{ color: 'var(--yellow)', border: '1px solid var(--yellow-border)', background: 'var(--bg-raised)' }}
           >
             Next →
@@ -98,7 +98,7 @@ export function Pagination({ currentPage, totalPages, basePath }: PaginationProp
         {hasPrev ? (
           <a
             href={pageUrl(basePath, currentPage - 1)}
-            className="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+            className="px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:opacity-80"
             style={{ color: 'var(--yellow)', border: '1px solid var(--yellow-border)', background: 'var(--bg-raised)' }}
           >
             ←
@@ -147,7 +147,7 @@ export function Pagination({ currentPage, totalPages, basePath }: PaginationProp
         {hasNext ? (
           <a
             href={pageUrl(basePath, currentPage + 1)}
-            className="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+            className="px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:opacity-80"
             style={{ color: 'var(--yellow)', border: '1px solid var(--yellow-border)', background: 'var(--bg-raised)' }}
           >
             →

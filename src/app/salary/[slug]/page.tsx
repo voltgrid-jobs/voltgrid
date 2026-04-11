@@ -149,9 +149,9 @@ export default async function SalaryPage({ params }: Props) {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
         {/* Breadcrumb */}
         <p className="text-sm mb-6" style={{ color: 'var(--fg-faint)' }}>
-          <Link href="/" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors">Home</Link>
+          <Link href="/" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors hover:opacity-80">Home</Link>
           {' '}/{' '}
-          <Link href="/salary-guide" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors">Salary Guide</Link>
+          <Link href="/salary-guide" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors hover:opacity-80">Salary Guide</Link>
           {' '}/{' '}
           <span style={{ color: 'var(--fg-muted)' }}>{page.city}, {page.state}</span>
         </p>
@@ -254,14 +254,14 @@ export default async function SalaryPage({ params }: Props) {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href={`/${page.tradeCategory === 'low_voltage' ? 'low-voltage' : page.tradeCategory}-jobs-in-${page.citySlug}`}
-              className="inline-block font-bold px-6 py-3 rounded-xl transition-colors"
+              className="inline-block font-bold px-6 py-3 rounded-xl transition-colors hover:opacity-80"
               style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
             >
               Browse {page.city} jobs →
             </Link>
             <Link
               href="/salary-guide"
-              className="inline-block font-semibold px-6 py-3 rounded-xl transition-colors"
+              className="inline-block font-semibold px-6 py-3 rounded-xl transition-colors hover:opacity-80"
               style={{ border: '1px solid var(--border)', color: 'var(--fg-muted)' }}
             >
               2026 Salary Guide →
@@ -279,7 +279,7 @@ export default async function SalaryPage({ params }: Props) {
               <Link
                 key={p.slug}
                 href={`/salary/${p.slug}`}
-                className="text-sm px-3 py-1.5 rounded-lg transition-colors"
+                className="text-sm px-3 py-1.5 rounded-lg transition-colors hover:opacity-80"
                 style={{ border: '1px solid var(--border)', color: 'var(--fg-muted)' }}
               >
                 {p.trade} · {p.city}

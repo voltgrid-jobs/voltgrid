@@ -193,7 +193,7 @@ export function SalaryCalculatorClient() {
 
         <button
           type="submit"
-          className="w-full sm:w-auto px-8 py-3 rounded-xl font-bold text-base transition-opacity"
+          className="w-full sm:w-auto px-8 py-3 rounded-xl font-bold text-base transition-opacity hover:opacity-90"
           style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
         >
           Calculate Salary →
@@ -302,7 +302,7 @@ export function SalaryCalculatorClient() {
                 </div>
                 <a
                   href={`/jobs?category=${trade}`}
-                  className="text-sm font-bold px-5 py-2.5 rounded-lg whitespace-nowrap transition-opacity"
+                  className="text-sm font-bold px-5 py-2.5 rounded-lg whitespace-nowrap transition-opacity hover:opacity-90"
                   style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
                 >
                   Browse {tradeLabel} Jobs →
@@ -340,7 +340,7 @@ export function SalaryCalculatorClient() {
                 <button
                   type="submit"
                   disabled={gateLoading || !email.trim()}
-                  className="px-5 py-2.5 rounded-lg font-semibold text-sm transition-opacity disabled:opacity-40 whitespace-nowrap"
+                  className="px-5 py-2.5 rounded-lg font-semibold text-sm transition-opacity hover:opacity-90 disabled:opacity-40 whitespace-nowrap"
                   style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
                 >
                   {gateLoading ? 'Loading...' : 'See full breakdown →'}

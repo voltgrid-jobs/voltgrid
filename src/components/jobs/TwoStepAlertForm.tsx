@@ -205,7 +205,7 @@ export function TwoStepAlertForm({
               key={t.value}
               type="button"
               onClick={() => pickTrade(t.value)}
-              className="transition-colors"
+              className="transition-colors hover:opacity-80"
               style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -336,7 +336,7 @@ export function TwoStepAlertForm({
       <button
         type="submit"
         disabled={loading}
-        className="w-full font-semibold transition-opacity disabled:opacity-60"
+        className="w-full font-semibold transition-opacity hover:opacity-90 disabled:opacity-60"
         style={{
           padding: '0.85rem 1.25rem',
           borderRadius: '12px',
@@ -354,7 +354,7 @@ export function TwoStepAlertForm({
         type="button"
         onClick={onSkipLocation}
         disabled={loading}
-        className="transition-colors"
+        className="transition-colors hover:opacity-80"
         style={{
           background: 'transparent',
           border: 'none',

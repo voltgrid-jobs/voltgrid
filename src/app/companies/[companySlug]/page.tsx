@@ -218,13 +218,13 @@ export default async function CompanyPage({ params }: Props) {
       <nav className="max-w-5xl mx-auto px-4 pt-6 pb-2">
         <ol className="flex items-center gap-2 text-sm" style={{ color: 'var(--fg-faint)' }}>
           <li>
-            <Link href="/" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors">
+            <Link href="/" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors hover:opacity-80">
               Home
             </Link>
           </li>
           <li>/</li>
           <li>
-            <Link href="/jobs" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors">
+            <Link href="/jobs" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors hover:opacity-80">
               Companies
             </Link>
           </li>
@@ -297,7 +297,7 @@ export default async function CompanyPage({ params }: Props) {
         </p>
         <Link
           href="/employers"
-          className="inline-block font-bold px-6 py-3 rounded-xl transition-colors"
+          className="inline-block font-bold px-6 py-3 rounded-xl transition-colors hover:opacity-80"
           style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
         >
           Claim your listing →

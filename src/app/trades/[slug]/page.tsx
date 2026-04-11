@@ -149,13 +149,13 @@ export default async function TradePage({ params }: Props) {
       <nav className="max-w-5xl mx-auto px-4 pt-6 pb-2">
         <ol className="flex items-center gap-2 text-sm text-gray-500">
           <li>
-            <Link href="/" className="hover:text-yellow-400 transition-colors">
+            <Link href="/" className="hover:text-yellow-400 transition-colors hover:opacity-80">
               Home
             </Link>
           </li>
           <li className="text-gray-700">/</li>
           <li>
-            <Link href="/trades" className="hover:text-yellow-400 transition-colors">
+            <Link href="/trades" className="hover:text-yellow-400 transition-colors hover:opacity-80">
               Trades
             </Link>
           </li>
@@ -223,7 +223,7 @@ export default async function TradePage({ params }: Props) {
         </p>
         <Link
           href="/post-job"
-          className="inline-block bg-yellow-400 text-gray-950 font-bold px-6 py-3 rounded-xl hover:bg-yellow-300 transition-colors"
+          className="inline-block bg-yellow-400 text-gray-950 font-bold px-6 py-3 rounded-xl hover:bg-yellow-300 transition-colors hover:opacity-80"
         >
           Post a job from $149 →
         </Link>

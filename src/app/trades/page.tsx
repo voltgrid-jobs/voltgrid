@@ -77,11 +77,11 @@ export default function TradesPage() {
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <span className="text-2xl mb-2 block">{cat.icon}</span>
-                  <h2 className="text-lg font-bold text-white group-hover:text-yellow-400 transition-colors">
+                  <h2 className="text-lg font-bold text-white group-hover:text-yellow-400 transition-colors hover:opacity-80">
                     {cat.shortName}
                   </h2>
                 </div>
-                <span className="text-gray-600 group-hover:text-yellow-400 transition-colors text-xl">
+                <span className="text-gray-600 group-hover:text-yellow-400 transition-colors hover:opacity-80 text-xl">
                   →
                 </span>
               </div>

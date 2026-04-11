@@ -150,14 +150,14 @@ export default async function HomePage() {
             <div className="flex flex-col sm:flex-row gap-3 animate-fade-up delay-300">
               <Link
                 href="/jobs"
-                className="px-8 py-4 rounded-xl font-semibold text-lg transition-opacity"
+                className="px-8 py-4 rounded-xl font-semibold text-lg transition-opacity hover:opacity-90"
                 style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
               >
                 Browse All Jobs
               </Link>
               <Link
                 href="/post-job"
-                className="px-8 py-4 rounded-xl font-semibold text-lg transition-colors"
+                className="px-8 py-4 rounded-xl font-semibold text-lg transition-colors hover:opacity-80"
                 style={{ border: '1px solid var(--border-strong)', color: 'var(--fg-muted)' }}
               >
                 Hire Trades Workers →
@@ -198,7 +198,7 @@ export default async function HomePage() {
               className="rounded-xl p-4 text-center transition-all group"
               style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}
             >
-              <div className="text-sm font-semibold transition-colors" style={{ color: 'var(--fg-muted)' }}>
+              <div className="text-sm font-semibold transition-colors hover:opacity-80" style={{ color: 'var(--fg-muted)' }}>
                 {label}
               </div>
             </Link>
@@ -211,7 +211,7 @@ export default async function HomePage() {
         <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--fg-faint)' }}>Featured Jobs</h2>
-            <Link href="/jobs?featured=true" className="text-sm transition-colors" style={{ color: 'var(--yellow)' }}>
+            <Link href="/jobs?featured=true" className="text-sm transition-colors hover:opacity-80" style={{ color: 'var(--yellow)' }}>
               View all →
             </Link>
           </div>
@@ -225,7 +225,7 @@ export default async function HomePage() {
       <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-xs font-semibold tracking-widest uppercase" style={{ color: 'var(--fg-faint)' }}>Latest Jobs</h2>
-          <Link href="/jobs" className="text-sm transition-colors" style={{ color: 'var(--yellow)' }}>
+          <Link href="/jobs" className="text-sm transition-colors hover:opacity-80" style={{ color: 'var(--yellow)' }}>
             View all {totalJobs ?? 0} →
           </Link>
         </div>
@@ -244,7 +244,7 @@ export default async function HomePage() {
       <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
         <Link
           href="/salary-guide"
-          className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl px-6 py-5 transition-colors group"
+          className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl px-6 py-5 transition-all group hover:-translate-y-0.5 hover:shadow-lg"
           style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}
         >
           <div>
@@ -319,7 +319,7 @@ export default async function HomePage() {
           </p>
           <Link
             href="/post-job"
-            className="inline-block px-10 py-4 rounded-xl font-semibold text-lg transition-opacity"
+            className="inline-block px-10 py-4 rounded-xl font-semibold text-lg transition-opacity hover:opacity-90"
             style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
           >
             Post Your First Job

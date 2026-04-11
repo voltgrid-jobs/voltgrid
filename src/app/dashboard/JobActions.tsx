@@ -61,7 +61,7 @@ export function JobActions({ jobId, isActive, expired }: JobActionsProps) {
       {/* Edit — outlined neutral button */}
       <Link
         href={`/post-job?edit=${jobId}`}
-        className="inline-flex items-center justify-center min-h-[32px] px-2.5 rounded text-xs font-medium whitespace-nowrap border border-gray-700 text-gray-400 hover:border-gray-500 hover:text-white transition-colors"
+        className="inline-flex items-center justify-center min-h-[32px] px-2.5 rounded text-xs font-medium whitespace-nowrap border border-gray-700 text-gray-400 hover:border-gray-500 hover:text-white transition-colors hover:opacity-80"
       >
         Edit
       </Link>
@@ -71,7 +71,7 @@ export function JobActions({ jobId, isActive, expired }: JobActionsProps) {
         <button
           onClick={handlePauseToggle}
           disabled={pending}
-          className="inline-flex items-center justify-center gap-1.5 min-h-[32px] px-2.5 rounded text-xs font-medium whitespace-nowrap transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+          className="inline-flex items-center justify-center gap-1.5 min-h-[32px] px-2.5 rounded text-xs font-medium whitespace-nowrap transition-colors hover:opacity-80 disabled:opacity-60 disabled:cursor-not-allowed"
           style={optimisticActive
             ? { border: '1px solid rgba(74,222,128,0.35)', background: 'rgba(74,222,128,0.08)', color: 'var(--green)' }
             : { border: '1px solid rgba(250,204,21,0.35)', background: 'rgba(250,204,21,0.08)', color: 'var(--yellow)' }
@@ -85,7 +85,7 @@ export function JobActions({ jobId, isActive, expired }: JobActionsProps) {
       {expired && (
         <Link
           href="/post-job"
-          className="inline-flex items-center justify-center min-h-[32px] px-2.5 rounded text-xs font-medium whitespace-nowrap transition-colors"
+          className="inline-flex items-center justify-center min-h-[32px] px-2.5 rounded text-xs font-medium whitespace-nowrap transition-colors hover:opacity-80"
           style={{ border: '1px solid var(--yellow-border)', background: 'var(--yellow-dim)', color: 'var(--yellow)' }}
         >
           Renew →
@@ -102,14 +102,14 @@ export function JobActions({ jobId, isActive, expired }: JobActionsProps) {
           <button
             onClick={handleDelete}
             disabled={deleting}
-            className="inline-flex items-center gap-1 font-semibold min-h-[24px] transition-opacity disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap"
+            className="inline-flex items-center gap-1 font-semibold min-h-[24px] transition-opacity hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap"
             style={{ color: '#F87171' }}
           >
             {deleting ? <Spinner /> : 'Yes, delete'}
           </button>
           <button
             onClick={() => setShowDeleteConfirm(false)}
-            className="min-h-[24px] transition-opacity hover:opacity-70 whitespace-nowrap"
+            className="min-h-[24px] transition-opacity hover:opacity-90 hover:opacity-70 whitespace-nowrap"
             style={{ color: 'var(--fg-faint)' }}
           >
             Cancel

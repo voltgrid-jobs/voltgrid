@@ -132,7 +132,7 @@ function StepTrade({
       <button
         type="button"
         onClick={onSkip}
-        className="w-full mt-4 text-sm transition-colors"
+        className="w-full mt-4 text-sm transition-colors hover:opacity-80"
         style={{ color: 'var(--fg-faint)', minHeight: 44 }}
       >
         Skip — I&apos;ll browse all trades
@@ -219,7 +219,7 @@ function StepZip({
       <button
         type="button"
         onClick={onBack}
-        className="w-full mt-3 text-sm transition-colors"
+        className="w-full mt-3 text-sm transition-colors hover:opacity-80"
         style={{ color: 'var(--fg-faint)', minHeight: 44 }}
       >
         ← Back
@@ -334,7 +334,7 @@ function StepEmail({
       <button
         type="button"
         onClick={onBack}
-        className="w-full mt-3 text-sm transition-colors"
+        className="w-full mt-3 text-sm transition-colors hover:opacity-80"
         style={{ color: 'var(--fg-faint)', minHeight: 44 }}
       >
         ← Back
@@ -467,7 +467,7 @@ export function JobAlertPopup() {
           <button
             type="button"
             onClick={dismiss}
-            className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-full text-sm transition-colors"
+            className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-full text-sm transition-colors hover:opacity-80"
             style={{
               background: 'var(--bg)',
               border: '1px solid var(--border)',

@@ -97,7 +97,7 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
               type="button"
               onClick={handleMagicLink}
               disabled={loading}
-              className="w-full bg-yellow-400 text-gray-950 py-2 rounded-lg font-semibold text-sm hover:bg-yellow-300 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full bg-yellow-400 text-gray-950 py-2 rounded-lg font-semibold text-sm hover:bg-yellow-300 transition-colors hover:opacity-80 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {loading ? '...' : 'Send magic link →'}
             </button>
@@ -149,7 +149,7 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
             <button
               type="button"
               onClick={() => setShowPassword(true)}
-              className="w-full text-sm text-gray-500 hover:text-gray-300 transition-colors py-1"
+              className="w-full text-sm text-gray-500 hover:text-gray-300 transition-colors hover:opacity-80 py-1"
             >
               {isLogin ? 'Sign in with password instead' : 'Sign up with password instead'}
             </button>
@@ -184,7 +184,7 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full border border-gray-700 text-gray-300 py-2.5 rounded-xl font-medium hover:border-gray-500 hover:text-white transition-colors text-sm disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full border border-gray-700 text-gray-300 py-2.5 rounded-xl font-medium hover:border-gray-500 hover:text-white transition-colors hover:opacity-80 text-sm disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {loading ? '...' : isLogin ? 'Sign in with password' : 'Create account with password'}
               </button>

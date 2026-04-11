@@ -8,7 +8,7 @@ const PLAN_DISPLAY: Record<string, { name: string; price: string; description: s
   pro_monthly: { name: 'Pro Monthly', price: '$799/mo', description: 'Unlimited listings' },
 }
 
-const inputCls = 'w-full px-3 py-2.5 rounded-lg text-sm transition-colors focus:outline-none'
+const inputCls = 'w-full px-3 py-2.5 rounded-lg text-sm transition-colors hover:opacity-80 focus:outline-none'
 const inputStyle = {
   background: 'var(--bg)',
   border: '1px solid var(--border-strong)',
@@ -330,7 +330,7 @@ export function PostJobForm({ selectedPlan, setSelectedPlan: _setSelectedPlan, i
         </p>
 
         <button type="button" onClick={() => { setStep(1); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-          className="w-full mt-3 py-2 text-sm transition-colors"
+          className="w-full mt-3 py-2 text-sm transition-colors hover:opacity-80"
           style={{ color: 'var(--fg-muted)' }}>
           ← Edit job details
         </button>
@@ -546,7 +546,7 @@ export function PostJobForm({ selectedPlan, setSelectedPlan: _setSelectedPlan, i
       </div>
 
       <button type="submit"
-        className="w-full py-4 rounded-xl font-semibold text-lg transition-opacity"
+        className="w-full py-4 rounded-xl font-semibold text-lg transition-opacity hover:opacity-90"
         style={{ background: 'var(--yellow)', color: '#0A0A0A' }}>
         {isEditMode ? 'Review changes →' : 'Review & Continue →'}
       </button>

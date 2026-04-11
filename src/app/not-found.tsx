@@ -30,14 +30,14 @@ export default function NotFound() {
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <Link
           href="/jobs"
-          className="px-8 py-3 rounded-xl font-semibold transition-opacity"
+          className="px-8 py-3 rounded-xl font-semibold transition-opacity hover:opacity-90"
           style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
         >
           Browse All Jobs
         </Link>
         <Link
           href="/post-job"
-          className="px-8 py-3 rounded-xl font-semibold transition-colors"
+          className="px-8 py-3 rounded-xl font-semibold transition-colors hover:opacity-80"
           style={{ border: '1px solid var(--border-strong)', color: 'var(--fg-muted)' }}
         >
           Post a Job — $149

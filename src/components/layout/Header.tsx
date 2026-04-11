@@ -44,7 +44,7 @@ export function Header() {
             <Link
               key={href}
               href={href}
-              className="px-3 py-1.5 rounded-lg transition-colors"
+              className="px-3 py-1.5 rounded-lg transition-colors hover:opacity-80"
               style={{ color: 'var(--fg-muted)' }}
               onMouseEnter={e => (e.currentTarget.style.color = 'var(--fg)')}
               onMouseLeave={e => (e.currentTarget.style.color = 'var(--fg-muted)')}
@@ -60,7 +60,7 @@ export function Header() {
             </Link>
           ) : (
             <Link href="/auth/login"
-              className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+              className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors hover:opacity-80"
               style={{ border: '1px solid var(--border-strong)', color: 'var(--fg)', background: 'transparent' }}
               onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--yellow)')}
               onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border-strong)')}>
@@ -69,7 +69,7 @@ export function Header() {
           )}
           <Link
             href="/post-job"
-            className="ml-2 px-4 py-2 rounded-lg font-semibold text-sm transition-colors"
+            className="ml-2 px-4 py-2 rounded-lg font-semibold text-sm transition-colors hover:opacity-80"
             style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
             onMouseEnter={e => (e.currentTarget.style.opacity = '0.9')}
             onMouseLeave={e => (e.currentTarget.style.opacity = '1')}

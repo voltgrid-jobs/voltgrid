@@ -62,7 +62,7 @@ function TabButton({
   return (
     <button
       onClick={onClick}
-      className="px-4 py-2.5 text-sm font-medium transition-colors relative"
+      className="px-4 py-2.5 text-sm font-medium transition-colors hover:opacity-80 relative"
       style={{
         color: active ? 'var(--fg)' : 'var(--fg-faint)',
         borderBottom: active ? '2px solid var(--yellow)' : '2px solid transparent',

@@ -109,7 +109,7 @@ export default function ResourcesPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
         {/* Breadcrumb */}
         <p className="text-sm mb-6" style={{ color: 'var(--fg-faint)' }}>
-          <Link href="/" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors">Home</Link>
+          <Link href="/" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors hover:opacity-80">Home</Link>
           {' '}/{' '}
           <span style={{ color: 'var(--fg-muted)' }}>Resources</span>
         </p>
@@ -154,7 +154,7 @@ export default function ResourcesPage() {
               <Link
                 key={resource.href}
                 href={resource.href}
-                className="group rounded-xl p-5 flex flex-col gap-3 transition-colors"
+                className="group rounded-xl p-5 flex flex-col gap-3 transition-colors hover:opacity-80"
                 style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
               >
                 <div className="flex items-start justify-between gap-2">
@@ -168,7 +168,7 @@ export default function ResourcesPage() {
                 </div>
                 <div>
                   <p
-                    className="font-bold mb-1.5 group-hover:text-yellow-400 transition-colors"
+                    className="font-bold mb-1.5 group-hover:text-yellow-400 transition-colors hover:opacity-80"
                     style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif' }}
                   >
                     {resource.title}
@@ -225,7 +225,7 @@ export default function ResourcesPage() {
           </p>
           <Link
             href="/jobs"
-            className="inline-block font-bold px-6 py-3 rounded-xl transition-colors"
+            className="inline-block font-bold px-6 py-3 rounded-xl transition-colors hover:opacity-80"
             style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
           >
             Browse all open jobs →

@@ -264,7 +264,7 @@ export function CompactHeroSignup({
         <button
           type="submit"
           disabled={loading}
-          className="w-full font-bold transition-opacity disabled:opacity-60"
+          className="w-full font-bold transition-opacity hover:opacity-90 disabled:opacity-60"
           style={{
             padding: '0.85rem 1.25rem',
             borderRadius: '12px',

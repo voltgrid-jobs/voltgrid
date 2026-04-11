@@ -215,7 +215,7 @@ export default function InterviewPrepPage() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
         {/* Breadcrumb */}
         <p className="text-sm mb-6" style={{ color: 'var(--fg-faint)' }}>
-          <Link href="/" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors">Home</Link>
+          <Link href="/" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors hover:opacity-80">Home</Link>
           {' '}/{' '}
           <span style={{ color: 'var(--fg-muted)' }}>Interview Prep</span>
         </p>
@@ -238,11 +238,11 @@ export default function InterviewPrepPage() {
         </p>
         <p className="text-sm mb-10" style={{ color: 'var(--fg-faint)' }}>
           Jump to:{' '}
-          <a href="#electrician" className="hover:text-yellow-400 transition-colors" style={{ color: 'var(--yellow)' }}>Electrician</a>
+          <a href="#electrician" className="hover:text-yellow-400 transition-colors hover:opacity-80" style={{ color: 'var(--yellow)' }}>Electrician</a>
           {' · '}
-          <a href="#hvac" className="hover:text-yellow-400 transition-colors" style={{ color: 'var(--yellow)' }}>HVAC</a>
+          <a href="#hvac" className="hover:text-yellow-400 transition-colors hover:opacity-80" style={{ color: 'var(--yellow)' }}>HVAC</a>
           {' · '}
-          <a href="#low-voltage" className="hover:text-yellow-400 transition-colors" style={{ color: 'var(--yellow)' }}>Low Voltage</a>
+          <a href="#low-voltage" className="hover:text-yellow-400 transition-colors hover:opacity-80" style={{ color: 'var(--yellow)' }}>Low Voltage</a>
         </p>
 
         {/* Electrician section — free, always visible, fully crawlable */}
@@ -288,7 +288,7 @@ export default function InterviewPrepPage() {
               </div>
               <Link
                 href="/jobs?category=electrical"
-                className="text-sm font-bold px-4 py-2 rounded-lg transition-colors whitespace-nowrap"
+                className="text-sm font-bold px-4 py-2 rounded-lg transition-colors hover:opacity-80 whitespace-nowrap"
                 style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
               >
                 Browse ⚡ jobs →

@@ -95,7 +95,7 @@ export default function ResumeAnalyzerPage() {
       {/* Breadcrumb */}
       <nav className="max-w-3xl mx-auto px-4 pt-6 pb-2">
         <ol className="flex items-center gap-2 text-sm" style={{ color: 'var(--fg-faint)' }}>
-          <li><Link href="/" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors">Home</Link></li>
+          <li><Link href="/" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors hover:opacity-80">Home</Link></li>
           <li>/</li>
           <li style={{ color: 'var(--fg-muted)' }}>Resume Analyzer</li>
         </ol>
@@ -191,7 +191,7 @@ export default function ResumeAnalyzerPage() {
           <button
             onClick={handleAnalyze}
             disabled={loading}
-            className="font-bold px-7 py-3 rounded-xl transition-opacity"
+            className="font-bold px-7 py-3 rounded-xl transition-opacity hover:opacity-90"
             style={{
               background: loading ? 'var(--border)' : 'var(--yellow)',
               color: loading ? 'var(--fg-faint)' : '#0A0A0A',
@@ -327,7 +327,7 @@ export default function ResumeAnalyzerPage() {
               </p>
               <Link
                 href={`/jobs?category=${trade}`}
-                className="inline-block font-bold px-6 py-2.5 rounded-xl text-sm transition-colors"
+                className="inline-block font-bold px-6 py-2.5 rounded-xl text-sm transition-colors hover:opacity-80"
                 style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
               >
                 Browse {TRADE_OPTIONS.find(o => o.value === trade)?.label} Jobs →

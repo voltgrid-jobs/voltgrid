@@ -187,7 +187,7 @@ export default async function SuccessPage({
         {jobId ? (
           <Link
             href={`/jobs/${jobId}`}
-            className="px-8 py-3 rounded-xl font-semibold transition-opacity"
+            className="px-8 py-3 rounded-xl font-semibold transition-opacity hover:opacity-90"
             style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
           >
             View Your Listing →
@@ -195,7 +195,7 @@ export default async function SuccessPage({
         ) : (
           <Link
             href="/jobs"
-            className="px-8 py-3 rounded-xl font-semibold transition-opacity"
+            className="px-8 py-3 rounded-xl font-semibold transition-opacity hover:opacity-90"
             style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
           >
             Browse All Jobs
@@ -203,7 +203,7 @@ export default async function SuccessPage({
         )}
         <Link
           href="/post-job"
-          className="px-8 py-3 rounded-xl font-semibold transition-colors"
+          className="px-8 py-3 rounded-xl font-semibold transition-colors hover:opacity-80"
           style={{ border: '1px solid var(--border)', color: 'var(--fg-muted)' }}
         >
           Post Another Job
@@ -221,7 +221,7 @@ export default async function SuccessPage({
           Reach us at{' '}
           <a
             href="mailto:hello@voltgridjobs.com"
-            className="transition-colors"
+            className="transition-colors hover:opacity-80"
             style={{ color: 'var(--yellow)' }}
           >
             hello@voltgridjobs.com

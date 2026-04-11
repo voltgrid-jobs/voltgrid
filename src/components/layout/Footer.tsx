@@ -27,14 +27,14 @@ export function Footer() {
               Job Seekers
             </h3>
             <ul className="space-y-2.5 text-sm" style={{ color: 'var(--fg-muted)' }}>
-              <li><Link href="/jobs" className="hover:text-white transition-colors">Browse All Jobs</Link></li>
-              <li><Link href="/jobs?category=electrical" className="hover:text-white transition-colors">Electrical Jobs</Link></li>
-              <li><Link href="/jobs?category=hvac" className="hover:text-white transition-colors">HVAC Jobs</Link></li>
-              <li><Link href="/jobs?category=low_voltage" className="hover:text-white transition-colors">Low Voltage Jobs</Link></li>
-              <li><Link href="/companies" className="hover:text-white transition-colors">Companies Hiring</Link></li>
-              <li><Link href="/resources" className="hover:text-white transition-colors">Career Resources</Link></li>
+              <li><Link href="/jobs" className="hover:text-white transition-colors hover:opacity-80">Browse All Jobs</Link></li>
+              <li><Link href="/jobs?category=electrical" className="hover:text-white transition-colors hover:opacity-80">Electrical Jobs</Link></li>
+              <li><Link href="/jobs?category=hvac" className="hover:text-white transition-colors hover:opacity-80">HVAC Jobs</Link></li>
+              <li><Link href="/jobs?category=low_voltage" className="hover:text-white transition-colors hover:opacity-80">Low Voltage Jobs</Link></li>
+              <li><Link href="/companies" className="hover:text-white transition-colors hover:opacity-80">Companies Hiring</Link></li>
+              <li><Link href="/resources" className="hover:text-white transition-colors hover:opacity-80">Career Resources</Link></li>
               <li>
-                <Link href="/salary-guide" className="hover:text-white transition-colors" style={{ color: 'var(--yellow)' }}>
+                <Link href="/salary-guide" className="hover:text-white transition-colors hover:opacity-80" style={{ color: 'var(--yellow)' }}>
                   📊 2026 Salary Guide
                 </Link>
               </li>
@@ -46,10 +46,10 @@ export function Footer() {
               Employers
             </h3>
             <ul className="space-y-2.5 text-sm" style={{ color: 'var(--fg-muted)' }}>
-              <li><Link href="/post-job" className="hover:text-white transition-colors">Post a Job</Link></li>
-              <li><Link href="/employers" className="hover:text-white transition-colors">Why VoltGrid</Link></li>
-              <li><Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
-              <li><Link href="/about" className="hover:text-white transition-colors">About</Link></li>
+              <li><Link href="/post-job" className="hover:text-white transition-colors hover:opacity-80">Post a Job</Link></li>
+              <li><Link href="/employers" className="hover:text-white transition-colors hover:opacity-80">Why VoltGrid</Link></li>
+              <li><Link href="/pricing" className="hover:text-white transition-colors hover:opacity-80">Pricing</Link></li>
+              <li><Link href="/about" className="hover:text-white transition-colors hover:opacity-80">About</Link></li>
             </ul>
           </div>
         </div>
@@ -74,7 +74,7 @@ export function Footer() {
             </a>
             <span className="text-xs" style={{ color: 'var(--fg-faint)' }}>
               Questions?{' '}
-              <a href="mailto:hello@voltgridjobs.com" style={{ color: 'var(--fg-muted)' }} className="hover:text-white transition-colors">
+              <a href="mailto:hello@voltgridjobs.com" style={{ color: 'var(--fg-muted)' }} className="hover:text-white transition-colors hover:opacity-80">
                 hello@voltgridjobs.com
               </a>
             </span>

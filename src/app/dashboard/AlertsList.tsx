@@ -65,7 +65,7 @@ export function AlertsList({ initialAlerts }: { initialAlerts: Alert[] }) {
               <button
                 onClick={() => handleDelete(alert.id)}
                 disabled={isDeleting}
-                className="text-xs px-3 py-1.5 rounded-lg hover:text-red-400 transition-colors disabled:cursor-not-allowed"
+                className="text-xs px-3 py-1.5 rounded-lg hover:text-red-400 transition-colors hover:opacity-80 disabled:cursor-not-allowed"
                 style={{ color: 'var(--fg-muted)', border: '1px solid var(--border)' }}
               >
                 {isDeleting ? '...' : 'Delete'}

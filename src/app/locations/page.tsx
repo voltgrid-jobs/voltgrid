@@ -82,12 +82,12 @@ export default function LocationsPage() {
             >
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <h2 className="text-lg font-bold text-white group-hover:text-yellow-400 transition-colors">
+                  <h2 className="text-lg font-bold text-white group-hover:text-yellow-400 transition-colors hover:opacity-80">
                     {hub.name}
                   </h2>
                   <p className="text-yellow-400 text-xs font-medium mt-0.5">{hub.region}</p>
                 </div>
-                <span className="text-gray-600 group-hover:text-yellow-400 transition-colors text-xl">
+                <span className="text-gray-600 group-hover:text-yellow-400 transition-colors hover:opacity-80 text-xl">
                   →
                 </span>
               </div>

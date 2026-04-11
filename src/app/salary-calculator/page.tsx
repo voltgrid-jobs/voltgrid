@@ -65,9 +65,9 @@ export default function SalaryCalculatorPage() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
         {/* Breadcrumb */}
         <p className="text-sm mb-6" style={{ color: 'var(--fg-faint)' }}>
-          <Link href="/" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors">Home</Link>
+          <Link href="/" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors hover:opacity-80">Home</Link>
           {' '}/{' '}
-          <Link href="/resources" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors">Resources</Link>
+          <Link href="/resources" style={{ color: 'var(--fg-faint)' }} className="hover:text-yellow-400 transition-colors hover:opacity-80">Resources</Link>
           {' '}/{' '}
           <span style={{ color: 'var(--fg-muted)' }}>Salary Calculator</span>
         </p>
@@ -154,21 +154,21 @@ export default function SalaryCalculatorPage() {
           <div className="flex flex-col sm:flex-row gap-3">
             <Link
               href="/salary-guide"
-              className="inline-block font-semibold px-5 py-3 rounded-xl text-sm transition-colors"
+              className="inline-block font-semibold px-5 py-3 rounded-xl text-sm transition-colors hover:opacity-80"
               style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
             >
               2026 Salary Guide →
             </Link>
             <Link
               href="/jobs"
-              className="inline-block font-semibold px-5 py-3 rounded-xl text-sm transition-colors"
+              className="inline-block font-semibold px-5 py-3 rounded-xl text-sm transition-colors hover:opacity-80"
               style={{ border: '1px solid var(--border)', color: 'var(--fg-muted)' }}
             >
               Browse open jobs →
             </Link>
             <Link
               href="/resources"
-              className="inline-block font-semibold px-5 py-3 rounded-xl text-sm transition-colors"
+              className="inline-block font-semibold px-5 py-3 rounded-xl text-sm transition-colors hover:opacity-80"
               style={{ border: '1px solid var(--border)', color: 'var(--fg-muted)' }}
             >
               Career resources →

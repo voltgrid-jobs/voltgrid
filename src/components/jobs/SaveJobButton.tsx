@@ -88,7 +88,7 @@ export function SaveJobButton({
         <button
           onClick={toggle}
           disabled={loading}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition-colors ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition-colors hover:opacity-80 ${
             saved
               ? 'border-yellow-400 text-yellow-400 bg-yellow-400/10'
               : 'border-gray-700 text-gray-400 hover:border-gray-500 hover:text-white'
@@ -137,7 +137,7 @@ export function SaveJobButton({
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 py-2 rounded-lg text-sm font-semibold transition-opacity disabled:opacity-50"
+                className="flex-1 py-2 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-50"
                 style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
               >
                 {loading ? 'Saving…' : 'Save & Get Alerts'}
@@ -146,7 +146,7 @@ export function SaveJobButton({
                 type="button"
                 onClick={() => setShowEmailPrompt(false)}
                 aria-label="Close"
-                className="px-3 py-2 rounded-lg text-sm transition-colors"
+                className="px-3 py-2 rounded-lg text-sm transition-colors hover:opacity-80"
                 style={{ border: '1px solid var(--border)', color: 'var(--fg-muted)' }}
               >
                 ✕

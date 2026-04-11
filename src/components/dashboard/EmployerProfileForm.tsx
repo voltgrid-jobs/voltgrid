@@ -83,7 +83,7 @@ export function EmployerProfileForm({ employer, userId }: { employer: Employer |
 
       <button
         type="submit" disabled={loading}
-        className="w-full bg-yellow-400 text-gray-950 py-3 rounded-xl font-semibold hover:bg-yellow-300 transition-colors disabled:opacity-60"
+        className="w-full bg-yellow-400 text-gray-950 py-3 rounded-xl font-semibold hover:bg-yellow-300 transition-colors hover:opacity-80 disabled:opacity-60"
       >
         {loading ? 'Saving...' : 'Save Profile'}
       </button>

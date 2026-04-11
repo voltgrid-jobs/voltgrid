@@ -89,7 +89,7 @@ export function PersistentPricingSelector({
         <button
           type="button"
           onClick={() => setExpanded((e) => !e)}
-          className="text-sm font-semibold flex items-center gap-1.5 px-3 py-1.5 rounded-lg flex-shrink-0 transition-colors"
+          className="text-sm font-semibold flex items-center gap-1.5 px-3 py-1.5 rounded-lg flex-shrink-0 transition-colors hover:opacity-80"
           style={{
             background: expanded ? 'var(--bg)' : 'transparent',
             border: '1px solid var(--border)',
@@ -118,7 +118,7 @@ export function PersistentPricingSelector({
                     setSelectedPlan(plan.id)
                     setExpanded(false)
                   }}
-                  className="rounded-xl p-4 text-left w-full transition-colors"
+                  className="rounded-xl p-4 text-left w-full transition-colors hover:opacity-80"
                   style={{
                     border: `1px solid ${isSelected ? 'var(--yellow)' : 'var(--border)'}`,
                     background: isSelected ? 'var(--yellow-dim)' : 'var(--bg)',
