@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { buildConfirmationEmail } from '@/lib/emails/alerts'
+import { logFunnelEvent } from '@/lib/analytics/events'
 
 // In-memory rate limit store (per cold-start instance)
 // For production scale, replace with Redis/KV — adequate for current traffic
@@ -116,6 +117,13 @@ export async function POST(req: NextRequest) {
 
   if (existing) {
     if (existing.confirmed_at && existing.is_active) {
+      await logFunnelEvent({
+        eventType: 'alert_submit',
+        email: normalizedEmail,
+        alertId: existing.id,
+        sourcePage,
+        metadata: { outcome: 'already_subscribed', category: normalizedCategory },
+      })
       return NextResponse.json({
         success: true,
         status: 'already_subscribed',
@@ -142,6 +150,14 @@ export async function POST(req: NextRequest) {
     } catch (err) {
       console.error('[alerts] resend confirmation error:', err)
     }
+
+    await logFunnelEvent({
+      eventType: 'alert_submit',
+      email: normalizedEmail,
+      alertId: existing.id,
+      sourcePage,
+      metadata: { outcome: 'confirmation_resent', category: normalizedCategory },
+    })
 
     return NextResponse.json({
       success: true,
@@ -182,6 +198,14 @@ export async function POST(req: NextRequest) {
     // Non-critical — the row is saved, the user can request a resend
     console.error('[alerts] confirmation email error:', err)
   }
+
+  await logFunnelEvent({
+    eventType: 'alert_submit',
+    email: normalizedEmail,
+    alertId: inserted.id,
+    sourcePage,
+    metadata: { outcome: 'confirmation_sent', category: normalizedCategory },
+  })
 
   // Employer notification for matching listings — unchanged behaviour
   try {

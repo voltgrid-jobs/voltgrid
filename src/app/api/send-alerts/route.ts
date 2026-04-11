@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Resend } from 'resend'
+import { logFunnelEvent } from '@/lib/analytics/events'
 
 const INGEST_SECRET = process.env.INGEST_SECRET
 
@@ -110,7 +111,7 @@ export async function GET(req: NextRequest) {
         </html>
       `
 
-      await resend.emails.send({
+      const sendResult = await resend.emails.send({
         from: 'VoltGrid Jobs <alerts@voltgridjobs.com>',
         to: alert.email,
         subject: `${jobs.length} new ${alert.keywords || alert.category || 'trades'} job${jobs.length > 1 ? 's' : ''} on VoltGrid`,
@@ -122,6 +123,15 @@ export async function GET(req: NextRequest) {
         .from('job_alerts')
         .update({ last_sent_at: new Date().toISOString() })
         .eq('id', alert.id)
+
+      // Log the send so Resend webhook events can be joined on message_id
+      await logFunnelEvent({
+        eventType: 'alert_delivered',
+        email: alert.email,
+        alertId: alert.id,
+        resendMessageId: sendResult.data?.id ?? null,
+        metadata: { job_count: jobs.length, cadence: 'daily' },
+      })
 
       sent++
     } catch {

@@ -13,6 +13,7 @@ import {
   type RoleTaxonomy,
 } from './data'
 import { OfferComparisonWorksheet } from './OfferComparisonWorksheet'
+import { SalaryGuideTracker } from './SalaryGuideTracker'
 import { JobAlertInlineForm } from '@/components/jobs/JobAlertInlineForm'
 
 // ─────────────────────────────────────────────────────────────────────
@@ -301,6 +302,7 @@ export default function SalaryGuidePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
+      <SalaryGuideTracker />
 
       <div style={{ background: 'var(--bg)' }}>
         {/* ── Hero ─────────────────────────────────────────────── */}

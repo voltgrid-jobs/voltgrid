@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { logFunnelEvent } from '@/lib/analytics/events'
 
 /**
  * Token-based unsubscribe. Accepts GET so the link in email works
@@ -22,7 +23,7 @@ export async function GET(req: NextRequest) {
     .from('job_alerts')
     .update({ is_active: false, unsubscribed_at: nowIso })
     .eq('confirmation_token', token)
-    .select('id')
+    .select('id, email, category')
     .maybeSingle()
 
   if (error) {
@@ -32,6 +33,13 @@ export async function GET(req: NextRequest) {
   if (!data) {
     return NextResponse.redirect(`${baseUrl}/alerts/unsubscribed?status=notfound`, 302)
   }
+
+  await logFunnelEvent({
+    eventType: 'alert_unsubscribe',
+    email: data.email,
+    alertId: data.id,
+    metadata: { category: data.category },
+  })
 
   return NextResponse.redirect(`${baseUrl}/alerts/unsubscribed?status=ok`, 302)
 }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Resend } from 'resend'
 import { buildWelcomeEmail } from '@/lib/emails/alerts'
+import { logFunnelEvent } from '@/lib/analytics/events'
 
 /**
  * Confirm a job alert via the token in the confirmation email.
@@ -44,6 +45,13 @@ export async function GET(req: NextRequest) {
     console.error('[alerts/confirm] update error:', updateErr)
     return NextResponse.redirect(`${baseUrl}/alerts/confirmed?status=error`, 302)
   }
+
+  await logFunnelEvent({
+    eventType: 'alert_confirm',
+    email: alert.email,
+    alertId: alert.id,
+    metadata: { category: alert.category },
+  })
 
   // Send the welcome email (the one with the salary guide CTA).
   // Non-blocking — don't let email failure block the redirect.

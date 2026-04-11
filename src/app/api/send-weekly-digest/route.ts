@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Resend } from 'resend'
+import { logFunnelEvent } from '@/lib/analytics/events'
 
 const INGEST_SECRET = process.env.INGEST_SECRET
 
@@ -246,7 +247,7 @@ export async function GET(req: NextRequest) {
       const subject = `${jobCount} new ${searchDesc} job${jobCount !== 1 ? 's' : ''} this week — VoltGrid Jobs`
       const html = buildEmailHtml(jobs, alert, baseUrl, totalJobs || 0)
 
-      await resend.emails.send({
+      const sendResult = await resend.emails.send({
         from: `VoltGrid Jobs <${process.env.RESEND_FROM_EMAIL || 'alerts@voltgridjobs.com'}>`,
         to: alert.email,
         subject,
@@ -259,6 +260,15 @@ export async function GET(req: NextRequest) {
         .from('job_alerts')
         .update({ last_digest_sent_at: new Date().toISOString() } as Record<string, unknown>)
         .eq('id', alert.id)
+
+      // Log for funnel analytics
+      await logFunnelEvent({
+        eventType: 'alert_delivered',
+        email: alert.email,
+        alertId: alert.id,
+        resendMessageId: sendResult.data?.id ?? null,
+        metadata: { job_count: jobCount, cadence: 'weekly' },
+      })
 
       sent++
     } catch (err) {
