@@ -108,12 +108,12 @@ export default async function HomePage() {
                 color: 'var(--fg)',
               }}
             >
-              Fill Your Data Center<br />
-              <span style={{ color: 'var(--yellow)' }}>Trades Roles Faster.</span>
+              Stop Filtering.<br />
+              <span style={{ color: 'var(--yellow)' }}>Start Building.</span>
             </h1>
 
             <p className="text-lg sm:text-xl mb-6 max-w-xl animate-fade-up delay-200" style={{ color: 'var(--fg-muted)', lineHeight: 1.6 }}>
-              VoltGrid connects you with electricians, HVAC techs, and low voltage techs pre-qualified for AI data center work. Post a job and reach hundreds of trades workers actively looking for data center roles.
+              VoltGrid posts one job and surfaces electricians, HVAC techs, and low voltage techs who already have data center experience. No inbox-clogging. No recruiter markup.
             </p>
 
             {/* Trust stats row */}
