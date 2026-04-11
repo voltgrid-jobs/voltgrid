@@ -498,17 +498,7 @@ export default function SalaryGuidePage() {
             </ul>
           </div>
 
-          {/* Electrician by market */}
-          <SectionTitle id="electrician">Data center electrician salary by market (2026)</SectionTitle>
-          <Lede>
-            Base hourly rates for electricians working on data center projects in the
-            largest US markets. Rates are for construction and commissioning work unless
-            noted as operations or superintendent roles. Bands are 2026 observed ranges,
-            not averages.
-          </Lede>
-          <SalaryTable rows={ELECTRICIAN_MARKETS} title="Electrician — base hourly and annual pay" />
-
-          {/* Email capture — Placement 1: after electrician tables, before HVAC */}
+          {/* Email capture — ~20% scroll: after methodology, before the first pay table */}
           <ImpressionTracker source="salary-guide-top">
             <div
               style={{
@@ -523,12 +513,21 @@ export default function SalaryGuidePage() {
                 variant="jobs"
                 defaultTrade="electrical"
                 source="salary-guide-top"
-                headline="Get electrician jobs in your market by email"
-                subtext="New data center electrician roles — filtered to your market. Daily alerts. Unsubscribe anytime."
-                buttonLabel="Send me jobs"
+                headline="Use this pay data to benchmark your offer. Then get matching jobs in your market."
+                subtext="Daily alerts. Filtered to your trade and market. Unsubscribe anytime."
               />
             </div>
           </ImpressionTracker>
+
+          {/* Electrician by market */}
+          <SectionTitle id="electrician">Data center electrician salary by market (2026)</SectionTitle>
+          <Lede>
+            Base hourly rates for electricians working on data center projects in the
+            largest US markets. Rates are for construction and commissioning work unless
+            noted as operations or superintendent roles. Bands are 2026 observed ranges,
+            not averages.
+          </Lede>
+          <SalaryTable rows={ELECTRICIAN_MARKETS} title="Electrician — base hourly and annual pay" />
 
           {/* HVAC by market */}
           <SectionTitle id="hvac">Data center HVAC technician salary by market (2026)</SectionTitle>
@@ -778,7 +777,7 @@ export default function SalaryGuidePage() {
                 letterSpacing: '-0.01em',
               }}
             >
-              Get data center trades jobs in your inbox
+              Want offers this strong in your inbox?
             </h2>
             <p
               style={{
@@ -789,11 +788,15 @@ export default function SalaryGuidePage() {
                 maxWidth: '560px',
               }}
             >
-              Use this guide to benchmark offers, then hand us your email and we send the
-              roles that match your trade and market. No spam, unsubscribe anytime.
+              Tell us your trade and market. We&apos;ll send the jobs worth your time.
             </p>
             <ImpressionTracker source="salary-guide-bottom">
-              <JobAlertInlineForm variant="jobs" source="salary-guide-bottom" />
+              <JobAlertInlineForm
+                variant="jobs"
+                source="salary-guide-bottom"
+                headline="Pick your trade and city"
+                subtext="Daily alerts. Unsubscribe anytime."
+              />
             </ImpressionTracker>
           </section>
 
@@ -852,7 +855,7 @@ export default function SalaryGuidePage() {
               className="text-xs font-semibold tracking-widest uppercase mb-2"
               style={{ color: 'var(--yellow)' }}
             >
-              Ready to find your next role?
+              Still comparing options?
             </p>
             <h3
               style={{
@@ -864,7 +867,7 @@ export default function SalaryGuidePage() {
                 marginBottom: '0.5rem',
               }}
             >
-              Get matching jobs delivered to your inbox
+              Get new electrician and HVAC roles each morning
             </h3>
             <p
               style={{
@@ -875,7 +878,7 @@ export default function SalaryGuidePage() {
                 maxWidth: '560px',
               }}
             >
-              Data center electrician, HVAC, and low voltage roles — filtered to your trade and market. Daily alerts, no spam.
+              Daily alerts filtered to your trade and market. No spam. Unsubscribe anytime.
             </p>
             <JobAlertInlineForm
               variant="jobs"

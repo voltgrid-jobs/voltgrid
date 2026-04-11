@@ -90,6 +90,7 @@ function isFrenchDescription(description: string): boolean {
 
 import { SaveJobButton } from '@/components/jobs/SaveJobButton'
 import { AlertSignupWidget } from '@/components/jobs/AlertSignupWidget'
+import { CompactHeroSignup } from '@/components/jobs/CompactHeroSignup'
 import { ApplyButton } from '@/components/jobs/ApplyButton'
 import { JobCard } from '@/components/jobs/JobCard'
 import { extractSalaryFromDescription } from '@/lib/salary-extract'
@@ -353,7 +354,7 @@ export default async function JobDetailPage({
         </div>
 
         {/* Alert signup — positioned above the fold, right after job header */}
-        <div className="mb-4">
+        <div id="alert-signup" className="mb-4">
           <AlertSignupWidget keywords={job.title} category={job.category} subscriberCount={alertSubscribers ?? undefined} jobId={job.id} />
         </div>
 
@@ -489,21 +490,101 @@ export default async function JobDetailPage({
           )}
 
           {applyUrl && (
-            <div className="mt-10 pt-8 text-center" style={{ borderTop: '1px solid var(--border)' }}>
-              <p className="text-sm mb-4" style={{ color: 'var(--fg-muted)' }}>Ready to apply?</p>
-              <ApplyButton
-                jobId={job.id}
-                applyUrl={applyUrl}
-                isExternalUrl={!!job.apply_url}
-                label="Apply for this Job →"
-                source="bottom_button"
-                category={job.category}
-                companyName={job.company_name}
-                disableModal
-                className="inline-block px-10 py-4 rounded-xl font-semibold text-lg transition-opacity"
-                style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
-              />
-            </div>
+            <>
+              {/* Salary-guide-tied CTA — uses the actual job salary if present */}
+              <div
+                className="mt-8 rounded-xl p-5"
+                style={{
+                  background: 'var(--bg-raised)',
+                  border: '1px solid var(--border)',
+                }}
+              >
+                <p className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--yellow)' }}>
+                  Pay benchmark
+                </p>
+                <p className="mb-4" style={{ color: 'var(--fg)', fontSize: '0.95rem', lineHeight: 1.55 }}>
+                  {salary?.primary ? (
+                    <>
+                      This role is around <strong>{salary.primary}</strong>. See the full 2026 market data and get matching jobs.
+                    </>
+                  ) : (
+                    <>
+                      Check this role&apos;s pay against the 2026 market data and get matching jobs by email.
+                    </>
+                  )}
+                </p>
+                <Link
+                  href="/salary-guide"
+                  className="inline-block font-bold"
+                  style={{
+                    padding: '0.65rem 1.25rem',
+                    borderRadius: '10px',
+                    background: 'transparent',
+                    color: 'var(--yellow)',
+                    border: '1px solid var(--yellow-border)',
+                    fontSize: '0.85rem',
+                    textDecoration: 'none',
+                  }}
+                >
+                  Open 2026 Salary Guide →
+                </Link>
+              </div>
+
+              {/* "Before you leave" alert capture — above outbound apply button */}
+              <div
+                className="mt-8 rounded-xl p-5 sm:p-6"
+                style={{
+                  background: 'rgba(250, 204, 21, 0.05)',
+                  border: '1px solid var(--yellow-border)',
+                }}
+              >
+                <h3
+                  className="font-bold mb-2"
+                  style={{
+                    fontFamily: 'var(--font-display), system-ui, sans-serif',
+                    fontSize: 'clamp(1.1rem, 3vw, 1.35rem)',
+                    color: 'var(--fg)',
+                    letterSpacing: '-0.01em',
+                  }}
+                >
+                  Before you leave, get better jobs like this sent to you
+                </h3>
+                <p className="mb-4" style={{ color: 'var(--fg-muted)', fontSize: '0.9rem', lineHeight: 1.55 }}>
+                  Same trade. Same market. Same pay band. Delivered daily.
+                </p>
+                <CompactHeroSignup
+                  source="job-detail-before-apply"
+                  defaultTrade={
+                    job.category === 'electrical' || job.category === 'hvac' || job.category === 'low_voltage'
+                      ? (job.category as 'electrical' | 'hvac' | 'low_voltage')
+                      : 'all'
+                  }
+                />
+              </div>
+
+              <div className="mt-10 pt-8 text-center" style={{ borderTop: '1px solid var(--border)' }}>
+                <p className="text-sm mb-4" style={{ color: 'var(--fg-muted)' }}>Ready to apply?</p>
+                <ApplyButton
+                  jobId={job.id}
+                  applyUrl={applyUrl}
+                  isExternalUrl={!!job.apply_url}
+                  label="Apply for this Job →"
+                  source="bottom_button"
+                  category={job.category}
+                  companyName={job.company_name}
+                  disableModal
+                  className="inline-block px-10 py-4 rounded-xl font-semibold text-lg transition-opacity"
+                  style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
+                />
+                {/* Secondary CTA below the apply button */}
+                <p className="text-xs mt-4" style={{ color: 'var(--fg-faint)' }}>
+                  Not ready to apply?{' '}
+                  <a href="#alert-signup" style={{ color: 'var(--yellow)', fontWeight: 600 }}>
+                    Save this job + get similar ones by email →
+                  </a>
+                </p>
+              </div>
+            </>
           )}
         </div>
 

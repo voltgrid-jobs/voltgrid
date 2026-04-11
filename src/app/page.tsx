@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { JobCard } from '@/components/jobs/JobCard'
 import { CATEGORY_LABELS, type JobCategory } from '@/types'
 import { LogoCarousel } from '@/components/LogoCarousel'
-import { JobAlertInlineForm } from '@/components/jobs/JobAlertInlineForm'
+import { CompactHeroSignup } from '@/components/jobs/CompactHeroSignup'
 
 const CATEGORIES: { key: JobCategory; label: string }[] = [
   { key: 'electrical',          label: 'Electrical' },
@@ -25,6 +25,7 @@ export default async function HomePage() {
   let distinctCompanies = 0
   let jobsThisWeek: number | null = null
   let alertSubscribers: number | null = null
+  let electricalJobsCount: number | null = null
 
   try {
     const supabase = await createClient()
@@ -51,12 +52,18 @@ export default async function HomePage() {
       : 0
 
     const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-    const [{ count: thisWeek }, { count: alertSubs }] = await Promise.all([
+    const [
+      { count: thisWeek },
+      { count: alertSubs },
+      { count: electricalCount },
+    ] = await Promise.all([
       supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('is_active', true).gte('created_at', oneWeekAgo),
       supabase.from('job_alerts').select('*', { count: 'exact', head: true }),
+      supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('is_active', true).eq('category', 'electrical'),
     ])
     jobsThisWeek = thisWeek
     alertSubscribers = alertSubs
+    electricalJobsCount = electricalCount
   } catch (err) {
     console.error('[HomePage] Supabase error:', err)
     // Page renders with fallback zeros — no 500
@@ -157,12 +164,24 @@ export default async function HomePage() {
                 Hire Trades Workers →
               </Link>
             </div>
+
+            {/* Hero CTA capture — primary conversion path */}
+            <div className="mt-8 animate-fade-up delay-400" style={{ maxWidth: '540px' }}>
+              <CompactHeroSignup
+                source="homepage-hero"
+                defaultTrade="electrical"
+                headline="Get daily data center electrician jobs sent to you"
+                subtext="Pay, per diem, and travel filters. No junk. No generic construction spam."
+                trustLine={
+                  electricalJobsCount && electricalJobsCount > 0
+                    ? `Join electricians tracking ${electricalJobsCount} live electrical roles on VoltGrid.`
+                    : undefined
+                }
+              />
+            </div>
           </div>
         </div>
       </section>
-
-      {/* JOB ALERT CAPTURE */}
-      <JobAlertInlineForm variant="homepage" subscriberCount={alertSubscribers ?? undefined} source="homepage" />
 
       {/* COMPANY LOGO BAR — auto-scrolling carousel */}
       <LogoCarousel label="Open Roles From" />
@@ -244,6 +263,39 @@ export default async function HomePage() {
             Download free →
           </span>
         </Link>
+
+        {/* Second homepage capture — tied to the salary guide teaser */}
+        <div
+          className="mt-4"
+          style={{
+            background: 'rgba(250, 204, 21, 0.05)',
+            border: '1px solid var(--yellow-border)',
+            borderRadius: '16px',
+            padding: 'clamp(1.25rem, 3vw, 1.75rem)',
+          }}
+        >
+          <p
+            className="text-xs font-semibold tracking-widest uppercase mb-2"
+            style={{ color: 'var(--yellow)' }}
+          >
+            Pay data + matching roles
+          </p>
+          <h3
+            className="font-bold mb-3"
+            style={{
+              fontFamily: 'var(--font-display), system-ui, sans-serif',
+              fontSize: 'clamp(1.1rem, 3vw, 1.35rem)',
+              color: 'var(--fg)',
+              letterSpacing: '-0.01em',
+            }}
+          >
+            See what electricians are getting paid, then get matching jobs by email
+          </h3>
+          <CompactHeroSignup
+            source="homepage-salary-teaser"
+            defaultTrade="electrical"
+          />
+        </div>
       </section>
 
       {/* EMPLOYER CTA */}

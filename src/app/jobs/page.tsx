@@ -8,6 +8,7 @@ import { CATEGORY_LABELS, type JobCategory, type Job } from '@/types'
 import { JobAlertInlineForm } from '@/components/jobs/JobAlertInlineForm'
 import { JobAlertPopupWrapper } from '@/components/jobs/JobAlertPopupWrapper'
 import { StickyFooterAlertCTA } from '@/components/jobs/StickyFooterAlertCTA'
+import { CompactHeroSignup } from '@/components/jobs/CompactHeroSignup'
 import type { Metadata } from 'next'
 
 type MetadataProps = { searchParams: Promise<SearchParams> }
@@ -175,6 +176,89 @@ export default async function JobsPage({
         )}
       </div>
 
+      {/* Category-specific hero for the Electrical filter view — beachhead page */}
+      {activeCategory === 'electrical' && (
+        <section
+          className="mb-8"
+          style={{
+            background: 'rgba(250, 204, 21, 0.05)',
+            border: '1px solid var(--yellow-border)',
+            borderRadius: '16px',
+            padding: 'clamp(1.5rem, 4vw, 2rem)',
+          }}
+        >
+          <p
+            className="text-xs font-semibold tracking-widest uppercase mb-3"
+            style={{ color: 'var(--yellow)' }}
+          >
+            Electrical beachhead
+          </p>
+          <h2
+            className="font-bold mb-2"
+            style={{
+              fontFamily: 'var(--font-display), system-ui, sans-serif',
+              fontSize: 'clamp(1.5rem, 4vw, 2.25rem)',
+              color: 'var(--fg)',
+              letterSpacing: '-0.01em',
+              lineHeight: 1.15,
+            }}
+          >
+            {totalJobs} data center electrician {totalJobs === 1 ? 'job' : 'jobs'} live right now
+          </h2>
+          <p className="mb-5" style={{ color: 'var(--fg-muted)', fontSize: '0.95rem', lineHeight: 1.6 }}>
+            Get the new ones every morning with pay, per diem, travel, and union filters.
+          </p>
+          <div style={{ maxWidth: '540px' }}>
+            <CompactHeroSignup
+              source="jobs-electrical-hero"
+              defaultTrade="electrical"
+            />
+          </div>
+        </section>
+      )}
+
+      {/* Generic alert module above first job card — only when not on the electrical view */}
+      {activeCategory !== 'electrical' && jobs && jobs.length > 0 && (
+        <section
+          className="mb-6"
+          style={{
+            background: 'rgba(250, 204, 21, 0.05)',
+            border: '1px solid var(--yellow-border)',
+            borderRadius: '14px',
+            padding: 'clamp(1.25rem, 3vw, 1.75rem)',
+          }}
+        >
+          <h2
+            className="font-bold mb-2"
+            style={{
+              fontFamily: 'var(--font-display), system-ui, sans-serif',
+              fontSize: 'clamp(1.15rem, 3vw, 1.5rem)',
+              color: 'var(--fg)',
+              letterSpacing: '-0.01em',
+            }}
+          >
+            Don&apos;t check this page every day. We&apos;ll do it for you.
+          </h2>
+          <p className="mb-4" style={{ color: 'var(--fg-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
+            Get new data center trades jobs by email with pay, location, and per diem filters.
+          </p>
+          <a
+            href="#get-alerts"
+            className="inline-block font-bold"
+            style={{
+              padding: '0.75rem 1.5rem',
+              borderRadius: '10px',
+              background: 'var(--yellow)',
+              color: '#0A0A0A',
+              fontSize: '0.9rem',
+              textDecoration: 'none',
+            }}
+          >
+            Get Daily Job Alerts →
+          </a>
+        </section>
+      )}
+
       <div className="flex flex-col lg:flex-row gap-8">
         <aside className="lg:w-64 flex-shrink-0">
           <JobFilters currentParams={params} topCompanies={topCompanies} categoryCounts={categoryCounts} />
@@ -184,9 +268,99 @@ export default async function JobsPage({
           {jobs && jobs.length > 0 ? (
             <>
               <div className="flex flex-col gap-4">
-                {(jobs as Job[]).map((job) => (
-                  <JobCard key={job.id} job={job} featured={job.is_featured} />
-                ))}
+                {(jobs as Job[]).flatMap((job, i) => {
+                  const nodes: React.ReactNode[] = [
+                    <JobCard key={job.id} job={job} featured={job.is_featured} />,
+                  ]
+                  // Halfway down page 1 on the Electrical view — blunt mid-list nudge
+                  if (activeCategory === 'electrical' && i === 9) {
+                    nodes.push(
+                      <div
+                        key={`mid-electrical-${i}`}
+                        style={{
+                          background: 'rgba(250, 204, 21, 0.05)',
+                          border: '1px solid var(--yellow-border)',
+                          borderRadius: '14px',
+                          padding: 'clamp(1rem, 3vw, 1.5rem)',
+                        }}
+                      >
+                        <h3
+                          className="font-bold mb-2"
+                          style={{
+                            fontFamily: 'var(--font-display), system-ui, sans-serif',
+                            fontSize: '1.1rem',
+                            color: 'var(--fg)',
+                            letterSpacing: '-0.01em',
+                          }}
+                        >
+                          Still scrolling? Bad plan. Let the jobs come to you.
+                        </h3>
+                        <a
+                          href="#get-alerts"
+                          className="inline-block font-bold mt-1"
+                          style={{
+                            padding: '0.65rem 1.25rem',
+                            borderRadius: '10px',
+                            background: 'var(--yellow)',
+                            color: '#0A0A0A',
+                            fontSize: '0.85rem',
+                            textDecoration: 'none',
+                          }}
+                        >
+                          Send Me Electrical Jobs →
+                        </a>
+                      </div>
+                    )
+                  }
+                  // Every 12 cards — desktop-only inline nudge so mobile doesn't collide with the sticky footer
+                  if ((i + 1) % 12 === 0 && i < (jobs as Job[]).length - 1) {
+                    nodes.push(
+                      <div
+                        key={`every12-${i}`}
+                        className="hidden lg:block"
+                        style={{
+                          background: 'var(--bg-raised)',
+                          border: '1px dashed var(--yellow-border)',
+                          borderRadius: '14px',
+                          padding: '1.25rem 1.5rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: '1rem',
+                          flexWrap: 'wrap',
+                        }}
+                      >
+                        <p
+                          style={{
+                            margin: 0,
+                            color: 'var(--fg)',
+                            fontSize: '0.95rem',
+                            fontWeight: 600,
+                            maxWidth: '520px',
+                          }}
+                        >
+                          These jobs move fast. Get the next batch in your inbox.
+                        </p>
+                        <a
+                          href="#get-alerts"
+                          className="font-bold"
+                          style={{
+                            padding: '0.55rem 1.1rem',
+                            borderRadius: '10px',
+                            background: 'var(--yellow)',
+                            color: '#0A0A0A',
+                            fontSize: '0.85rem',
+                            textDecoration: 'none',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          Get Daily Alerts →
+                        </a>
+                      </div>
+                    )
+                  }
+                  return nodes
+                })}
               </div>
               <Pagination
                 currentPage={safePage}
