@@ -6,6 +6,7 @@ import { JobFilters } from '@/components/jobs/JobFilters'
 import { Pagination } from '@/components/jobs/Pagination'
 import { CATEGORY_LABELS, type JobCategory, type Job } from '@/types'
 import { JobAlertInlineForm } from '@/components/jobs/JobAlertInlineForm'
+import { JobAlertPopupWrapper } from '@/components/jobs/JobAlertPopupWrapper'
 import type { Metadata } from 'next'
 
 type MetadataProps = { searchParams: Promise<SearchParams> }
@@ -226,6 +227,8 @@ export default async function JobsPage({
           )}
         </div>
       </div>
+      {/* 3-step job alert popup — triggers after 2 job views */}
+      <JobAlertPopupWrapper />
     </div>
   )
 }
