@@ -15,6 +15,7 @@ import {
 import { OfferComparisonWorksheet } from './OfferComparisonWorksheet'
 import { SalaryGuideTracker } from './SalaryGuideTracker'
 import { JobAlertInlineForm } from '@/components/jobs/JobAlertInlineForm'
+import { ImpressionTracker } from '@/components/analytics/ImpressionTracker'
 
 // ─────────────────────────────────────────────────────────────────────
 // /salary-guide — US Data Center Electrician & HVAC Salary Guide 2026
@@ -508,24 +509,26 @@ export default function SalaryGuidePage() {
           <SalaryTable rows={ELECTRICIAN_MARKETS} title="Electrician — base hourly and annual pay" />
 
           {/* Email capture — Placement 1: after electrician tables, before HVAC */}
-          <div
-            style={{
-              background: 'rgba(250, 204, 21, 0.05)',
-              border: '1px solid var(--yellow-border)',
-              borderRadius: '14px',
-              padding: 'clamp(1.25rem, 3vw, 1.75rem)',
-              marginBottom: '2rem',
-            }}
-          >
-            <JobAlertInlineForm
-              variant="jobs"
-              defaultTrade="electrical"
-              source="salary-guide-top"
-              headline="Get electrician jobs in your market by email"
-              subtext="New data center electrician roles — filtered by city. Delivered weekly. Unsubscribe anytime."
-              buttonLabel="Send me jobs"
-            />
-          </div>
+          <ImpressionTracker source="salary-guide-top">
+            <div
+              style={{
+                background: 'rgba(250, 204, 21, 0.05)',
+                border: '1px solid var(--yellow-border)',
+                borderRadius: '14px',
+                padding: 'clamp(1.25rem, 3vw, 1.75rem)',
+                marginBottom: '2rem',
+              }}
+            >
+              <JobAlertInlineForm
+                variant="jobs"
+                defaultTrade="electrical"
+                source="salary-guide-top"
+                headline="Get electrician jobs in your market by email"
+                subtext="New data center electrician roles — filtered by city. Delivered weekly. Unsubscribe anytime."
+                buttonLabel="Send me jobs"
+              />
+            </div>
+          </ImpressionTracker>
 
           {/* HVAC by market */}
           <SectionTitle id="hvac">Data center HVAC technician salary by market (2026)</SectionTitle>
@@ -789,7 +792,9 @@ export default function SalaryGuidePage() {
               Use this guide to benchmark offers, then hand us your email and we send the
               roles that match your trade and market. No spam, unsubscribe anytime.
             </p>
-            <JobAlertInlineForm variant="jobs" source="salary-guide-bottom" />
+            <ImpressionTracker source="salary-guide-bottom">
+              <JobAlertInlineForm variant="jobs" source="salary-guide-bottom" />
+            </ImpressionTracker>
           </section>
 
           {/* FAQ */}
@@ -832,6 +837,7 @@ export default function SalaryGuidePage() {
           </div>
 
           {/* Email capture — Placement 2: after FAQ, before related links */}
+          <ImpressionTracker source="salary-guide-faq">
           <div
             style={{
               background: 'rgba(250, 204, 21, 0.05)',
@@ -879,6 +885,7 @@ export default function SalaryGuidePage() {
               buttonLabel="Send me jobs"
             />
           </div>
+          </ImpressionTracker>
 
           {/* Related links */}
           <div
