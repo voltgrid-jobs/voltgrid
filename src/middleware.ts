@@ -33,6 +33,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  // Admin routes require the founder account
+  if (pathname.startsWith('/admin') && user?.email !== 'fhillesland@gmail.com') {
+    const url = request.nextUrl.clone()
+    url.pathname = '/'
+    return NextResponse.redirect(url)
+  }
+
   return supabaseResponse
 }
 
