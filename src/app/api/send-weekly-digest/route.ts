@@ -26,6 +26,7 @@ interface JobAlert {
   last_digest_sent_at: string | null
   is_active: boolean
   confirmation_token: string
+  per_diem_only: boolean
 }
 
 function formatSalary(min: number | null, max: number | null): string | null {
@@ -179,7 +180,7 @@ export async function GET(req: NextRequest) {
   // that would mean 8 emails/week and guaranteed unsubscribes.
   const { data: alertsWithDedup, error: dedupError } = await supabase
     .from('job_alerts')
-    .select('id, email, keywords, location, category, last_digest_sent_at, is_active, confirmation_token')
+    .select('id, email, keywords, location, category, last_digest_sent_at, is_active, confirmation_token, per_diem_only')
     .eq('is_active', true)
     .eq('frequency', 'weekly')
     .not('confirmed_at', 'is', null)
@@ -231,6 +232,7 @@ export async function GET(req: NextRequest) {
         .limit(8)
 
       if (alert.category) query = query.eq('category', alert.category)
+      if (alert.per_diem_only) query = query.eq('per_diem', true)
       const locationFilter = buildLocationOrFilter(alert.location)
       if (locationFilter) query = query.or(locationFilter)
       if (alert.keywords) {

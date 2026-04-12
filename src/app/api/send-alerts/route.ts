@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
   // not receive any content emails until the user clicks the confirm link.
   const { data: alerts } = await supabase
     .from('job_alerts')
-    .select('id, email, category, keywords, location, last_sent_at, confirmation_token')
+    .select('id, email, category, keywords, location, last_sent_at, confirmation_token, per_diem_only')
     .eq('is_active', true)
     .eq('frequency', 'daily')
     .not('confirmed_at', 'is', null)
@@ -56,6 +56,7 @@ export async function GET(req: NextRequest) {
         .limit(10)
 
       if (alert.category) query = query.eq('category', alert.category)
+      if (alert.per_diem_only) query = query.eq('per_diem', true)
       const locationFilter = buildLocationOrFilter(alert.location)
       if (locationFilter) query = query.or(locationFilter)
       if (alert.keywords) {

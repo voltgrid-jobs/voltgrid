@@ -90,6 +90,7 @@ export async function POST(req: NextRequest) {
     source,
     trade_pref,
     location_pref,
+    per_diem_only,
   } = body
 
   if (!email) return NextResponse.json({ error: 'Email required' }, { status: 400 })
@@ -230,6 +231,7 @@ export async function POST(req: NextRequest) {
       ...(background && { background }),
       ...(job_id && { source_job_id: job_id }),
       ...(sourcePage && { source_page: sourcePage }),
+      per_diem_only: !!per_diem_only,
     })
     .select('id, confirmation_token')
     .single()
