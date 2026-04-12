@@ -102,18 +102,19 @@ export default async function HomePage() {
               className="animate-fade-up delay-100 leading-none mb-6"
               style={{
                 fontFamily: 'var(--font-display), system-ui, sans-serif',
-                fontSize: 'clamp(2.5rem, 7vw, 5rem)',
+                fontSize: 'clamp(3rem, 8vw, 6rem)',
                 fontWeight: 800,
                 letterSpacing: '-0.01em',
                 color: 'var(--fg)',
               }}
             >
-              Stop Filtering.<br />
-              <span style={{ color: 'var(--yellow)' }}>Start Building.</span>
+              You Power AI.<br />
+              <span style={{ color: 'var(--yellow)' }}>We&apos;ll Find You<br />the Job.</span>
             </h1>
 
             <p className="text-lg sm:text-xl mb-6 max-w-xl animate-fade-up delay-200" style={{ color: 'var(--fg-muted)', lineHeight: 1.6 }}>
-              VoltGrid posts one job and surfaces electricians, HVAC techs, and low voltage techs who already have data center experience. No inbox-clogging. No recruiter markup.
+              Join trades workers earning $45–$85/hr at CoreWeave, xAI, T5, and the other companies
+              building the data centers powering AI.
             </p>
 
             {/* Trust stats row */}

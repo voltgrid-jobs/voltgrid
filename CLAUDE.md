@@ -223,17 +223,17 @@ import { createAdminClient } from '@/lib/supabase/admin'
 
 ## OpsGrid Task API
 
-OpsGrid is the **mission control dashboard** at `ops-dashboard-volt-grid.vercel.app`. It is the **single source of truth for all Claude Code tasks.** Fetch your tasks from OpsGrid at the start of every session — do NOT wait for Filip to relay tasks manually.
+OpsGrid is the **mission control dashboard** at `ops.voltgridjobs.com`. It is the **single source of truth for all Claude Code tasks.** Fetch your tasks from OpsGrid at the start of every session — do NOT wait for Filip to relay tasks manually.
 
 **API Key:** `5323c76261c136d86d2df19d8ac890647dd079d54a5999c78ac279cd87752049`
-**Base URL:** https://ops-dashboard-volt-grid.vercel.app
+**Base URL:** https://ops.voltgridjobs.com
 
 ### Session Start Workflow (mandatory)
 
 1. Fetch all tasks with status `tagged_for_claude`:
 ```bash
 curl -H "X-API-Key: 5323c76261c136d86d2df19d8ac890647dd079d54a5999c78ac279cd87752049" \
-  "https://ops-dashboard-volt-grid.vercel.app/api/tasks?assignee=claude-code&status=tagged_for_claude"
+  "https://ops.voltgridjobs.com/api/tasks?assignee=claude-code&status=tagged_for_claude"
 ```
 2. For each task: claim it, execute it, update status on completion or failure.
 
@@ -242,29 +242,29 @@ On failure → update status to `blocked` with error reason.
 
 Never ask Filip to relay tasks — always pull from OpsGrid directly.
 
-**Base URL:** https://ops-dashboard-volt-grid.vercel.app
+**Base URL:** https://ops.voltgridjobs.com
 **API Key header:** `X-API-Key: 5323c76261c136d86d2df19d8ac890647dd079d54a5999c78ac279cd87752049`
 
 ```bash
 # Get tasks assigned to you
 curl -H "X-API-Key: 5323c76261c136d86d2df19d8ac890647dd079d54a5999c78ac279cd87752049" \
-  "https://ops-dashboard-volt-grid.vercel.app/api/tasks?assignee=claude-code&status=tagged_for_claude"
+  "https://ops.voltgridjobs.com/api/tasks?assignee=claude-code&status=tagged_for_claude"
 
 # Claim a task (do this before starting)
 curl -X POST -H "X-API-Key: 5323c76261c136d86d2df19d8ac890647dd079d54a5999c78ac279cd87752049" \
-  "https://ops-dashboard-volt-grid.vercel.app/api/tasks/{id}/claim"
+  "https://ops.voltgridjobs.com/api/tasks/{id}/claim"
 
 # Complete a task
 curl -X POST -H "X-API-Key: 5323c76261c136d86d2df19d8ac890647dd079d54a5999c78ac279cd87752049" \
   -H "Content-Type: application/json" \
   -d '{"summary":"What I changed and why"}' \
-  "https://ops-dashboard-volt-grid.vercel.app/api/tasks/{id}/complete"
+  "https://ops.voltgridjobs.com/api/tasks/{id}/complete"
 
 # Request clarification (if brief is unclear — do NOT guess)
 curl -X POST -H "X-API-Key: 5323c76261c136d86d2df19d8ac890647dd079d54a5999c78ac279cd87752049" \
   -H "Content-Type: application/json" \
   -d '{"question":"What does X mean?"}' \
-  "https://ops-dashboard-volt-grid.vercel.app/api/tasks/{id}/clarify"
+  "https://ops.voltgridjobs.com/api/tasks/{id}/clarify"
 ```
 
 **Rules:**
@@ -342,4 +342,4 @@ echo "$VALUE" > file
 - **Felix** (AI agent / ops lead): manages via Telegram, monitors GitHub
 - **Hermes** (AI agent): triggers Vercel deploys after reviewing GitHub diffs
 - **Filip** (founder): reviews strategy, handles payments, runs Claude Code sessions
-- **OpsGrid dashboard:** https://ops-dashboard-volt-grid.vercel.app
+- **OpsGrid dashboard:** https://ops.voltgridjobs.com
