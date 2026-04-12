@@ -65,6 +65,9 @@ export function SaveJobButton({
           email,
           category: jobCategory || null,
           frequency: 'daily',
+          source: 'save-job-button',
+          trade_pref: jobCategory || 'all',
+          location_pref: 'all',
         }),
       })
       if (res.ok) {

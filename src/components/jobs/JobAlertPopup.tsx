@@ -261,6 +261,9 @@ function StepEmail({
           category: trade,
           location: zip,
           frequency: 'daily',
+          source: 'job-alert-popup',
+          trade_pref: trade || 'all',
+          location_pref: zip || 'all',
         }),
       })
       const data = await res.json().catch(() => ({}))

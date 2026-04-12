@@ -78,7 +78,7 @@ export function ApplyButton({
       await fetch('/api/alerts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, category, job_id: jobId }),
+        body: JSON.stringify({ email, category, job_id: jobId, source: 'apply-button-modal', trade_pref: category || 'all', location_pref: 'all' }),
       })
       if (typeof localStorage !== 'undefined') {
         localStorage.setItem('jobAlertSignedUp', 'true')

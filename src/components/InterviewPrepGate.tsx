@@ -117,7 +117,7 @@ export function InterviewPrepGate() {
       await fetch('/api/alerts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim(), location: '', frequency: 'daily' }),
+        body: JSON.stringify({ email: email.trim(), location: '', frequency: 'daily', source: 'interview-prep-gate', trade_pref: 'all', location_pref: 'all' }),
       })
     } catch {
       // Non-fatal — always unlock

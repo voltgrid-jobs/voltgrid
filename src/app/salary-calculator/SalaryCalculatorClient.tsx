@@ -123,7 +123,7 @@ export function SalaryCalculatorClient() {
       await fetch('/api/alerts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim(), category: trade, frequency: 'daily' }),
+        body: JSON.stringify({ email: email.trim(), category: trade, frequency: 'daily', source: 'salary-calculator', trade_pref: trade, location_pref: 'all' }),
       })
     } catch {
       // non-fatal — still unlock
