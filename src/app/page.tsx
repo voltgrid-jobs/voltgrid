@@ -170,8 +170,8 @@ export default async function HomePage() {
               <CompactHeroSignup
                 source="homepage-hero"
                 defaultTrade="electrical"
-                headline="Post a job — reach trades workers today."
-                subtext="Targeted reach to electricians, HVAC, and low voltage techs actively seeking data center roles."
+                headline="Get daily data center jobs sent to you"
+                subtext="Pay, per diem, and travel filters. No junk. No generic construction spam."
                 trustLine={
                   electricalJobsCount && electricalJobsCount > 0
                     ? `${electricalJobsCount} live electrical roles posted now on VoltGrid.`
