@@ -34,7 +34,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Admin routes require the founder account
-  if (pathname.startsWith('/admin') && user?.email !== 'fhillesland@gmail.com') {
+  if (pathname.startsWith('/admin') && user?.email !== 'voltgrid@protonmail.com') {
     const url = request.nextUrl.clone()
     url.pathname = '/'
     return NextResponse.redirect(url)
