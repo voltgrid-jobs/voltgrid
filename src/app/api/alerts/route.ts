@@ -250,6 +250,39 @@ export async function POST(req: NextRequest) {
     console.error('[alerts] confirmation email error:', err)
   }
 
+  // Auto-create Supabase Auth account if none exists, and link user_id
+  try {
+    let userId = user?.id || null
+
+    if (!userId) {
+      // Try to create a new user — if email already exists, createUser returns an error
+      const { data: newUser, error: createErr } = await adminClient.auth.admin.createUser({
+        email: normalizedEmail,
+        email_confirm: true,
+      })
+      if (newUser?.user?.id) {
+        userId = newUser.user.id
+      } else if (createErr) {
+        // User already exists — look them up
+        const { data: { users } } = await adminClient.auth.admin.listUsers({ perPage: 1, page: 1 })
+        const found = users?.find(u => u.email === normalizedEmail)
+        userId = found?.id || null
+      }
+    }
+
+    if (userId) {
+      // Link this alert and backfill any orphaned alerts for this email
+      await adminClient
+        .from('job_alerts')
+        .update({ user_id: userId })
+        .eq('email', normalizedEmail)
+        .is('user_id', null)
+    }
+  } catch (err) {
+    // Non-critical — alert still works without an account
+    console.error('[alerts] auto-create account error:', err)
+  }
+
   await logFunnelEvent({
     eventType: 'alert_submit',
     email: normalizedEmail,

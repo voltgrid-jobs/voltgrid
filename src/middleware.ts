@@ -40,9 +40,19 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  // Force passwordless users to set a password before accessing dashboard
+  if (user && (pathname.startsWith('/dashboard') || pathname.startsWith('/account')) && !pathname.startsWith('/auth')) {
+    const hasPassword = user.identities?.some(i => i.provider === 'email') ?? false
+    if (!hasPassword) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/auth/set-password'
+      return NextResponse.redirect(url)
+    }
+  }
+
   return supabaseResponse
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/account/:path*', '/admin/:path*'],
+  matcher: ['/dashboard/:path*', '/account/:path*', '/admin/:path*', '/auth/set-password'],
 }

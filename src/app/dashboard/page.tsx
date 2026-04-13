@@ -9,6 +9,7 @@ import { DashboardTabs } from './DashboardTabs'
 import { SavedJobsList } from './SavedJobsList'
 import { AlertsList } from './AlertsList'
 import { JobActions } from './JobActions'
+import { PasswordSection } from '@/components/dashboard/PasswordSection'
 
 export const metadata: Metadata = { title: 'Dashboard' }
 
@@ -53,6 +54,16 @@ export default async function DashboardPage({
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login?next=/dashboard')
+
+  // ── Auto-link orphaned job alerts to auth account ──────────────────────────
+  {
+    const admin = createAdminClient()
+    await admin
+      .from('job_alerts')
+      .update({ user_id: user.id })
+      .eq('email', user.email!)
+      .is('user_id', null)
+  }
 
   // ── Auto-link employer records to auth account ─────────────────────────────
   // Jobs posted via Stripe checkout have employer_email set but employer.user_id = null
@@ -364,22 +375,33 @@ export default async function DashboardPage({
                   My Alerts ({alerts?.length ?? 0})
                 </h2>
               </div>
-              <AlertsList initialAlerts={(alerts ?? []).map(a => ({
-                id: a.id,
-                keywords: a.keywords ?? null,
-                location: a.location ?? null,
-                category: a.category ?? null,
-                frequency: a.frequency,
-              }))} />
+              <AlertsList
+                userEmail={user.email!}
+                initialAlerts={(alerts ?? []).map(a => ({
+                  id: a.id,
+                  keywords: a.keywords ?? null,
+                  location: a.location ?? null,
+                  category: a.category ?? null,
+                  frequency: a.frequency,
+                }))}
+              />
             </section>
 
             {/* Browse CTA */}
-            <div className="text-center mt-6">
+            <div className="text-center mt-6 mb-10">
               <Link href="/jobs" className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm transition-opacity hover:opacity-90"
                 style={{ background: 'var(--yellow)', color: '#0D0D0D' }}>
                 Browse more jobs →
               </Link>
             </div>
+
+            {/* Account settings */}
+            <section>
+              <h2 className="text-xs font-semibold tracking-wide uppercase mb-4" style={{ color: 'var(--fg-faint)', letterSpacing: '0.08em' }}>
+                Account
+              </h2>
+              <PasswordSection />
+            </section>
           </div>
         }
       />
