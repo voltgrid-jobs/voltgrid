@@ -112,7 +112,7 @@ export default async function CityPage({ params }: Props) {
     return hub.locationPatterns.some(pattern => loc.includes(pattern))
   })
 
-  if (jobs.length === 0) notFound()
+  // Render empty state instead of 404 when no jobs — keeps page indexable
 
   return (
     <main className="min-h-screen">

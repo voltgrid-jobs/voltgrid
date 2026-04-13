@@ -149,7 +149,67 @@ export default async function JobDetailPage({
   const supabase = await createClient()
   const { data: job } = await supabase.from('jobs').select('*').eq('id', id).eq('is_active', true).single()
   if (!job) notFound()
-  if (job.expires_at && new Date(job.expires_at) < new Date()) notFound()
+
+  // Expired jobs render a dedicated expired state instead of 404
+  const isExpired = !!(job.expires_at && new Date(job.expires_at) < new Date())
+  if (isExpired) {
+    const tradeSlug = job.category === 'low_voltage' ? 'low-voltage-jobs'
+      : job.category === 'project_management' ? 'project-management-jobs'
+      : job.category ? `${job.category}-jobs` : null
+    return (
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-20">
+        <div className="text-center mb-8">
+          <div
+            className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4 text-2xl"
+            style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}
+          >
+            ⏳
+          </div>
+          <p className="text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: 'var(--fg-faint)' }}>
+            Expired Listing
+          </p>
+          <h1
+            className="text-2xl sm:text-3xl font-bold mb-2"
+            style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif' }}
+          >
+            {job.title}
+          </h1>
+          <p className="text-sm mb-1" style={{ color: 'var(--fg-muted)' }}>
+            {job.company_name}{job.location ? ` · ${job.location}` : ''}
+          </p>
+          <p className="text-sm" style={{ color: 'var(--fg-faint)' }}>
+            This job listing has expired and is no longer accepting applications.
+          </p>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center mb-10">
+          {tradeSlug && (
+            <Link
+              href={`/trades/${tradeSlug}`}
+              className="px-6 py-3 rounded-xl font-semibold text-center transition-opacity hover:opacity-90"
+              style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
+            >
+              Browse similar jobs →
+            </Link>
+          )}
+          <Link
+            href="/jobs"
+            className="px-6 py-3 rounded-xl font-semibold text-center transition-opacity hover:opacity-80"
+            style={{ border: '1px solid var(--border-strong)', color: 'var(--fg-muted)' }}
+          >
+            Browse all jobs
+          </Link>
+        </div>
+        <div style={{ maxWidth: '420px', margin: '0 auto' }}>
+          <CompactHeroSignup
+            source="expired-job"
+            defaultTrade={job.category === 'low_voltage' ? 'low_voltage' : (job.category as 'electrical' | 'hvac' | 'construction' | 'operations' | undefined) || 'all'}
+            headline="Get notified when similar jobs are posted"
+            subtext="Daily alerts for matching roles. No spam."
+          />
+        </div>
+      </div>
+    )
+  }
 
   const [{ data: { user } }, { data: similarJobs }, { count: alertSubscribers }] = await Promise.all([
     supabase.auth.getUser(),

@@ -110,7 +110,7 @@ export default async function TradePage({ params }: Props) {
     // DB unavailable — render page with 0 jobs
   }
 
-  if (jobs.length === 0) notFound()
+  // Render empty state instead of 404 when no jobs — keeps page indexable
 
   const pageUrl = `https://voltgridjobs.com/trades/${slug}`
 

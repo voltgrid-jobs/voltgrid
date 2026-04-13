@@ -193,8 +193,8 @@ export default async function CompanyPage({ params }: Props) {
 
   const jobs: Job[] = jobsData ?? []
 
-  // 3. If no company and no jobs found — 404
-  if (!companyName || jobs.length === 0) notFound()
+  // 3. If no company name found at all — 404
+  if (!companyName) notFound()
 
   // Logo URL
   let logoUrl: string | null = null
@@ -276,11 +276,28 @@ export default async function CompanyPage({ params }: Props) {
 
       {/* Jobs list */}
       <section className="max-w-5xl mx-auto px-4 py-10">
-        <div className="space-y-3">
-          {jobs.map(job => (
-            <JobCard key={job.id} job={job} />
-          ))}
-        </div>
+        {jobs.length > 0 ? (
+          <div className="space-y-3">
+            {jobs.map(job => (
+              <JobCard key={job.id} job={job} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16">
+            <p className="text-lg mb-2" style={{ color: 'var(--fg-muted)' }}>
+              No active listings right now
+            </p>
+            <p className="text-sm mb-6" style={{ color: 'var(--fg-faint)' }}>
+              {companyName} has no open positions at the moment. Set up an alert to get notified when they post.
+            </p>
+            <div className="max-w-md mx-auto mb-6">
+              <AlertSignupWidget keywords={companyName} />
+            </div>
+            <Link href="/jobs" className="text-sm hover:underline" style={{ color: 'var(--yellow)' }}>
+              Browse all open positions →
+            </Link>
+          </div>
+        )}
       </section>
 
       {/* Alert widget */}
