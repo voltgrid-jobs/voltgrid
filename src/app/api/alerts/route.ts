@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
-import { buildConfirmationEmail } from '@/lib/emails/alerts'
+import { buildConfirmationEmail, buildWelcomeEmail } from '@/lib/emails/alerts'
 import { logFunnelEvent } from '@/lib/analytics/events'
 
 // In-memory rate limit store (per cold-start instance)
@@ -177,11 +177,12 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    // Unconfirmed (or previously unsubscribed) — reactivate and resend confirmation
+    // Unconfirmed (or previously unsubscribed) — reactivate and auto-confirm
     await adminClient
       .from('job_alerts')
       .update({
         is_active: true,
+        confirmed_at: new Date().toISOString(),
         unsubscribed_at: null,
         keywords: keywords || null,
         location: location || null,
@@ -194,9 +195,25 @@ export async function POST(req: NextRequest) {
       .eq('id', existing.id)
 
     try {
-      await sendConfirmation(normalizedEmail, existing.confirmation_token, normalizedTradePref, normalizedCategory, baseUrl)
+      if (process.env.RESEND_API_KEY) {
+        const resend = new Resend(process.env.RESEND_API_KEY)
+        const tradeLabel = normalizedTradePref === 'all' ? 'trades' : (normalizedTradePref || 'trades').replace(/_/g, ' ')
+        const { subject, html, text } = buildWelcomeEmail({
+          tradeLabel,
+          manageToken: existing.confirmation_token,
+          baseUrl,
+          category: normalizedCategory,
+        })
+        await resend.emails.send({
+          from: `VoltGrid Jobs <${process.env.RESEND_FROM_EMAIL || 'alerts@voltgridjobs.com'}>`,
+          to: normalizedEmail,
+          subject,
+          html,
+          text,
+        })
+      }
     } catch (err) {
-      console.error('[alerts] resend confirmation error:', err)
+      console.error('[alerts] welcome email error:', err)
     }
 
     await logFunnelEvent({
@@ -204,13 +221,13 @@ export async function POST(req: NextRequest) {
       email: normalizedEmail,
       alertId: existing.id,
       sourcePage,
-      metadata: { outcome: 'confirmation_resent', category: normalizedCategory },
+      metadata: { outcome: 'reactivated', category: normalizedCategory },
     })
 
     return NextResponse.json({
       success: true,
-      status: 'confirmation_resent',
-      message: 'Check your email to confirm your alert.',
+      status: 'confirmation_sent',
+      message: "You're signed up! Check your email.",
     })
   }
 
@@ -225,7 +242,7 @@ export async function POST(req: NextRequest) {
       category: normalizedCategory,
       frequency: frequency || 'daily',
       is_active: true,
-      confirmed_at: null,
+      confirmed_at: new Date().toISOString(),
       trade_pref: normalizedTradePref,
       location_pref: normalizedLocationPref,
       ...(background && { background }),
@@ -243,11 +260,27 @@ export async function POST(req: NextRequest) {
     )
   }
 
+  // Send welcome email (auto-confirmed, no double opt-in)
   try {
-    await sendConfirmation(normalizedEmail, inserted.confirmation_token, normalizedTradePref, normalizedCategory, baseUrl)
+    if (process.env.RESEND_API_KEY) {
+      const resend = new Resend(process.env.RESEND_API_KEY)
+      const tradeLabel = normalizedTradePref === 'all' ? 'trades' : (normalizedTradePref || 'trades').replace(/_/g, ' ')
+      const { subject, html, text } = buildWelcomeEmail({
+        tradeLabel,
+        manageToken: inserted.confirmation_token,
+        baseUrl,
+        category: normalizedCategory,
+      })
+      await resend.emails.send({
+        from: `VoltGrid Jobs <${process.env.RESEND_FROM_EMAIL || 'alerts@voltgridjobs.com'}>`,
+        to: normalizedEmail,
+        subject,
+        html,
+        text,
+      })
+    }
   } catch (err) {
-    // Non-critical — the row is saved, the user can request a resend
-    console.error('[alerts] confirmation email error:', err)
+    console.error('[alerts] welcome email error:', err)
   }
 
   // Auto-create Supabase Auth account if none exists, and link user_id
