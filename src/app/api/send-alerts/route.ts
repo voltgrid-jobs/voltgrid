@@ -79,6 +79,25 @@ export async function GET(req: NextRequest) {
       if (!jobs?.length) continue // Nothing new to send
 
       const baseUrl = 'https://voltgridjobs.com'
+
+      // Check if the user has set a password — if not, show account setup CTA
+      let needsPassword = false
+      try {
+        // Query auth.users via the admin RPC to find this specific user
+        const { data: authUsers } = await supabase
+          .from('job_alerts')
+          .select('user_id')
+          .eq('id', alert.id)
+          .single()
+        if (authUsers?.user_id) {
+          const { data: { user: authUser } } = await supabase.auth.admin.getUserById(authUsers.user_id)
+          if (authUser) {
+            needsPassword = !authUser.identities?.some(i => i.provider === 'email')
+          }
+        } else {
+          needsPassword = true // no user_id means no account set up
+        }
+      } catch { /* non-critical */ }
       const jobListHtml = jobs.map(job => `
         <tr>
           <td style="padding:12px 0;border-bottom:1px solid #1f2937">
@@ -89,6 +108,15 @@ export async function GET(req: NextRequest) {
         </tr>
       `).join('')
 
+      const accountSetupHtml = needsPassword ? `
+            <div style="background:#111827;border:1px solid #facc15;border-radius:12px;padding:16px 20px;margin-bottom:24px">
+              <p style="font-size:14px;font-weight:700;color:#f9fafb;margin:0 0 4px 0">Set up your account</p>
+              <p style="font-size:12px;color:#9ca3af;margin:0 0 12px 0">Set a password to save jobs, manage alerts, and access your dashboard.</p>
+              <a href="${baseUrl}/auth/set-password" style="display:inline-block;background:#facc15;color:#0a0a0a;padding:8px 16px;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none">
+                Set Password →
+              </a>
+            </div>` : ''
+
       const emailHtml = `
         <!DOCTYPE html>
         <html>
@@ -98,6 +126,7 @@ export async function GET(req: NextRequest) {
               <span style="font-size:24px">⚡</span>
               <span style="font-size:20px;font-weight:700;color:#fff;margin-left:8px">VoltGrid Jobs</span>
             </div>
+            ${accountSetupHtml}
             <h1 style="color:#fff;font-size:22px;margin-bottom:8px">
               ${jobs.length} new job${jobs.length > 1 ? 's' : ''} matching your alert
             </h1>
@@ -114,7 +143,7 @@ export async function GET(req: NextRequest) {
               </a>
             </div>
             <p style="color:#4b5563;font-size:12px;margin-top:32px;text-align:center;line-height:1.6">
-              You're receiving this because you confirmed a job alert on VoltGrid Jobs.<br>
+              You're receiving this because you signed up for job alerts on VoltGrid Jobs.<br>
               <a href="${baseUrl}/alerts/manage?t=${alert.confirmation_token}" style="color:#4b5563;text-decoration:underline">Manage alerts</a>
               &nbsp;·&nbsp;
               <a href="${baseUrl}/api/alerts/unsubscribe?t=${alert.confirmation_token}" style="color:#4b5563;text-decoration:underline">Unsubscribe</a>
