@@ -115,6 +115,17 @@ export function buildWelcomeEmail({ tradeLabel, manageToken, baseUrl, category }
     </li>
   </ul>
 
+  <!-- Set up your account CTA -->
+  <div style="background:#111827;border:1px solid ${YELLOW};border-radius:12px;padding:20px;margin:0 0 24px 0">
+    <p style="font-size:16px;font-weight:700;color:${FG};margin:0 0 6px 0">Set up your account</p>
+    <p style="font-size:13px;line-height:1.6;color:${FG_MUTED};margin:0 0 14px 0">
+      Set a password to access your dashboard. Manage alerts, save jobs, and track applications.
+    </p>
+    <a href="${baseUrl}/auth/set-password" style="display:inline-block;background:${YELLOW};color:#0a0a0a;padding:12px 24px;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none">
+      Set Password & Go to Dashboard →
+    </a>
+  </div>
+
   <!-- Salary guide CTA box -->
   <div style="background:#111827;border:1px solid ${BORDER};border-radius:12px;padding:20px;margin:0 0 24px 0">
     <p style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:${YELLOW};margin:0 0 8px 0">Free companion guide</p>
@@ -122,14 +133,14 @@ export function buildWelcomeEmail({ tradeLabel, manageToken, baseUrl, category }
     <p style="font-size:13px;line-height:1.6;color:${FG_MUTED};margin:0 0 14px 0">
       Real pay bands by market, role taxonomy, compensation components, union vs non-union, and an offer comparison worksheet. No email wall.
     </p>
-    <a href="${salaryGuideUrl}" style="display:inline-block;background:${YELLOW};color:#0a0a0a;padding:10px 18px;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none">
+    <a href="${salaryGuideUrl}" style="display:inline-block;background:transparent;color:${YELLOW};border:1px solid ${YELLOW};padding:10px 18px;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none">
       Read the salary guide →
     </a>
   </div>
 
   <div style="margin:0 0 24px 0">
     <a href="${browseUrl}"
-      style="display:inline-block;background:transparent;color:${YELLOW};border:1px solid ${YELLOW};padding:12px 24px;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none">
+      style="display:inline-block;background:transparent;color:${FG_MUTED};border:1px solid ${BORDER};padding:12px 24px;border-radius:10px;font-weight:600;font-size:14px;text-decoration:none">
       Browse open ${tradeLabel} jobs →
     </a>
   </div>
@@ -138,7 +149,7 @@ export function buildWelcomeEmail({ tradeLabel, manageToken, baseUrl, category }
     VoltGrid Jobs — built for trades workers in the data center industry.<br>
     <a href="${baseUrl}" style="color:${YELLOW};text-decoration:none">voltgridjobs.com</a>
     &nbsp;·&nbsp;
-    <a href="${manageUrl}" style="color:${FG_FAINT};text-decoration:underline">Manage alerts</a>
+    <a href="${baseUrl}/dashboard" style="color:${FG_FAINT};text-decoration:underline">Manage alerts</a>
     &nbsp;·&nbsp;
     <a href="${unsubscribeUrl}" style="color:${FG_FAINT};text-decoration:underline">Unsubscribe</a>
   </p>
@@ -151,8 +162,10 @@ Your alert for ${tradeLabel} jobs is live. Here is what happens next:
 - Quiet days stay quiet. If no new roles match, you don't get an email.
 - No spam. Real job alerts only. Unsubscribe in one click any time.
 
-Free companion guide — 2026 US Data Center Trades Salary Guide
-Real pay bands by market, role taxonomy, compensation components, union vs non-union, and an offer comparison worksheet.
+Set up your account — set a password to manage alerts, save jobs, and track applications:
+${baseUrl}/auth/set-password
+
+Free companion guide — 2026 US Data Center Trades Salary Guide:
 ${salaryGuideUrl}
 
 Browse open ${tradeLabel} jobs:

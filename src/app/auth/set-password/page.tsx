@@ -1,9 +1,12 @@
 'use client'
 
 import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 export default function SetPasswordPage() {
+  const searchParams = useSearchParams()
+  const next = searchParams.get('next') || '/dashboard'
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [loading, setLoading] = useState(false)
@@ -30,7 +33,7 @@ export default function SetPasswordPage() {
       setError(updateError.message)
       setLoading(false)
     } else {
-      window.location.href = '/dashboard'
+      window.location.href = next
     }
   }
 
