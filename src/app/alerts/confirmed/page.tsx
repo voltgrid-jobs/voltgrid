@@ -1,5 +1,9 @@
+export const dynamic = 'force-dynamic'
+
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { createClient } from '@/lib/supabase/server'
+import { SetPasswordInline } from './SetPasswordInline'
 
 export const metadata: Metadata = {
   title: 'Alert confirmed',
@@ -9,27 +13,27 @@ export const metadata: Metadata = {
 const COPY: Record<string, { heading: string; body: string; tone: 'success' | 'neutral' | 'error' }> = {
   ok: {
     heading: "You're confirmed.",
-    body: "Your data center trades job alert is live. We'll start sending matching roles tomorrow morning. Check your inbox for the welcome email with the 2026 salary guide.",
+    body: "Your job alert is live. Matching roles will arrive in your inbox starting tomorrow morning.",
     tone: 'success',
   },
   already: {
     heading: "Already confirmed.",
-    body: "This alert was already confirmed. You don't need to do anything — matching jobs will keep arriving on your usual schedule.",
+    body: "This alert was already confirmed. Matching jobs will keep arriving on your usual schedule.",
     tone: 'neutral',
   },
   invalid: {
     heading: 'That link looks wrong.',
-    body: "The confirmation token is missing or malformed. If you clicked it from an email, try copying the full URL into your browser. Otherwise, sign up for alerts again from any job listing.",
+    body: "The confirmation token is missing or malformed. Try copying the full URL from your email into your browser.",
     tone: 'error',
   },
   notfound: {
     heading: "We couldn't find that alert.",
-    body: 'The link may have expired or the alert was already removed. Sign up again from any job listing and we will resend the confirmation.',
+    body: 'The link may have expired or the alert was already removed. Sign up again from any job listing.',
     tone: 'error',
   },
   error: {
     heading: 'Something went wrong.',
-    body: "We could not confirm your alert. Please try the link again in a minute, or sign up once more.",
+    body: "We could not confirm your alert. Please try the link again in a minute.",
     tone: 'error',
   },
 }
@@ -42,7 +46,11 @@ export default async function AlertsConfirmedPage({
   const params = await searchParams
   const status = (params.status ?? 'ok') as keyof typeof COPY
   const copy = COPY[status] ?? COPY.ok
-  const manageHref = params.t ? `/alerts/manage?t=${params.t}` : null
+
+  // Check if user is signed in and whether they have a password
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const hasPassword = user?.identities?.some(i => i.provider === 'email') ?? false
 
   const accent =
     copy.tone === 'success' ? 'var(--yellow)' : copy.tone === 'error' ? '#f87171' : 'var(--fg-muted)'
@@ -86,54 +94,93 @@ export default async function AlertsConfirmedPage({
           {copy.body}
         </p>
 
+        {/* Signed in + no password → prompt to set one */}
+        {user && !hasPassword && copy.tone === 'success' && (
+          <div
+            className="rounded-xl p-5 mb-6"
+            style={{ background: 'var(--bg-raised)', border: '1px solid var(--yellow-border)', maxWidth: '420px' }}
+          >
+            <p className="text-sm font-semibold mb-1" style={{ color: 'var(--yellow)' }}>
+              Set a password to access your dashboard
+            </p>
+            <p className="text-xs mb-4" style={{ color: 'var(--fg-muted)' }}>
+              View saved jobs, manage alerts, and track applications.
+            </p>
+            <SetPasswordInline />
+          </div>
+        )}
+
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
-          <Link
-            href="/jobs"
-            style={{
-              display: 'inline-block',
-              padding: '0.875rem 1.5rem',
-              borderRadius: '10px',
-              background: 'var(--yellow)',
-              color: '#0a0a0a',
-              fontWeight: 700,
-              fontSize: '0.95rem',
-              textDecoration: 'none',
-            }}
-          >
-            Browse open jobs →
-          </Link>
-          <Link
-            href="/salary-guide"
-            style={{
-              display: 'inline-block',
-              padding: '0.875rem 1.5rem',
-              borderRadius: '10px',
-              background: 'transparent',
-              color: 'var(--yellow)',
-              border: '1px solid var(--yellow-border)',
-              fontWeight: 700,
-              fontSize: '0.95rem',
-              textDecoration: 'none',
-            }}
-          >
-            Read the 2026 salary guide
-          </Link>
-          {manageHref && (
+          {/* Signed in with password → go to dashboard */}
+          {user && hasPassword ? (
             <Link
-              href={manageHref}
+              href="/dashboard"
+              style={{
+                display: 'inline-block',
+                padding: '0.875rem 1.5rem',
+                borderRadius: '10px',
+                background: 'var(--yellow)',
+                color: '#0a0a0a',
+                fontWeight: 700,
+                fontSize: '0.95rem',
+                textDecoration: 'none',
+              }}
+            >
+              Go to Dashboard →
+            </Link>
+          ) : !user ? (
+            <>
+              <Link
+                href="/jobs"
+                style={{
+                  display: 'inline-block',
+                  padding: '0.875rem 1.5rem',
+                  borderRadius: '10px',
+                  background: 'var(--yellow)',
+                  color: '#0a0a0a',
+                  fontWeight: 700,
+                  fontSize: '0.95rem',
+                  textDecoration: 'none',
+                }}
+              >
+                Browse open jobs →
+              </Link>
+              <Link
+                href="/auth/login"
+                style={{
+                  display: 'inline-block',
+                  padding: '0.875rem 1.5rem',
+                  borderRadius: '10px',
+                  background: 'transparent',
+                  color: 'var(--fg-muted)',
+                  border: '1px solid var(--border)',
+                  fontWeight: 600,
+                  fontSize: '0.95rem',
+                  textDecoration: 'none',
+                }}
+              >
+                Sign In
+              </Link>
+            </>
+          ) : null}
+
+          {/* Always show browse jobs as secondary if signed in */}
+          {user && (
+            <Link
+              href="/jobs"
               style={{
                 display: 'inline-block',
                 padding: '0.875rem 1.5rem',
                 borderRadius: '10px',
                 background: 'transparent',
-                color: 'var(--fg-faint)',
+                color: 'var(--fg-muted)',
                 border: '1px solid var(--border)',
                 fontWeight: 600,
                 fontSize: '0.95rem',
                 textDecoration: 'none',
               }}
             >
-              Manage this alert
+              Browse open jobs
             </Link>
           )}
         </div>
