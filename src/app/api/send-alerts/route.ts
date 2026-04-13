@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
   // Get all active, confirmed daily alerts not sent in last 23 hours.
   // Rows with confirmed_at IS NULL are pending double opt-in and must
   // not receive any content emails until the user clicks the confirm link.
-  const { data: alerts } = await supabase
+  const { data: alerts, error: alertsError } = await supabase
     .from('job_alerts')
     .select('id, email, category, keywords, location, last_sent_at, confirmation_token, per_diem_only')
     .eq('is_active', true)
@@ -35,7 +35,17 @@ export async function GET(req: NextRequest) {
     .not('confirmed_at', 'is', null)
     .or('last_sent_at.is.null,last_sent_at.lt.' + new Date(Date.now() - 23 * 60 * 60 * 1000).toISOString())
 
-  if (!alerts?.length) return NextResponse.json({ sent: 0, reason: 'No alerts due' })
+  if (alertsError) {
+    console.error('[send-alerts] Error fetching alerts:', alertsError)
+    return NextResponse.json({ error: 'Database error', details: alertsError.message }, { status: 500 })
+  }
+
+  if (!alerts?.length) {
+    console.log('[send-alerts] No alerts due - found', alerts?.length ?? 0, 'eligible alerts')
+    return NextResponse.json({ sent: 0, reason: 'No alerts due' })
+  }
+
+  console.log(`[send-alerts] Found ${alerts.length} alerts to process`)
 
   let sent = 0
   let failed = 0
