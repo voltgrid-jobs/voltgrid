@@ -24,7 +24,7 @@ interface ConfirmArgs {
 }
 
 export function buildConfirmationEmail({ confirmToken, tradeLabel, baseUrl }: ConfirmArgs) {
-  const confirmUrl = `${baseUrl}/alerts/confirm?t=${confirmToken}`
+  const confirmUrl = `${baseUrl}/api/alerts/confirm?t=${confirmToken}`
   // Subject reflects the chosen trade so inbox scanners recognise what
   // the email is for. "data center trades" is the fallback for all-trades
   // signups.
