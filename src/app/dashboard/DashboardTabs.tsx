@@ -13,34 +13,26 @@ interface DashboardTabsProps {
 
 export function DashboardTabs({
   defaultTab,
-  showPostings,
   postingsContent,
   searchesContent,
 }: DashboardTabsProps) {
   const [activeTab, setActiveTab] = useState<'postings' | 'searches'>(defaultTab)
 
-  // If only one tab available, skip tab rendering and show directly
-  if (!showPostings) {
-    return <>{searchesContent}</>
-  }
-
   return (
     <div>
-      {/* Tab bar — Postings first for employers */}
+      {/* Tab bar — always show both tabs */}
       <div className="flex items-center gap-1 mb-8" style={{ borderBottom: '1px solid var(--border)', paddingBottom: '0' }}>
-        {showPostings && (
-          <TabButton
-            active={activeTab === 'postings'}
-            onClick={() => setActiveTab('postings')}
-          >
-            My Postings
-          </TabButton>
-        )}
         <TabButton
           active={activeTab === 'searches'}
           onClick={() => setActiveTab('searches')}
         >
           My Job Searches
+        </TabButton>
+        <TabButton
+          active={activeTab === 'postings'}
+          onClick={() => setActiveTab('postings')}
+        >
+          My Postings
         </TabButton>
       </div>
 

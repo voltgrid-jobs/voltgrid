@@ -231,7 +231,7 @@ export default async function DashboardPage({
       {/* ── Tabs (only shown if both roles apply, or always to allow switching) */}
       <DashboardTabs
         defaultTab={defaultTab}
-        showPostings={isEmployer}
+        showPostings={true}
         showSearches={true}
         // ── Postings tab content ──────────────────────────────────────────
         postingsContent={

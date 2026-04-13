@@ -33,35 +33,42 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
     const supabase = createClient()
 
     if (mode === 'signup') {
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { full_name: fullName },
-          emailRedirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
-        },
-      })
-      if (signUpError) {
-        setError(signUpError.message)
-      } else if (data.user?.identities?.length === 0) {
-        setError('An account with this email already exists. Try signing in instead.')
-      } else {
-        setSuccess('Check your email for a confirmation link!')
-        // If they opted into job alerts, create the alert in the background
-        if (wantAlerts) {
-          fetch('/api/alerts', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email,
-              category: trade === 'all' ? null : trade,
-              frequency: 'daily',
-              trade_pref: trade,
-              location_pref: 'all',
-              source: 'auth-signup',
-            }),
-          }).catch(() => {})
+      // Create account via our API (auto-confirmed, branded welcome email via Resend)
+      try {
+        const res = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password, fullName }),
+        })
+        const data = await res.json().catch(() => ({}))
+        if (!res.ok) {
+          setError(data.error || 'Failed to create account.')
+        } else {
+          // Sign in immediately since account is auto-confirmed
+          const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
+          if (signInError) {
+            setSuccess('Account created! Check your email for a welcome message. You can now sign in.')
+          } else {
+            // If they opted into job alerts, create the alert in the background
+            if (wantAlerts) {
+              fetch('/api/alerts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  email,
+                  category: trade === 'all' ? null : trade,
+                  frequency: 'daily',
+                  trade_pref: trade,
+                  location_pref: 'all',
+                  source: 'auth-signup',
+                }),
+              }).catch(() => {})
+            }
+            window.location.href = '/dashboard'
+          }
         }
+      } catch {
+        setError('Something went wrong. Try again.')
       }
     } else {
       const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
