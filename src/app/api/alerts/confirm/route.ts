@@ -6,9 +6,8 @@ import { logFunnelEvent } from '@/lib/analytics/events'
 
 /**
  * Confirm a job alert via the token in the confirmation email.
- * Sets confirmed_at, sends the welcome email, signs the user in
- * via a generated magic link (transparent to the user), and
- * redirects to /alerts/confirmed.
+ * Sets confirmed_at, sends the welcome email, and redirects to
+ * /alerts/confirmed.
  */
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get('t')
@@ -30,7 +29,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(`${baseUrl}/alerts/confirmed?status=notfound`, 302)
   }
 
-  // Already confirmed — idempotent, redirect to success
   if (alert.confirmed_at) {
     return NextResponse.redirect(`${baseUrl}/alerts/confirmed?status=already`, 302)
   }
@@ -76,25 +74,5 @@ export async function GET(req: NextRequest) {
     console.error('[alerts/confirm] welcome email error:', err)
   }
 
-  // Auto-sign in the user by generating a magic link and redirecting through it.
-  // This is transparent — the user just sees the confirmed page with a session.
-  try {
-    const { data: linkData } = await admin.auth.admin.generateLink({
-      type: 'magiclink',
-      email: alert.email,
-      options: {
-        redirectTo: `${baseUrl}/alerts/confirmed?status=ok&t=${token}`,
-      },
-    })
-
-    if (linkData?.properties?.action_link) {
-      // The action_link goes through Supabase's verify endpoint which sets the session
-      return NextResponse.redirect(linkData.properties.action_link, 302)
-    }
-  } catch (err) {
-    console.error('[alerts/confirm] auto-sign-in error:', err)
-  }
-
-  // Fallback: redirect without session if sign-in generation failed
   return NextResponse.redirect(`${baseUrl}/alerts/confirmed?status=ok&t=${token}`, 302)
 }

@@ -1,9 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 
-export function SetPasswordInline() {
+export function SetPasswordWithToken({ alertToken }: { alertToken: string }) {
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [loading, setLoading] = useState(false)
@@ -22,26 +21,38 @@ export function SetPasswordInline() {
     }
     setLoading(true)
     setError('')
-    const supabase = createClient()
-    const { error: updateError } = await supabase.auth.updateUser({ password })
-    if (updateError) {
-      setError(updateError.message)
+
+    try {
+      const res = await fetch('/api/alerts/set-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: alertToken, password }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (res.ok && data.success) {
+        setDone(true)
+      } else {
+        setError(data.error || 'Failed to set password.')
+      }
+    } catch {
+      setError('Something went wrong.')
+    } finally {
       setLoading(false)
-    } else {
-      setDone(true)
     }
   }
 
   if (done) {
     return (
       <div>
-        <p className="text-sm font-semibold mb-2" style={{ color: '#4ADE80' }}>Password set.</p>
+        <p className="text-sm font-semibold mb-3" style={{ color: '#4ADE80' }}>
+          Password set. You can now sign in.
+        </p>
         <a
-          href="/dashboard"
-          className="inline-block px-4 py-2 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90"
+          href="/auth/login"
+          className="inline-block px-5 py-2.5 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90"
           style={{ background: 'var(--yellow)', color: '#0A0A0A' }}
         >
-          Go to Dashboard →
+          Sign In & Go to Dashboard →
         </a>
       </div>
     )

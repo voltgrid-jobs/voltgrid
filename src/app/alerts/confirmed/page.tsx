@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { SetPasswordInline } from './SetPasswordInline'
+import { SetPasswordWithToken } from './SetPasswordWithToken'
 
 export const metadata: Metadata = {
   title: 'Alert confirmed',
@@ -46,10 +46,11 @@ export default async function AlertsConfirmedPage({
   const params = await searchParams
   const status = (params.status ?? 'ok') as keyof typeof COPY
   const copy = COPY[status] ?? COPY.ok
+  const token = params.t || null
 
-  // Check if user is signed in and whether they have a password
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  const isSignedIn = !!user
   const hasPassword = user?.identities?.some(i => i.provider === 'email') ?? false
 
   const accent =
@@ -94,25 +95,24 @@ export default async function AlertsConfirmedPage({
           {copy.body}
         </p>
 
-        {/* Signed in + no password → prompt to set one */}
-        {user && !hasPassword && copy.tone === 'success' && (
+        {/* Password setup prompt — show for successful confirms when user needs a password */}
+        {copy.tone === 'success' && token && (!isSignedIn || !hasPassword) && (
           <div
             className="rounded-xl p-5 mb-6"
             style={{ background: 'var(--bg-raised)', border: '1px solid var(--yellow-border)', maxWidth: '420px' }}
           >
             <p className="text-sm font-semibold mb-1" style={{ color: 'var(--yellow)' }}>
-              Set a password to access your dashboard
+              Set up your account
             </p>
             <p className="text-xs mb-4" style={{ color: 'var(--fg-muted)' }}>
-              View saved jobs, manage alerts, and track applications.
+              Create a password to manage alerts, save jobs, and access your dashboard.
             </p>
-            <SetPasswordInline />
+            <SetPasswordWithToken alertToken={token} />
           </div>
         )}
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
-          {/* Signed in with password → go to dashboard */}
-          {user && hasPassword ? (
+          {isSignedIn && hasPassword ? (
             <Link
               href="/dashboard"
               style={{
@@ -128,44 +128,26 @@ export default async function AlertsConfirmedPage({
             >
               Go to Dashboard →
             </Link>
-          ) : !user ? (
-            <>
-              <Link
-                href="/jobs"
-                style={{
-                  display: 'inline-block',
-                  padding: '0.875rem 1.5rem',
-                  borderRadius: '10px',
-                  background: 'var(--yellow)',
-                  color: '#0a0a0a',
-                  fontWeight: 700,
-                  fontSize: '0.95rem',
-                  textDecoration: 'none',
-                }}
-              >
-                Browse open jobs →
-              </Link>
-              <Link
-                href="/auth/login"
-                style={{
-                  display: 'inline-block',
-                  padding: '0.875rem 1.5rem',
-                  borderRadius: '10px',
-                  background: 'transparent',
-                  color: 'var(--fg-muted)',
-                  border: '1px solid var(--border)',
-                  fontWeight: 600,
-                  fontSize: '0.95rem',
-                  textDecoration: 'none',
-                }}
-              >
-                Sign In
-              </Link>
-            </>
-          ) : null}
+          ) : (
+            <Link
+              href="/jobs"
+              style={{
+                display: 'inline-block',
+                padding: '0.875rem 1.5rem',
+                borderRadius: '10px',
+                background: copy.tone === 'success' && token && !isSignedIn ? 'transparent' : 'var(--yellow)',
+                color: copy.tone === 'success' && token && !isSignedIn ? 'var(--fg-muted)' : '#0a0a0a',
+                border: copy.tone === 'success' && token && !isSignedIn ? '1px solid var(--border)' : 'none',
+                fontWeight: 700,
+                fontSize: '0.95rem',
+                textDecoration: 'none',
+              }}
+            >
+              Browse open jobs
+            </Link>
+          )}
 
-          {/* Always show browse jobs as secondary if signed in */}
-          {user && (
+          {isSignedIn && (
             <Link
               href="/jobs"
               style={{
