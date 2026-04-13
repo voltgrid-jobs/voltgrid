@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import Link from 'next/link'
 
 export default function SetPasswordPage() {
   return (
@@ -19,6 +20,22 @@ function SetPasswordForm() {
   const [confirm, setConfirm] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [checking, setChecking] = useState(true)
+  const [alreadyHasPassword, setAlreadyHasPassword] = useState(false)
+  const [notSignedIn, setNotSignedIn] = useState(false)
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) {
+        setNotSignedIn(true)
+      } else {
+        const hasEmail = user.identities?.some(i => i.provider === 'email') ?? false
+        if (hasEmail) setAlreadyHasPassword(true)
+      }
+      setChecking(false)
+    })
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -45,6 +62,91 @@ function SetPasswordForm() {
     }
   }
 
+  if (checking) return null
+
+  // User already has a password — show "already set" message
+  if (alreadyHasPassword) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center px-4">
+        <div className="w-full max-w-sm text-center">
+          <div
+            className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4 text-2xl"
+            style={{ background: 'var(--green-dim)', border: '1px solid rgba(74,222,128,0.2)' }}
+          >
+            ✓
+          </div>
+          <h1
+            className="text-2xl font-bold mb-2"
+            style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif' }}
+          >
+            Your account is ready
+          </h1>
+          <p className="text-sm mb-6" style={{ color: 'var(--fg-muted)' }}>
+            You already have a password set. Sign in to access your dashboard.
+          </p>
+          <div className="flex flex-col gap-3">
+            <Link
+              href="/dashboard"
+              className="w-full py-3 rounded-xl font-semibold text-center transition-opacity hover:opacity-90"
+              style={{ background: 'var(--yellow)', color: '#0A0A0A', display: 'block' }}
+            >
+              Go to Dashboard →
+            </Link>
+            <Link
+              href="/auth/login"
+              className="w-full py-3 rounded-xl font-semibold text-center transition-opacity hover:opacity-80"
+              style={{ border: '1px solid var(--border)', color: 'var(--fg-muted)', display: 'block' }}
+            >
+              Sign In
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Not signed in — need to sign in first or use the token-based flow
+  if (notSignedIn) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center px-4">
+        <div className="w-full max-w-sm text-center">
+          <div
+            className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4 text-2xl"
+            style={{ background: 'var(--yellow-dim)', border: '1px solid var(--yellow-border)' }}
+          >
+            🔒
+          </div>
+          <h1
+            className="text-2xl font-bold mb-2"
+            style={{ color: 'var(--fg)', fontFamily: 'var(--font-display), system-ui, sans-serif' }}
+          >
+            Sign in to set your password
+          </h1>
+          <p className="text-sm mb-6" style={{ color: 'var(--fg-muted)' }}>
+            Sign in first, then you can set or change your password from the dashboard.
+          </p>
+          <div className="flex flex-col gap-3">
+            <Link
+              href="/auth/login"
+              className="w-full py-3 rounded-xl font-semibold text-center transition-opacity hover:opacity-90"
+              style={{ background: 'var(--yellow)', color: '#0A0A0A', display: 'block' }}
+            >
+              Sign In →
+            </Link>
+            <Link
+              href="/auth/signup"
+              className="w-full py-3 rounded-xl font-semibold text-center transition-opacity hover:opacity-80"
+              style={{ border: '1px solid var(--border)', color: 'var(--fg-muted)', display: 'block' }}
+            >
+              Create Account
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Signed in but no password — show the form
   return (
     <div className="min-h-[60vh] flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
