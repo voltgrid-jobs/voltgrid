@@ -231,7 +231,7 @@ export async function POST(req: NextRequest) {
       ...(background && { background }),
       ...(job_id && { source_job_id: job_id }),
       ...(sourcePage && { source_page: sourcePage }),
-      per_diem_only: !!per_diem_only,
+      ...(per_diem_only && { per_diem_only: true }),
     })
     .select('id, confirmation_token')
     .single()
