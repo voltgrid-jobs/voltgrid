@@ -82,7 +82,7 @@ interface WelcomeArgs {
 
 export function buildWelcomeEmail({ tradeLabel, manageToken, baseUrl, category }: WelcomeArgs) {
   const manageUrl = `${baseUrl}/alerts/manage?t=${manageToken}`
-  const unsubscribeUrl = `${baseUrl}/alerts/unsubscribe?t=${manageToken}`
+  const unsubscribeUrl = `${baseUrl}/api/alerts/unsubscribe?t=${manageToken}`
   const browseUrl = `${baseUrl}/jobs${category ? `?category=${category}` : ''}`
   const salaryGuideUrl = `${baseUrl}/salary-guide`
 

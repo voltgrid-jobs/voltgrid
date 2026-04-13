@@ -107,7 +107,7 @@ export async function GET(req: NextRequest) {
               You're receiving this because you confirmed a job alert on VoltGrid Jobs.<br>
               <a href="${baseUrl}/alerts/manage?t=${alert.confirmation_token}" style="color:#4b5563;text-decoration:underline">Manage alerts</a>
               &nbsp;·&nbsp;
-              <a href="${baseUrl}/alerts/unsubscribe?t=${alert.confirmation_token}" style="color:#4b5563;text-decoration:underline">Unsubscribe</a>
+              <a href="${baseUrl}/api/alerts/unsubscribe?t=${alert.confirmation_token}" style="color:#4b5563;text-decoration:underline">Unsubscribe</a>
             </p>
           </div>
         </body>

@@ -82,7 +82,7 @@ function buildEmailHtml(jobs: Job[], alert: JobAlert, baseUrl: string, totalJobs
   }).join('')
 
   const manageUrl = `${baseUrl}/alerts/manage?t=${alert.confirmation_token}`
-  const unsubscribeUrl = `${baseUrl}/alerts/unsubscribe?t=${alert.confirmation_token}`
+  const unsubscribeUrl = `${baseUrl}/api/alerts/unsubscribe?t=${alert.confirmation_token}`
 
   return `<!DOCTYPE html>
 <html lang="en">
