@@ -1,10 +1,18 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 export default function SetPasswordPage() {
+  return (
+    <Suspense>
+      <SetPasswordForm />
+    </Suspense>
+  )
+}
+
+function SetPasswordForm() {
   const searchParams = useSearchParams()
   const next = searchParams.get('next') || '/dashboard'
   const [password, setPassword] = useState('')
