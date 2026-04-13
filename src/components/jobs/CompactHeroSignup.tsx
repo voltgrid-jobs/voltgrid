@@ -223,7 +223,7 @@ export function CompactHeroSignup({
               name="postal_code"
               autoComplete="postal-code"
               maxLength={10}
-              placeholder="ZIP code"
+              placeholder="e.g. 75001"
               value={zip}
               onChange={(e) => {
                 setZip(e.target.value)
