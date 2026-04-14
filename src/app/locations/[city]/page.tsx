@@ -86,6 +86,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${hub.name} Data Center Jobs — Electricians, HVAC & Trades`,
     description: `${hub.name} data center jobs for electricians, HVAC technicians, and skilled trades. ${hub.blurb}`,
+    alternates: { canonical: `https://voltgridjobs.com/locations/${city}` },
   }
 }
 

@@ -109,6 +109,7 @@ export async function generateMetadata({
   return {
     title: `${job.title} at ${job.company_name}`,
     description: `${job.title} at ${job.company_name} in ${job.location}. Apply on VoltGrid Jobs.`,
+    alternates: { canonical: `https://voltgridjobs.com/jobs/${id}` },
   }
 }
 

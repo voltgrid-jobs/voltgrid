@@ -182,6 +182,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${tradeDef.shortName} Jobs in ${marketDef.name} — ${tradeDef.shortName}s at Data Centers`,
     description: `${tradeDef.shortName} jobs at data centers in ${marketDef.name}. ${marketDef.blurb} Browse and apply free on VoltGrid.`,
+    alternates: { canonical: `https://voltgridjobs.com/trades/${trade}/${city}` },
   }
 }
 

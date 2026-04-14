@@ -86,6 +86,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: categoryDef.name,
     description: categoryDef.metaDescription,
+    alternates: { canonical: `https://voltgridjobs.com/trades/${slug}` },
   }
 }
 
