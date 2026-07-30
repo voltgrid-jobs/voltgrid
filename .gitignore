@@ -35,6 +35,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# claude code — local user prefs stay untracked; shared settings.json is committed
+.claude/settings.local.json
+.claude/worktrees/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

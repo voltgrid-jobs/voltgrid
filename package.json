@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "env:prod": "npx vercel@latest env pull --environment=production .env.local",
+    "ingest:health": "node --env-file=.env.local scripts/ingest-health.mjs",
+    "ingest:test": "node --env-file=.env.local scripts/ingest-test.mjs"
   },
   "dependencies": {
     "@stripe/stripe-js": "^9.0.0",
