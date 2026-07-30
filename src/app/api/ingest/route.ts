@@ -416,16 +416,7 @@ async function fetchDOLApprenticeshipJobs(): Promise<RawJob[]> {
   return []
 }
 
-export async function POST(req: NextRequest) {
-  if (!INGEST_SECRET) {
-    console.error('INGEST_SECRET is not configured')
-    return NextResponse.json({ error: 'Not configured' }, { status: 500 })
-  }
-  const secret = req.headers.get('x-ingest-secret')
-  if (secret !== INGEST_SECRET) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
+async function runIngest() {
   const supabase = createAdminClient()
   const allJobs: RawJob[] = []
 
@@ -564,7 +555,7 @@ export async function POST(req: NextRequest) {
     else skipped++
   }
 
-  return NextResponse.json({
+  return {
     success: true,
     fetched: allJobs.length,
     inserted,
@@ -576,7 +567,19 @@ export async function POST(req: NextRequest) {
       lever: leverJobs.length,
       dol_apprenticeship: dolJobs.length,
     },
-  })
+  }
+}
+
+export async function POST(req: NextRequest) {
+  if (!INGEST_SECRET) {
+    console.error('INGEST_SECRET is not configured')
+    return NextResponse.json({ error: 'Not configured' }, { status: 500 })
+  }
+  const secret = req.headers.get('x-ingest-secret')
+  if (secret !== INGEST_SECRET) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  return NextResponse.json(await runIngest())
 }
 
 // Also allow GET for Vercel Cron
@@ -589,5 +592,5 @@ export async function GET(req: NextRequest) {
   if (!isVercelCron && authHeader !== `Bearer ${INGEST_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
-  return POST(req)
+  return NextResponse.json(await runIngest())
 }
